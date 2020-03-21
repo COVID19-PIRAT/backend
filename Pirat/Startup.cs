@@ -91,6 +91,7 @@ namespace Pirat
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pirat API");
             });
 
+            app.UseCors("AllowAll");
 
             app.UseRouting();
 
