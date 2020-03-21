@@ -22,6 +22,12 @@ namespace Pirat.Services
 
         public List<Provider> queryProviders(Consumable consumable)
         {
+            if(string.IsNullOrEmpty(consumable.category) || string.IsNullOrEmpty(consumable.name) || consumable.amount <= 0)
+            {
+                throw new ArgumentException();
+            }
+
+
             var query = from p in _context.provider join c in _context.consumable
                              on p.id equals c.provider_id
                         where consumable.amount <= c.amount
@@ -67,6 +73,12 @@ namespace Pirat.Services
 
         public List<Provider> queryProviders(Device device)
         {
+            if (string.IsNullOrEmpty(device.category) || string.IsNullOrEmpty(device.name) || device.amount <= 0)
+            {
+                throw new ArgumentException();
+            }
+
+
             var query = from p in _context.provider
                         join d in _context.device 
                         on p.id equals d.provider_id

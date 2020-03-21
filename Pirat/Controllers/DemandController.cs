@@ -35,33 +35,54 @@ namespace Pirat.Controllers
         [HttpGet("consumables")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
         public IActionResult Get([FromQuery] Consumable consumable)
         {
-            return Ok(_service.queryProviders(consumable));
-        }
+            try { 
+                return Ok(_service.queryProviders(consumable));
+            } catch (ArgumentException)
+            {
+                return BadRequest("Some obligatory value is missing");
+            }
+}
 
 
 
         [HttpGet("devices")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
         public IActionResult Get([FromQuery] Device device)
         {
-            return Ok(_service.queryProviders(device));
+            try
+            {
+                return Ok(_service.queryProviders(device));
+            } catch (ArgumentException)
+            {
+                return BadRequest("Some obligatory value is missing");
+            }
         }
 
         [HttpGet("manpower")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
         public IActionResult Get([FromQuery] Manpower manpower)
         {
-            return Ok(_service.queryProviders(manpower));
+            try
+            {
+                return Ok(_service.queryProviders(manpower));
+            } catch (ArgumentException)
+            {
+                return BadRequest("Some obligatory value is missing");
+            }
+           
         }
 
         //*********POST REQUESTS
