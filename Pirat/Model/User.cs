@@ -6,6 +6,9 @@ namespace Pirat
     public class User
     {
         [JsonProperty]
+        public Guid Id { get; set; }
+
+        [JsonProperty]
         public string Name { get; set; }
 
         [JsonProperty]

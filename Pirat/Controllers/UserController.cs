@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Pirat.DatabaseContext;
 
 namespace Pirat.Controllers
 {
@@ -15,9 +16,12 @@ namespace Pirat.Controllers
 
         private readonly ILogger<UserController> _logger;
 
-        public UserController(ILogger<UserController> logger)
+        private readonly ApplicationContext _context;
+
+        public UserController(ILogger<UserController> logger, ApplicationContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         [HttpGet]
@@ -26,7 +30,9 @@ namespace Pirat.Controllers
         [Produces("application/json")]
         public IActionResult Get()
         {
-            var user = new User() {Age = 20, Name = "Dummy" };
+            var user = new User() {Age = 20, Name = "Dummy", Id = new Guid() };
+            //_context.Add(user);
+            //_context.SaveChanges();
             return Ok(user);
         }
     }
