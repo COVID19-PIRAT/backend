@@ -8,11 +8,11 @@ namespace Pirat.Services
 {
     public interface IDemandService
     {
-        public List<Provider> queryProviders(Consumable consumable);
+        public ISet<Provider> queryProviders(Consumable consumable);
 
-        public List<Provider> queryProviders(Device device);
+        public ISet<Provider> queryProviders(Device device);
 
-        public List<Provider> queryProviders(Manpower manpower);
+        public ISet<Provider> queryProviders(Manpower manpower);
 
         public void update(Aggregate aggregate);
 

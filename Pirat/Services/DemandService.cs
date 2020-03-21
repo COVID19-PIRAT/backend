@@ -20,7 +20,7 @@ namespace Pirat.Services
             _context = context;
         }
 
-        public List<Provider> queryProviders(Consumable consumable)
+        public ISet<Provider> queryProviders(Consumable consumable)
         {
             if(string.IsNullOrEmpty(consumable.category) || string.IsNullOrEmpty(consumable.name) || consumable.amount <= 0)
             {
@@ -57,7 +57,7 @@ namespace Pirat.Services
                 query = query.Where(collection => consumable.postalcode.Equals(collection.c.postalcode)); ;
             }
 
-            List<Provider> providers = query.Select(collection => new Provider
+            HashSet<Provider> providers = query.Select(collection => new Provider
             {
                 id = collection.p.id,
                 name = collection.p.name,
@@ -66,12 +66,12 @@ namespace Pirat.Services
                 postalcode = collection.p.postalcode,
                 mail = collection.p.mail,
                 phone = collection.p.phone
-            }).ToList();
+            }).ToHashSet();
 
             return providers;
         }
 
-        public List<Provider> queryProviders(Device device)
+        public ISet<Provider> queryProviders(Device device)
         {
             if (string.IsNullOrEmpty(device.category) || string.IsNullOrEmpty(device.name) || device.amount <= 0)
             {
@@ -108,7 +108,7 @@ namespace Pirat.Services
                 query = query.Where(collection => device.postalcode.Equals(collection.d.postalcode)); ;
             }
 
-            List<Provider> providers = query.Select(collection => new Provider
+            ISet<Provider> providers = query.Select(collection => new Provider
             {
                 id = collection.p.id,
                 name = collection.p.name,
@@ -117,12 +117,12 @@ namespace Pirat.Services
                 postalcode = collection.p.postalcode,
                 mail = collection.p.mail,
                 phone = collection.p.phone
-            }).ToList();
+            }).ToHashSet();
 
             return providers;
         }
 
-        public List<Provider> queryProviders(Manpower manpower)
+        public ISet<Provider> queryProviders(Manpower manpower)
         {
             var query = from p in _context.provider
                         join m in _context.manpower
@@ -150,7 +150,7 @@ namespace Pirat.Services
                 query = query.Where(collection => collection.m.experience_rt_pcr); ;
             }
 
-            List<Provider> providers = query.Select(collection => new Provider
+            ISet<Provider> providers = query.Select(collection => new Provider
             {
                 id = collection.p.id,
                 name = collection.p.name,
@@ -159,7 +159,7 @@ namespace Pirat.Services
                 postalcode = collection.p.postalcode,
                 mail = collection.p.mail,
                 phone = collection.p.phone
-            }).ToList();
+            }).ToHashSet();
 
             return providers;
         }
