@@ -1,5 +1,11 @@
 # Backend service
 
+# Requirements
+
+.Net Core Sdk 3.1
+
+See https://dotnet.microsoft.com/download/dotnet-core/3.1 to get the SDK
+
 # Running the project
 
 Use dotnet publish on the sln File
