@@ -8,8 +8,7 @@ namespace Pirat.Model
 {
     public class Provider
     {
-        [JsonProperty]
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public int id { get; set; }
 
         [JsonProperty]

@@ -31,15 +31,6 @@ namespace Pirat.Controllers
 
         //***********GET REQUESTS
 
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Consumes("application/json")]
-        [Produces("application/json")]
-        public IActionResult Get()
-        {
-            return Ok("Resources");
-        }
 
         [HttpGet("consumables")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -76,56 +67,9 @@ namespace Pirat.Controllers
         //*********POST REQUESTS
 
 
-        [HttpPost("consumables")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Consumes("application/json")]
-        [Produces("application/json")]
-        public IActionResult Post([FromBody] Consumable consumable)
-        {
-            _service.update(consumable);
-
-            return Ok("d");
-        }
-
-        [HttpPost("devices")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Consumes("application/json")]
-        [Produces("application/json")]
-        public IActionResult Post([FromBody] Device device)
-        {
-            _service.update(device);
-
-            return Ok("d");
-        }
-
-        [HttpPost("manpower")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Consumes("application/json")]
-        [Produces("application/json")]
-        public IActionResult Post([FromBody] Manpower manpower)
-        {
-            _service.update(manpower);
-
-            return Ok("d");
-        }
-
-        [HttpPost("providers")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Consumes("application/json")]
-        [Produces("application/json")]
-        public IActionResult Post([FromBody] Provider provider)
-        {
-            _service.update(provider);
-
-            return Ok("d");
-        }
-
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -133,15 +77,7 @@ namespace Pirat.Controllers
         {
             _service.update(aggregate);
 
-            //List<Device> devices = JsonConvert.DeserializeObject<List<Device>>(data["provider"].ToString());
-            //Dictionary<string, string> parameters = JsonConvert.DeserializeObject<Dictionary<string, string>>(data);
-
-            //Provider provider = data["provider"].ToObject<Provider>();
-            //Device[] devices = (JArray)data["devices"];
-            //Provider provider = data["provider"].ToObject<Provider>();
-            //Provider provider = data["provider"].ToObject<Provider>();
-
-            return Ok("d");
+            return Created("/successful", "Successful");
         }
 
     }

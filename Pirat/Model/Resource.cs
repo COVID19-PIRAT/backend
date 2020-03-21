@@ -9,12 +9,11 @@ namespace Pirat.Model
 {
     public abstract class Resource
     {
-        [JsonProperty]
+        [System.Text.Json.Serialization.JsonIgnore]
         [FromQuery(Name = "id")]
         public int id { get; set; }
 
-        [JsonProperty]
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         [FromQuery(Name = "provider_id")]
         public int provider_id { get; set; }
 

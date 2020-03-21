@@ -9,12 +9,11 @@ namespace Pirat.Model
 {
     public class Manpower
     {
-        [JsonProperty]
-        [JsonIgnore]
+
+        [System.Text.Json.Serialization.JsonIgnore]
         public int id { get; set; }
 
-        [JsonProperty]
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public int provider_id { get; set; }
 
         [JsonProperty]

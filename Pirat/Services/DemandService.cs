@@ -180,7 +180,10 @@ namespace Pirat.Services
         {
             var provider = aggregate.provider;
 
-            update(provider);
+            if (!exists(provider))
+            {
+                update(provider);
+            }
 
             int key = retrieveKeyFromProvider(provider);
 
@@ -215,6 +218,35 @@ namespace Pirat.Services
             }
 
             return keys.First();
+        }
+
+        private bool exists(Provider provider)
+        {
+            var query = from p in _context.provider
+                                       where p.name.Equals(provider.name)
+                                       && p.mail.Equals(provider.mail)
+                                       select p;
+
+            List<Provider> providers = query.Select(p => new Provider
+            {
+                id = p.id,
+                name = p.name,
+                street = p.street,
+                streetnumber = p.streetnumber,
+                postalcode = p.postalcode,
+                mail = p.mail,
+                phone = p.phone
+            }).ToList();
+
+            if (providers.Count() == 1)
+            {
+                return true;
+            }
+            if (providers.Count() > 1)
+            {
+                throw new Exception();
+            }
+            return false;
         }
     }
 }
