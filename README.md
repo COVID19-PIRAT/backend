@@ -8,6 +8,12 @@ See https://dotnet.microsoft.com/download/dotnet-core/3.1 to get the SDK
 
 # Running the project
 
+Set the following environment variables:
+
+* PIRAT_GOOGLE_API_KEY
+* PIRAT_CONNECTION
+
+
 Use dotnet publish on the sln File
 
 Example: dotnet publish Pirat.sln (this builds the executable Debug version)
