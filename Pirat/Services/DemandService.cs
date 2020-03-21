@@ -20,7 +20,7 @@ namespace Pirat.Services
             _context = context;
         }
 
-        public List<Provider> queryProvider(Consumable consumable)
+        public List<Provider> queryProviders(Consumable consumable)
         {
             var query = from p in _context.provider join c in _context.consumable
                              on p.id equals c.provider_id
@@ -29,10 +29,7 @@ namespace Pirat.Services
                         && consumable.name.Equals(c.name)
                         select new { p, c };
 
-            if (consumable.Id > 0)
-            {
-                query = query.Where(collection => consumable.Id == collection.c.Id);
-            }
+
             if (!string.IsNullOrEmpty(consumable.category))
             {
                 query = query.Where(collection => consumable.category.Equals(collection.c.category));
@@ -41,14 +38,14 @@ namespace Pirat.Services
             {
                 query = query.Where(collection => consumable.manufacturer.Equals(collection.c.manufacturer)); ;
             }
-            if (!string.IsNullOrEmpty(consumable.street))
-            {
-                query = query.Where(collection => consumable.street.Equals(collection.c.street)); ;
-            }
-            if (!string.IsNullOrEmpty(consumable.streetnumber))
-            {
-                query = query.Where(collection => consumable.streetnumber.Equals(collection.c.streetnumber)); ;
-            }
+            //if (!string.IsNullOrEmpty(consumable.street))
+            //{
+            //    query = query.Where(collection => consumable.street.Equals(collection.c.street)); ;
+            //}
+            //if (!string.IsNullOrEmpty(consumable.streetnumber))
+            //{
+            //    query = query.Where(collection => consumable.streetnumber.Equals(collection.c.streetnumber)); ;
+            //}
             if (!string.IsNullOrEmpty(consumable.postalcode))
             {
                 query = query.Where(collection => consumable.postalcode.Equals(collection.c.postalcode)); ;
@@ -68,7 +65,7 @@ namespace Pirat.Services
             return providers;
         }
 
-        public List<Provider> queryProvider(Device device)
+        public List<Provider> queryProviders(Device device)
         {
             var query = from p in _context.provider
                         join d in _context.device 
@@ -78,10 +75,6 @@ namespace Pirat.Services
                         && device.name.Equals(d.name)
                         select new { p, d };
 
-            if (device.Id > 0)
-            {
-                query = query.Where(collection => device.Id == collection.d.Id);
-            }
             if (!string.IsNullOrEmpty(device.category))
             {
                 query = query.Where(collection => device.category.Equals(collection.d.category));
@@ -90,14 +83,14 @@ namespace Pirat.Services
             {
                 query = query.Where(collection => device.manufacturer.Equals(collection.d.manufacturer)); ;
             }
-            if (!string.IsNullOrEmpty(device.street))
-            {
-                query = query.Where(collection => device.street.Equals(collection.d.street)); ;
-            }
-            if (!string.IsNullOrEmpty(device.streetnumber))
-            {
-                query = query.Where(collection => device.streetnumber.Equals(collection.d.streetnumber)); ;
-            }
+            //if (!string.IsNullOrEmpty(device.street))
+            //{
+            //    query = query.Where(collection => device.street.Equals(collection.d.street)); ;
+            //}
+            //if (!string.IsNullOrEmpty(device.streetnumber))
+            //{
+            //    query = query.Where(collection => device.streetnumber.Equals(collection.d.streetnumber)); ;
+            //}
             if (!string.IsNullOrEmpty(device.postalcode))
             {
                 query = query.Where(collection => device.postalcode.Equals(collection.d.postalcode)); ;
@@ -117,17 +110,13 @@ namespace Pirat.Services
             return providers;
         }
 
-        public List<Provider> queryProvider(Manpower manpower)
+        public List<Provider> queryProviders(Manpower manpower)
         {
             var query = from p in _context.provider
                         join m in _context.manpower
                         on p.id equals m.provider_id
                         select new { p, m };
 
-            if (manpower.id > 0)
-            {
-                query = query.Where(collection => manpower.id == collection.m.id);
-            }
             if (!string.IsNullOrEmpty(manpower.qualification))
             {
                 query = query.Where(collection => manpower.qualification.Equals(collection.m.qualification));
@@ -136,17 +125,13 @@ namespace Pirat.Services
             {
                 query = query.Where(collection => manpower.institution.Equals(collection.m.institution)); ;
             }
-            if (!string.IsNullOrEmpty(manpower.reasearchgroup))
+            if (!string.IsNullOrEmpty(manpower.researchgroup))
             {
-                query = query.Where(collection => manpower.reasearchgroup.Equals(collection.m.reasearchgroup)); ;
+                query = query.Where(collection => manpower.researchgroup.Equals(collection.m.researchgroup)); ;
             }
             if (!string.IsNullOrEmpty(manpower.area))
             {
                 query = query.Where(collection => manpower.area.Equals(collection.m.area)); ;
-            }
-            if (manpower.experience_pcr)
-            {
-                query = query.Where(collection => collection.m.experience_pcr); ;
             }
             if (manpower.experience_rt_pcr)
             {
@@ -165,6 +150,71 @@ namespace Pirat.Services
             }).ToList();
 
             return providers;
+        }
+
+        public void update(Consumable consumable)
+        {
+            _context.Add(consumable);
+            _context.SaveChanges();
+        }
+
+        public void update(Device device)
+        {
+            _context.Add(device);
+            _context.SaveChanges();
+        }
+
+        public void update(Manpower manpower)
+        {
+            _context.Add(manpower);
+            _context.SaveChanges();
+        }
+
+        public void update(Provider provider)
+        {
+            _context.Add(provider);
+            _context.SaveChanges();
+        }
+
+        public void update(Aggregate aggregate)
+        {
+            var provider = aggregate.provider;
+
+            update(provider);
+
+            int key = retrieveKeyFromProvider(provider);
+
+            foreach (var c in aggregate.consumables)
+            {
+                c.provider_id = key;
+                update(c);
+            }
+            foreach (var m in aggregate.manpowers)
+            {
+                m.provider_id = key;
+                update(m);
+            }
+            foreach (var d in aggregate.devices)
+            {
+                d.provider_id = key;
+                update(d);
+            }
+        }
+
+        private int retrieveKeyFromProvider(Provider provider)
+        {
+            var key = from p in _context.provider
+                      where p.name.Equals(provider.name)
+                      && p.mail.Equals(provider.mail)
+                      select p;
+
+            List<int> keys = key.Select(p => p.id).ToList();
+            if(keys.Count() != 1)
+            {
+                throw new Exception();
+            }
+
+            return keys.First();
         }
     }
 }

@@ -11,7 +11,12 @@ namespace Pirat.Model
     {
         [JsonProperty]
         [FromQuery(Name = "id")]
-        public int Id { get; set; }
+        public int id { get; set; }
+
+        [JsonProperty]
+        [JsonIgnore]
+        [FromQuery(Name = "provider_id")]
+        public int provider_id { get; set; }
 
         [JsonProperty]
         [JsonRequired]
@@ -29,28 +34,25 @@ namespace Pirat.Model
 
         [JsonProperty]
         [FromQuery(Name = "order_number")]
-        public string OrderNumber { get; set; }
+        public string ordernumber { get; set; }
 
-        [JsonProperty]
-        [FromQuery(Name = "street")]
-        public string street { get; set; }
+        //[JsonProperty]
+        //[FromQuery(Name = "street")]
+        //public string street { get; set; }
 
         [JsonProperty]
         [FromQuery(Name = "postal_code")]
         public string postalcode { get; set; }
 
-        [JsonProperty]
-        [FromQuery(Name = "street_number")]
-        public string streetnumber { get; set; }
+        //[JsonProperty]
+        //[FromQuery(Name = "street_number")]
+        //public string streetnumber { get; set; }
 
         [JsonProperty]
         [JsonRequired]
         [FromQuery(Name = "amount")]
         public int amount { get; set; }
 
-        [JsonProperty]
-        [FromQuery(Name = "provider_id")]
-        public int provider_id { get; set; }
     }
 
     public class Device : Resource { }
