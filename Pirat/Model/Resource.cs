@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,20 +11,22 @@ namespace Pirat.Model
     public abstract class Resource
     {
         [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         [FromQuery(Name = "id")]
         public int id { get; set; }
 
         [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         [FromQuery(Name = "provider_id")]
         public int provider_id { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
+        [Required]
         [FromQuery(Name = "category")]
         public string category { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
+        [Required]
         [FromQuery(Name = "name")]
         public string name { get; set; }
 
@@ -48,7 +51,7 @@ namespace Pirat.Model
         //public string streetnumber { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
+        [Required]
         [FromQuery(Name = "amount")]
         public int amount { get; set; }
 

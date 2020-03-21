@@ -9,30 +9,25 @@ namespace Pirat.Model
     public class Provider
     {
         [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public int id { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
         public string name { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
         public string organisation { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
         public string street { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
         public string streetnumber { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
         public string postalcode { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
         public string city { get; set; }
 
         [JsonProperty]
@@ -40,11 +35,9 @@ namespace Pirat.Model
         public string country { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
         public string mail { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
         public string phone { get; set; }
 
         public override bool Equals(object obj)
