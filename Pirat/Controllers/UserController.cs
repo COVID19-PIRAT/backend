@@ -9,6 +9,8 @@ using Pirat.DatabaseContext;
 
 namespace Pirat.Controllers
 {
+
+    //[Route("api/[controller]/[action]")]
     [ApiController]
     [Route("/user")]
     public class UserController : ControllerBase
@@ -27,6 +29,7 @@ namespace Pirat.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Consumes("application/json")]
         [Produces("application/json")]
         public IActionResult Get()
         {
@@ -34,6 +37,18 @@ namespace Pirat.Controllers
             //_context.Add(user);
             //_context.SaveChanges();
             return Ok(user);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public IActionResult Post([FromBody] User u)
+        {
+            //_context.Add(user);
+            //_context.SaveChanges();
+            return Ok(u);
         }
     }
 

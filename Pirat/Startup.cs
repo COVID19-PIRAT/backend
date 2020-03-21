@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,8 +31,8 @@ namespace Pirat
         {
             services.AddControllers();
             services.AddHealthChecks();
-            services.AddMvc();
 
+            services.Configure<KestrelServerOptions>(Configuration.GetSection("Kestrel"));
 
             //we get the connection string from an environment variable
             var connectionString = Environment.GetEnvironmentVariable("PIRAT_CONNECTION");
@@ -40,20 +41,27 @@ namespace Pirat
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
+            
+
             if (env.IsDevelopment())
             {
+                logger.LogInformation("In Development environment");
                 app.UseDeveloperExceptionPage();
-            } else
-            {
-                app.UseHttpsRedirection();
             }
+            if (env.IsProduction())
+            {
+                logger.LogInformation("In Production environment");
+                app.UseExceptionHandler("/Error");
+            }
+
 
             app.UseRouting();
 
             app.UseHealthChecks("/health");
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
