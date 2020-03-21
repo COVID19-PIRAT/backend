@@ -12,8 +12,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using Npgsql;
 using Pirat.DatabaseContext;
+using Pirat.Services;
 
 namespace Pirat
 {
@@ -29,22 +31,34 @@ namespace Pirat
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //General
             services.AddControllers();
             services.AddHealthChecks();
 
+            //Services
+            services.AddTransient<IDemandService, DemandService>();
+
+
+            //Kestrel
             services.Configure<KestrelServerOptions>(Configuration.GetSection("Kestrel"));
 
             //we get the connection string from an environment variable
             var connectionString = Environment.GetEnvironmentVariable("PIRAT_CONNECTION");
 
-            services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connectionString));
+            //DB context
+            services.AddDbContext<DemandContext>(options => options.UseNpgsql(connectionString));
+
+            //Swagger
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
-            
-
+         
             if (env.IsDevelopment())
             {
                 logger.LogInformation("In Development environment");
@@ -55,6 +69,12 @@ namespace Pirat
                 logger.LogInformation("In Production environment");
                 app.UseExceptionHandler("/Error");
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pirat API");
+            });
 
 
             app.UseRouting();

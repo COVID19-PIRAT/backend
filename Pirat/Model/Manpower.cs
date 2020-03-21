@@ -10,36 +10,36 @@ namespace Pirat.Model
     {
         [JsonProperty]
         [JsonRequired]
-        public int Id { get; set; }
+        public int id { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public string Qualification { get; set; }
+        public string qualification { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public string Institution { get; set; }
+        public string institution { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public string Area { get; set; }
+        public string area { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public bool ExperiencePcr { get; set; }
+        public bool experience_pcr { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public bool ExperienceRtPcr { get; set; }
+        public bool experience_rt_pcr { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public int ProviderId { get; set; }
+        public int provider_id { get; set; }
 
         [JsonProperty]
         public string Annotation { get; set; }
 
         [JsonProperty]
-        public string ResearchGroup { get; set; }
+        public string reasearchgroup { get; set; }
     }
 }

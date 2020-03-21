@@ -10,30 +10,30 @@ namespace Pirat.Model
     {
         [JsonProperty]
         [JsonRequired]
-        public int Id { get; set; }
+        public int id { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public string Name { get; set; }
+        public string name { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public string Street { get; set; }
+        public string street { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public string StreetNumber { get; set; }
+        public string streetnumber { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public string PostalCode { get; set; }
+        public string postalcode { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public string Mail { get; set; }
+        public string mail { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public string Phone { get; set; }
+        public string phone { get; set; }
     }
 }

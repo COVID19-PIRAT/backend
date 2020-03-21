@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,40 +10,47 @@ namespace Pirat.Model
     public abstract class Resource
     {
         [JsonProperty]
-        [JsonRequired]
+        [FromQuery(Name = "id")]
         public int Id { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public string Category { get; set; }
+        [FromQuery(Name = "category")]
+        public string category { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public string Name { get; set; }
+        [FromQuery(Name = "name")]
+        public string name { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
-        public string Manufacturer { get; set; }
+        [FromQuery(Name = "manufacturer")]
+        public string manufacturer { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
+        [FromQuery(Name = "order_number")]
         public string OrderNumber { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
-        public string Street { get; set; }
+        [FromQuery(Name = "street")]
+        public string street { get; set; }
+
+        [JsonProperty]
+        [FromQuery(Name = "postal_code")]
+        public string postalcode { get; set; }
+
+        [JsonProperty]
+        [FromQuery(Name = "street_number")]
+        public string streetnumber { get; set; }
 
         [JsonProperty]
         [JsonRequired]
-        public string PostalCode { get; set; }
+        [FromQuery(Name = "amount")]
+        public int amount { get; set; }
 
         [JsonProperty]
-        [JsonRequired]
-        public string StreetNumber { get; set; }
-
-        [JsonProperty]
-        [JsonRequired]
-        public string Amount { get; set; }
+        [FromQuery(Name = "provider_id")]
+        public int provider_id { get; set; }
     }
 
     public class Device : Resource { }

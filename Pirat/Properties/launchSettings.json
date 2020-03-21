@@ -1,8 +1,9 @@
 ﻿{
+  "profiles": {
     "Pirat": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "user",
+      "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
