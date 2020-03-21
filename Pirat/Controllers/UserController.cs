@@ -26,9 +26,7 @@ namespace Pirat.Controllers
         [Produces("application/json")]
         public IActionResult Get()
         {
-            var user = new User();
-            user.Age = 20;
-            user.Name = "Dummy";
+            var user = new User() {Age = 20, Name = "Dummy" };
             return Ok(user);
         }
     }
