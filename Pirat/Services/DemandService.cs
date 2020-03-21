@@ -260,5 +260,10 @@ namespace Pirat.Services
             }
             return false;
         }
+
+        public Aggregate queryLink(string link)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

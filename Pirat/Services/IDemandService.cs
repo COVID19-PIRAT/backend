@@ -14,6 +14,8 @@ namespace Pirat.Services
 
         public ISet<Provider> queryProviders(Manpower manpower);
 
+        public Aggregate queryLink(string link);
+
         public void update(Aggregate aggregate);
 
         public void update(Provider provider);

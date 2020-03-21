@@ -39,6 +39,19 @@ namespace Pirat
             //Services
             services.AddTransient<IDemandService, DemandService>();
 
+            //Cors
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                    });
+            });
 
             //Kestrel
             services.Configure<KestrelServerOptions>(Configuration.GetSection("Kestrel"));

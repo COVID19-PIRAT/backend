@@ -85,6 +85,20 @@ namespace Pirat.Controllers
            
         }
 
+        [HttpGet("offer/{link}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public IActionResult Get(string link)
+        {
+
+            //TODO
+            return Ok();
+
+        }
+
         //*********POST REQUESTS
 
 
