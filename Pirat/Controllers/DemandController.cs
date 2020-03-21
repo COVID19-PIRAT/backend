@@ -85,7 +85,7 @@ namespace Pirat.Controllers
            
         }
 
-        [HttpGet("offer/{link}")]
+        [HttpGet("offers/{link}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -94,8 +94,7 @@ namespace Pirat.Controllers
         public IActionResult Get(string link)
         {
 
-            //TODO
-            return Ok();
+            return Ok(_service.queryLink(link));
 
         }
 
@@ -108,9 +107,9 @@ namespace Pirat.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public IActionResult Post([FromBody] Aggregate aggregate)
+        public IActionResult Post([FromBody] Offer offer)
         {
-            _service.update(aggregate);
+            _service.update(offer);
 
             return Created("/successful", "Successful");
         }

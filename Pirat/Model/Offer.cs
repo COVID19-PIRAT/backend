@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace Pirat.Model
 {
+
     public class Aggregate
     {
-        [JsonProperty]
-        public Provider provider { get; set; }
-
         [JsonProperty]
         public List<Manpower> manpowers { get; set; }
 
@@ -19,5 +17,12 @@ namespace Pirat.Model
 
         [JsonProperty]
         public List<Device> devices { get; set; }
+    }
+
+    public class Offer : Aggregate
+    {
+        [JsonProperty]
+        public Provider provider { get; set; }
+
     }
 }

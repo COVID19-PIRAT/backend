@@ -16,7 +16,7 @@ namespace Pirat.Services
 
         public Aggregate queryLink(string link);
 
-        public void update(Aggregate aggregate);
+        public void update(Offer aggregate);
 
         public void update(Provider provider);
 

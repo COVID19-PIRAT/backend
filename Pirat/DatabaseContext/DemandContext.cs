@@ -17,6 +17,8 @@ namespace Pirat.DatabaseContext
 
         public DbSet<Manpower> manpower { get; set; }
 
+        public DbSet<Link> link { get; set; }
+
         public DemandContext(DbContextOptions<DemandContext> options) : base(options)
         {
         }

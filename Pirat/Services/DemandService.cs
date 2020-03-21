@@ -1,9 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MailKit.Net.Smtp;
+using Microsoft.Extensions.Logging;
+using MimeKit;
 using Pirat.DatabaseContext;
 using Pirat.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Pirat.Services
@@ -166,6 +169,7 @@ namespace Pirat.Services
 
         public void update(Consumable consumable)
         {
+
             _context.Add(consumable);
             _context.SaveChanges();
         }
@@ -188,9 +192,15 @@ namespace Pirat.Services
             _context.SaveChanges();
         }
 
-        public void update(Aggregate aggregate)
+        private void update(Link link)
         {
-            var provider = aggregate.provider;
+            _context.Add(link);
+            _context.SaveChanges();
+        }
+
+        public void update(Offer offer)
+        {
+            var provider = offer.provider;
 
             if (!exists(provider))
             {
@@ -199,21 +209,31 @@ namespace Pirat.Services
 
             int key = retrieveKeyFromProvider(provider);
 
-            foreach (var c in aggregate.consumables)
+            List<int> consumable_ids = new List<int>();
+            List<int> device_ids = new List<int>();
+            List<int> manpower_ids = new List<int>();
+
+            foreach (var c in offer.consumables)
             {
                 c.provider_id = key;
                 update(c);
+                consumable_ids.Add(c.id);
             }
-            foreach (var m in aggregate.manpowers)
+            foreach (var m in offer.manpowers)
             {
                 m.provider_id = key;
                 update(m);
+                manpower_ids.Add(m.id);
             }
-            foreach (var d in aggregate.devices)
+            foreach (var d in offer.devices)
             {
                 d.provider_id = key;
                 update(d);
+                device_ids.Add(d.id);
             }
+            var link = new Link { link = createLink(), consumable_ids = consumable_ids.ToArray(), device_ids = device_ids.ToArray(), manpower_ids = manpower_ids.ToArray() };
+            update(link);
+            sendLinkToMail(provider.mail, link.link);
         }
 
         private int retrieveKeyFromProvider(Provider provider)
@@ -263,7 +283,80 @@ namespace Pirat.Services
 
         public Aggregate queryLink(string link)
         {
-            throw new NotImplementedException();
+            var query = from l in _context.link
+                        where l.link.Equals(link)
+                        select l;
+
+            List<Link> links = query.Select(l => new Link
+            {
+                link = l.link,
+                consumable_ids = l.consumable_ids,
+                device_ids = l.device_ids,
+                manpower_ids = l.manpower_ids
+            }).ToList();
+
+            if (links.Count() <= 0)
+            {
+                throw new Exception();
+            }
+            if (links.Count() > 1)
+            {
+                throw new Exception();
+            }
+            var linkResult = links.First();
+            var aggregation = new Aggregate() { consumables = new List<Consumable>(), devices = new List<Device>(), manpowers = new List<Manpower>()};
+            foreach(int k in linkResult.consumable_ids)
+            {
+                aggregation.devices.Add(_context.device.Find(k));
+            }
+            foreach(int k in linkResult.device_ids)
+            {
+                aggregation.devices.Add(_context.device.Find(k));
+            }
+            foreach(int k in linkResult.manpower_ids)
+            {
+                aggregation.manpowers.Add(_context.manpower.Find(k));
+            }
+            return aggregation;
         }
+
+        private string createLink()
+        {
+            Random random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
+            return new string(Enumerable.Repeat(chars, 30)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        private void sendLinkToMail(string mailNameReceiver, string link)
+        {
+
+            var fullLink = "https://localhost:5000/offers/" + link;
+            var userName = "pirat.hilfsmittel";
+            var mailNameSender = "pirat.hilfsmittel@gmail.com";
+            var password = "2JCBnCs7t3PdyA8";
+
+            MimeMessage message = new MimeMessage();
+            MailboxAddress from = new MailboxAddress(mailNameSender);
+            message.From.Add(from);
+
+            MailboxAddress to = new MailboxAddress(mailNameReceiver);
+            message.To.Add(to);
+
+            message.Subject = "Dein Bearbeitungslink";
+
+            BodyBuilder arnold = new BodyBuilder();
+            arnold.TextBody = fullLink;
+            message.Body = arnold.ToMessageBody();
+
+            SmtpClient client = new SmtpClient();
+            client.Connect("imap.gmail.com", 465, true);
+            client.Authenticate(userName, password);
+
+            client.Send(message);
+            client.Disconnect(true);
+            client.Dispose();
+        }
+
     }
 }
