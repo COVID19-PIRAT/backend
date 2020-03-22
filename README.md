@@ -12,6 +12,10 @@ Set the following environment variables:
 
 * PIRAT_GOOGLE_API_KEY
 * PIRAT_CONNECTION
+* PIRAT_HOST
+* PIRAT_SENDER_MAIL_ADDRESS
+* PIRAT_SENDER_MAIL_USERNAME
+* PIRAT_SENDER_MAIL_PASSWORD
 
 
 Use dotnet publish on the sln File
