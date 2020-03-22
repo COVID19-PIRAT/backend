@@ -400,23 +400,36 @@ namespace Pirat.Services
         {
 
             var host = Environment.GetEnvironmentVariable("PIRAT_HOST");
+
+            var mailSenderAddress = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_ADDRESS");
+            var mailSenderUserName = Environment.GetEnvironmentVariable("PRIAT_SENDER_MAIL_USERNAME");
+            var mailSenderPassword = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_PASSWORD");
+
             if (string.IsNullOrEmpty(host))
             {
-                host = "localhost:5000";
                 _logger.LogWarning("Could not find host. Set to localhost:5000");
+            }
+            if (string.IsNullOrEmpty(mailSenderAddress))
+            {
+                _logger.LogWarning("No sender address is set for sending mails");
+            }
+            if (string.IsNullOrEmpty(mailSenderUserName))
+            {
+                _logger.LogWarning("No user name is set for credentials");
+            }
+            if (string.IsNullOrEmpty(mailSenderPassword))
+            {
+                _logger.LogWarning("No passowrd is set for credentials");
             }
 
             var fullLink = "http://" + host + "/resources/offers/" + token;
-            var userName = "pirat.hilfsmittel";
-            var mailNameSender = "pirat.hilfsmittel@gmail.com";
-            var password = "2JCBnCs7t3PdyA8";
 
-            _logger.LogDebug($"Sender: {mailNameSender}");
+            _logger.LogDebug($"Sender: {mailSenderAddress}");
             _logger.LogDebug($"Receiver: {provider.name}");
             _logger.LogDebug($"Link: {fullLink}");
 
             MimeMessage message = new MimeMessage();
-            MailboxAddress from = new MailboxAddress(mailNameSender);
+            MailboxAddress from = new MailboxAddress(mailSenderAddress);
             message.From.Add(from);
 
             MailboxAddress to = new MailboxAddress(provider.mail);
@@ -430,7 +443,7 @@ namespace Pirat.Services
 
             SmtpClient client = new SmtpClient();
             client.Connect("imap.gmail.com", 465, true);
-            client.Authenticate(userName, password);
+            client.Authenticate(mailSenderUserName, mailSenderPassword);
 
             client.Send(message);
             client.Disconnect(true);
