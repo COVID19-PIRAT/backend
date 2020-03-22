@@ -25,7 +25,7 @@ namespace Pirat.Services
             _context = context;
         }
 
-        public Compilation queryProviders(ConsumableEntity consumable)
+        public Task<Compilation> queryProviders(ConsumableEntity consumable)
         {
 
             if (string.IsNullOrEmpty(consumable.category)) // || string.IsNullOrEmpty(consumable.address.postalcode)
@@ -66,7 +66,7 @@ namespace Pirat.Services
             return collectAllResources(providers);
         }
 
-        public Compilation queryProviders(DeviceEntity device)
+        public Task<Compilation> queryProviders(DeviceEntity device)
         {
             if (string.IsNullOrEmpty(device.category)) //|| string.IsNullOrEmpty(device.address.postalcode)
             {
@@ -106,7 +106,7 @@ namespace Pirat.Services
             return collectAllResources(providers);
         }
 
-        private Compilation collectAllResources(ISet<ProviderEntity> providers)
+        private Task<Compilation> collectAllResources(ISet<ProviderEntity> providers)
         {
             Compilation comp = new Compilation() { offers = new List<Offer>() };
 
@@ -134,10 +134,10 @@ namespace Pirat.Services
                 comp.offers.Add(new Offer() { personals = personals, devices = devices, consumables = consumables });
             }
 
-            return comp;
+            return Task.FromResult(comp);
         }
 
-        public Compilation queryProviders(Manpower manpower)
+        public Task<Compilation> queryProviders(Manpower manpower)
         {
             var query = from p in _context.provider
                         join m in _context.personal
@@ -216,7 +216,7 @@ namespace Pirat.Services
             _context.SaveChanges();
         }
 
-        public string update(Offer offer)
+        public Task<string> update(Offer offer)
         {
             var provider = offer.provider;
 
@@ -339,7 +339,7 @@ namespace Pirat.Services
             return false;
         }
 
-        public Aggregate queryLink(string link)
+        public Task<Aggregate> queryLink(string link)
         {
             var linkResult = retrieveLink(link);
             var aggregation = new Aggregate() { consumables = new List<Consumable>(), devices = new List<Device>(), personals = new List<Personal>()};
@@ -359,14 +359,15 @@ namespace Pirat.Services
             {
                 aggregation.personals.Add(_context.personal.Find(k));
             }
-            return aggregation;
+            return Task.FromResult(aggregation);
         }
 
-        public void delete(string link)
+        public Task<string> delete(string link)
         {
             Link l = retrieveLink(link);
             _context.link.Remove(l);
             _context.SaveChanges();
+            return Task.FromResult("Offer deleted");
         }
 
         private Link retrieveLink(string link)
@@ -403,9 +404,9 @@ namespace Pirat.Services
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        private string sendLinkToMail(Provider provider, string token)
+        private Task<string> sendLinkToMail(Provider provider, string token)
         {
-
+            var fullLink = "";
             var host = Environment.GetEnvironmentVariable("PIRAT_HOST");
 
             var mailSenderAddress = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_ADDRESS");
@@ -429,7 +430,7 @@ namespace Pirat.Services
                 _logger.LogWarning("No passowrd is set for credentials");
             }
 
-            var fullLink = "http://" + host + "/resources/offers/" + token;
+            fullLink = "http://" + host + "/resources/offers/" + token;
 
             _logger.LogDebug($"Sender: {mailSenderAddress}");
             _logger.LogDebug($"Receiver: {provider.name}");
@@ -455,7 +456,9 @@ namespace Pirat.Services
             client.Send(message);
             client.Disconnect(true);
             client.Dispose();
-            return fullLink;
+
+
+            return Task.FromResult(fullLink);
         }
 
         private Address queryAddress(int addressKey)

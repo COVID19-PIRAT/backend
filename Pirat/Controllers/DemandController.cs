@@ -39,10 +39,10 @@ namespace Pirat.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public IActionResult Get([FromQuery] Consumable consumable)
+        public async Task<IActionResult> Get([FromQuery] Consumable consumable)
         {
             try { 
-                return Ok(_service.queryProviders(ConsumableEntity.of(consumable)));
+                return Ok(await _service.queryProviders(ConsumableEntity.of(consumable)));
             } catch (ArgumentException)
             {
                 return BadRequest("Some obligatory value is missing");
@@ -57,11 +57,11 @@ namespace Pirat.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public IActionResult Get([FromQuery] Device device)
+        public async Task<IActionResult> Get([FromQuery] Device device)
         {
             try
             {
-                return Ok(_service.queryProviders(DeviceEntity.of(device)));
+                return Ok(await _service.queryProviders(DeviceEntity.of(device)));
             } catch (ArgumentException)
             {
                 return BadRequest("Some obligatory value is missing");
@@ -74,11 +74,11 @@ namespace Pirat.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public IActionResult Get([FromQuery] Manpower manpower)
+        public async Task<IActionResult> Get([FromQuery] Manpower manpower)
         {
             try
             {
-                return Ok(_service.queryProviders(manpower));
+                return Ok(await _service.queryProviders(manpower));
             } catch (ArgumentException)
             {
                 return BadRequest("Some obligatory value is missing");
@@ -92,11 +92,11 @@ namespace Pirat.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public IActionResult Get(string token)
+        public async Task<IActionResult> Get(string token)
         {
             try
             {
-                return Ok(_service.queryLink(token));
+                return Ok(await _service.queryLink(token));
             } catch (ArgumentException e)
             {
                 return NotFound(e.Message);
@@ -113,11 +113,11 @@ namespace Pirat.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public IActionResult Post([FromBody] Offer offer)
+        public async Task<IActionResult> Post([FromBody] Offer offer)
         {
             try
             {
-                return Ok(_service.update(offer));
+                return Ok(await _service.update(offer));
             } catch (MailException e)
             {
                 return NotFound(e.Message);
@@ -135,15 +135,14 @@ namespace Pirat.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public IActionResult Delete(string token)
+        public async Task<IActionResult> Delete(string token)
         {
             try
             {
-                _service.delete(token);
-                return Ok();
+                return Ok(await _service.delete(token));
             } catch(ArgumentException e)
             {
-                return NotFound(e);
+                return NotFound(e.Message);
             }
         }
 
