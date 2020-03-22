@@ -86,16 +86,16 @@ namespace Pirat.Controllers
            
         }
 
-        [HttpGet("offers/{link}")]
+        [HttpGet("offers/{token}")]
         [ProducesResponseType(typeof(Aggregate), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public IActionResult Get(string link)
+        public IActionResult Get(string token)
         {
 
-            return Ok(_service.queryLink(link));
+            return Ok(_service.queryLink(token));
 
         }
 
@@ -121,15 +121,15 @@ namespace Pirat.Controllers
 
 
         //***********DELETE REQUESTS
-        [HttpDelete("offers/{link}")]
+        [HttpDelete("offers/{token}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public IActionResult Delete(string link)
+        public IActionResult Delete(string token)
         {
-            _service.delete(link);
+            _service.delete(token);
             return Ok();
         }
 
