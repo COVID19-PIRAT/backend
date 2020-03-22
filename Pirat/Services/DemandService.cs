@@ -283,9 +283,9 @@ namespace Pirat.Services
                 update(d);
                 device_ids.Add(d.id);
             }
-            var link = new Link { link = createLink(), consumable_ids = consumable_ids.ToArray(), device_ids = device_ids.ToArray(), manpower_ids = manpower_ids.ToArray() };
+            var link = new Link { token = createLink(), consumable_ids = consumable_ids.ToArray(), device_ids = device_ids.ToArray(), manpower_ids = manpower_ids.ToArray() };
             update(link);
-            return sendLinkToMail(provider.mail, link.link);
+            return sendLinkToMail(provider.mail, link.token);
         }
 
         private int retrieveKeyFromProvider(Provider provider)
@@ -365,12 +365,12 @@ namespace Pirat.Services
         private Link retrieveLink(string link)
         {
             var query = from l in _context.link
-                        where l.link.Equals(link)
+                        where l.token.Equals(link)
                         select l;
 
             List<Link> links = query.Select(l => new Link
             {
-                link = l.link,
+                token = l.token,
                 consumable_ids = l.consumable_ids,
                 device_ids = l.device_ids,
                 manpower_ids = l.manpower_ids
@@ -396,7 +396,7 @@ namespace Pirat.Services
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        private string sendLinkToMail(string mailNameReceiver, string link)
+        private string sendLinkToMail(string mailNameReceiver, string token)
         {
 
             var host = Environment.GetEnvironmentVariable("PIRAT_HOST");
@@ -406,7 +406,7 @@ namespace Pirat.Services
                 _logger.LogWarning("Could not find host. Set to localhost:5000");
             }
 
-            var fullLink = "https://" + host + "/offers/" + link;
+            var fullLink = "http://" + host + "/resources/offers/" + token;
             var userName = "pirat.hilfsmittel";
             var mailNameSender = "pirat.hilfsmittel@gmail.com";
             var password = "2JCBnCs7t3PdyA8";

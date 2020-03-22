@@ -9,7 +9,7 @@ namespace Pirat.Model
     public class Link
     {
         [Key]
-        public string link { get; set; }
+        public string token { get; set; }
 
         public int[] consumable_ids { get; set; }
 
