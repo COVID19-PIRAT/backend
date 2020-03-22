@@ -26,7 +26,6 @@ namespace Pirat.Model
         public string category { get; set; }
 
         [JsonProperty]
-        [Required]
         [FromQuery(Name = "name")]
         public string name { get; set; }
 
@@ -35,7 +34,7 @@ namespace Pirat.Model
         public string manufacturer { get; set; }
 
         [JsonProperty]
-        [FromQuery(Name = "order_number")]
+        [FromQuery(Name = "ordernumber")]
         public string ordernumber { get; set; }
 
         //[JsonProperty]
@@ -43,7 +42,8 @@ namespace Pirat.Model
         //public string street { get; set; }
 
         [JsonProperty]
-        [FromQuery(Name = "postal_code")]
+        [Required]
+        [FromQuery(Name = "postalcode")]
         public string postalcode { get; set; }
 
         //[JsonProperty]
@@ -51,7 +51,6 @@ namespace Pirat.Model
         //public string streetnumber { get; set; }
 
         [JsonProperty]
-        [Required]
         [FromQuery(Name = "amount")]
         public int amount { get; set; }
 

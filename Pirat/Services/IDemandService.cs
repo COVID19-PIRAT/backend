@@ -16,13 +16,13 @@ namespace Pirat.Services
 
         public Aggregate queryLink(string link);
 
-        public void update(Offer aggregate);
+        public string update(Offer offer);
 
         public void update(Provider provider);
 
         public void update(Consumable consumable);
 
-        public void update(Manpower manpower);
+        public void update(Personal manpower);
 
         public void update(Device device);
     }

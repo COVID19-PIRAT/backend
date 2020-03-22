@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Pirat.Services
@@ -25,7 +26,7 @@ namespace Pirat.Services
 
         public ISet<Provider> queryProviders(Consumable consumable)
         {
-            if(string.IsNullOrEmpty(consumable.category) || string.IsNullOrEmpty(consumable.name) || consumable.amount <= 0)
+            if(string.IsNullOrEmpty(consumable.category) || string.IsNullOrEmpty(consumable.postalcode))
             {
                 throw new ArgumentException();
             }
@@ -33,31 +34,22 @@ namespace Pirat.Services
 
             var query = from p in _context.provider join c in _context.consumable
                              on p.id equals c.provider_id
-                        where consumable.amount <= c.amount
-                        && consumable.category.Equals(c.category)
-                        && consumable.name.Equals(c.name)
+                        where consumable.category.Equals(c.category)
+                        && consumable.postalcode.Equals(c.postalcode)
                         select new { p, c };
 
 
-            if (!string.IsNullOrEmpty(consumable.category))
+            if (!string.IsNullOrEmpty(consumable.name))
             {
-                query = query.Where(collection => consumable.category.Equals(collection.c.category));
+                query = query.Where(collection => consumable.name.Equals(collection.c.name));
             }
             if (!string.IsNullOrEmpty(consumable.manufacturer))
             {
                 query = query.Where(collection => consumable.manufacturer.Equals(collection.c.manufacturer)); ;
             }
-            //if (!string.IsNullOrEmpty(consumable.street))
-            //{
-            //    query = query.Where(collection => consumable.street.Equals(collection.c.street)); ;
-            //}
-            //if (!string.IsNullOrEmpty(consumable.streetnumber))
-            //{
-            //    query = query.Where(collection => consumable.streetnumber.Equals(collection.c.streetnumber)); ;
-            //}
-            if (!string.IsNullOrEmpty(consumable.postalcode))
+            if (consumable.amount > 0)
             {
-                query = query.Where(collection => consumable.postalcode.Equals(collection.c.postalcode)); ;
+                query = query.Where(collection => consumable.amount <= collection.c.amount);
             }
 
             HashSet<Provider> providers = query.Select(collection => new Provider
@@ -76,39 +68,29 @@ namespace Pirat.Services
 
         public ISet<Provider> queryProviders(Device device)
         {
-            if (string.IsNullOrEmpty(device.category) || string.IsNullOrEmpty(device.name) || device.amount <= 0)
+            if (string.IsNullOrEmpty(device.category) || string.IsNullOrEmpty(device.postalcode))
             {
                 throw new ArgumentException();
             }
 
-
             var query = from p in _context.provider
                         join d in _context.device 
                         on p.id equals d.provider_id
-                        where device.amount <= d.amount
+                        where device.postalcode.Equals(d.postalcode)
                         && device.category.Equals(d.category)
-                        && device.name.Equals(d.name)
                         select new { p, d };
 
-            if (!string.IsNullOrEmpty(device.category))
+            if (!string.IsNullOrEmpty(device.name))
             {
-                query = query.Where(collection => device.category.Equals(collection.d.category));
+                query = query.Where(collection => device.name.Equals(collection.d.name));
             }
             if (!string.IsNullOrEmpty(device.manufacturer))
             {
                 query = query.Where(collection => device.manufacturer.Equals(collection.d.manufacturer)); ;
             }
-            //if (!string.IsNullOrEmpty(device.street))
-            //{
-            //    query = query.Where(collection => device.street.Equals(collection.d.street)); ;
-            //}
-            //if (!string.IsNullOrEmpty(device.streetnumber))
-            //{
-            //    query = query.Where(collection => device.streetnumber.Equals(collection.d.streetnumber)); ;
-            //}
-            if (!string.IsNullOrEmpty(device.postalcode))
+            if (device.amount > 0)
             {
-                query = query.Where(collection => device.postalcode.Equals(collection.d.postalcode)); ;
+                query = query.Where(collection => device.amount <= collection.d.amount);
             }
 
             ISet<Provider> providers = query.Select(collection => new Provider
@@ -128,14 +110,20 @@ namespace Pirat.Services
         public ISet<Provider> queryProviders(Manpower manpower)
         {
             var query = from p in _context.provider
-                        join m in _context.manpower
+                        join m in _context.personal
                         on p.id equals m.provider_id
                         select new { p, m };
 
-            if (!string.IsNullOrEmpty(manpower.qualification))
+            if (manpower.qualification.Any())
             {
-                query = query.Where(collection => manpower.qualification.Equals(collection.m.qualification));
+                query = query.Where(collection => manpower.qualification.Contains(collection.m.qualification));
             }
+            if (manpower.area.Any())
+            {
+                query = query.Where(collection => manpower.area.Contains(collection.m.area));
+            }
+
+
             if (!string.IsNullOrEmpty(manpower.institution))
             {
                 query = query.Where(collection => manpower.institution.Equals(collection.m.institution)); ;
@@ -143,10 +131,6 @@ namespace Pirat.Services
             if (!string.IsNullOrEmpty(manpower.researchgroup))
             {
                 query = query.Where(collection => manpower.researchgroup.Equals(collection.m.researchgroup)); ;
-            }
-            if (!string.IsNullOrEmpty(manpower.area))
-            {
-                query = query.Where(collection => manpower.area.Equals(collection.m.area)); ;
             }
             if (manpower.experience_rt_pcr)
             {
@@ -180,9 +164,9 @@ namespace Pirat.Services
             _context.SaveChanges();
         }
 
-        public void update(Manpower manpower)
+        public void update(Personal personal)
         {
-            _context.Add(manpower);
+            _context.Add(personal);
             _context.SaveChanges();
         }
 
@@ -198,7 +182,7 @@ namespace Pirat.Services
             _context.SaveChanges();
         }
 
-        public void update(Offer offer)
+        public string update(Offer offer)
         {
             var provider = offer.provider;
 
@@ -219,7 +203,7 @@ namespace Pirat.Services
                 update(c);
                 consumable_ids.Add(c.id);
             }
-            foreach (var m in offer.manpowers)
+            foreach (var m in offer.personals)
             {
                 m.provider_id = key;
                 update(m);
@@ -233,7 +217,7 @@ namespace Pirat.Services
             }
             var link = new Link { link = createLink(), consumable_ids = consumable_ids.ToArray(), device_ids = device_ids.ToArray(), manpower_ids = manpower_ids.ToArray() };
             update(link);
-            sendLinkToMail(provider.mail, link.link);
+            return sendLinkToMail(provider.mail, link.link);
         }
 
         private int retrieveKeyFromProvider(Provider provider)
@@ -304,7 +288,7 @@ namespace Pirat.Services
                 throw new Exception();
             }
             var linkResult = links.First();
-            var aggregation = new Aggregate() { consumables = new List<Consumable>(), devices = new List<Device>(), manpowers = new List<Manpower>()};
+            var aggregation = new Aggregate() { consumables = new List<Consumable>(), devices = new List<Device>(), personals = new List<Personal>()};
             foreach(int k in linkResult.consumable_ids)
             {
                 aggregation.devices.Add(_context.device.Find(k));
@@ -315,7 +299,7 @@ namespace Pirat.Services
             }
             foreach(int k in linkResult.manpower_ids)
             {
-                aggregation.manpowers.Add(_context.manpower.Find(k));
+                aggregation.personals.Add(_context.personal.Find(k));
             }
             return aggregation;
         }
@@ -328,7 +312,7 @@ namespace Pirat.Services
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        private void sendLinkToMail(string mailNameReceiver, string link)
+        private string sendLinkToMail(string mailNameReceiver, string link)
         {
 
             var fullLink = "https://localhost:5000/offers/" + link;
@@ -356,6 +340,7 @@ namespace Pirat.Services
             client.Send(message);
             client.Disconnect(true);
             client.Dispose();
+            return fullLink;
         }
 
     }

@@ -15,7 +15,7 @@ namespace Pirat.DatabaseContext
 
         public DbSet<Device> device { get; set; }
 
-        public DbSet<Manpower> manpower { get; set; }
+        public DbSet<Personal> personal { get; set; }
 
         public DbSet<Link> link { get; set; }
 

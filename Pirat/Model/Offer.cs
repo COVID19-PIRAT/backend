@@ -10,7 +10,7 @@ namespace Pirat.Model
     public class Aggregate
     {
         [JsonProperty]
-        public List<Manpower> manpowers { get; set; }
+        public List<Personal> personals { get; set; }
 
         [JsonProperty]
         public List<Consumable> consumables { get; set; }
