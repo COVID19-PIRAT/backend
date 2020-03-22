@@ -94,8 +94,13 @@ namespace Pirat.Controllers
         [Produces("application/json")]
         public IActionResult Get(string token)
         {
-
-            return Ok(_service.queryLink(token));
+            try
+            {
+                return Ok(_service.queryLink(token));
+            } catch (ArgumentException e)
+            {
+                return NotFound(e.Message);
+            }
 
         }
 
@@ -115,7 +120,10 @@ namespace Pirat.Controllers
                 return Ok(_service.update(offer));
             } catch (MailException e)
             {
-                return BadRequest(e.Message);
+                return NotFound(e.Message);
+            } catch (UnknownAdressException e)
+            {
+                return NotFound(e.Message);
             }
         }
 
@@ -129,8 +137,14 @@ namespace Pirat.Controllers
         [Produces("application/json")]
         public IActionResult Delete(string token)
         {
-            _service.delete(token);
-            return Ok();
+            try
+            {
+                _service.delete(token);
+                return Ok();
+            } catch(ArgumentException e)
+            {
+                return NotFound(e);
+            }
         }
 
     }

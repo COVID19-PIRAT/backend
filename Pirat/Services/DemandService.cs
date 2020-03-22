@@ -385,7 +385,7 @@ namespace Pirat.Services
 
             if (links.Count() <= 0)
             {
-                throw new Exception();
+                throw new ArgumentException($"{link} does not exist");
             }
             if (links.Count() > 1)
             {
