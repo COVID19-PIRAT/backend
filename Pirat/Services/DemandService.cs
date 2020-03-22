@@ -402,7 +402,7 @@ namespace Pirat.Services
             var host = Environment.GetEnvironmentVariable("PIRAT_HOST");
 
             var mailSenderAddress = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_ADDRESS");
-            var mailSenderUserName = Environment.GetEnvironmentVariable("PRIAT_SENDER_MAIL_USERNAME");
+            var mailSenderUserName = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_USERNAME");
             var mailSenderPassword = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_PASSWORD");
 
             if (string.IsNullOrEmpty(host))
