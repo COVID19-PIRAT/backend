@@ -25,18 +25,18 @@ namespace Pirat.Services
             _context = context;
         }
 
-        public Compilation queryProviders(Consumable consumable)
+        public Compilation queryProviders(ConsumableEntity consumable)
         {
-            if(string.IsNullOrEmpty(consumable.category) || string.IsNullOrEmpty(consumable.postalcode))
+
+            if (string.IsNullOrEmpty(consumable.category)) // || string.IsNullOrEmpty(consumable.address.postalcode)
             {
                 throw new ArgumentException();
             }
 
-
             var query = from p in _context.provider join c in _context.consumable
                              on p.id equals c.provider_id
                         where consumable.category.Equals(c.category)
-                        && consumable.postalcode.Equals(c.postalcode)
+                        //&& consumable.address.postalcode.Equals(c.address.postalcode) //TODO
                         select new { p, c };
 
 
@@ -53,35 +53,30 @@ namespace Pirat.Services
                 query = query.Where(collection => consumable.amount <= collection.c.amount);
             }
 
-            var providers = query.Select(collection => new Provider
+            var providers = query.Select(collection => new ProviderEntity
             {
                 id = collection.p.id,
                 name = collection.p.name,
-                street = collection.p.street,
-                streetnumber = collection.p.streetnumber,
-                postalcode = collection.p.postalcode,
+                address_id = collection.p.address_id,
                 mail = collection.p.mail,
                 phone = collection.p.phone,
-                organisation = collection.p.organisation,
-                country = collection.p.country,
-                city = collection.p.city
+                organisation = collection.p.organisation
             }).ToHashSet();
 
             return collectAllResources(providers);
         }
 
-        public Compilation queryProviders(Device device)
+        public Compilation queryProviders(DeviceEntity device)
         {
-            if (string.IsNullOrEmpty(device.category) || string.IsNullOrEmpty(device.postalcode))
+            if (string.IsNullOrEmpty(device.category)) //|| string.IsNullOrEmpty(device.address.postalcode)
             {
                 throw new ArgumentException();
             }
 
             var query = from p in _context.provider
                         join d in _context.device 
-                        on p.id equals d.provider_id
-                        where device.postalcode.Equals(d.postalcode)
-                        && device.category.Equals(d.category)
+                        on p.id equals d.provider_id where
+                        device.category.Equals(d.category) //where device.address.postalcode.Equals(d.address.postalcode) //TODO
                         select new { p, d };
 
             if (!string.IsNullOrEmpty(device.name))
@@ -97,55 +92,31 @@ namespace Pirat.Services
                 query = query.Where(collection => device.amount <= collection.d.amount);
             }
 
-            ISet<Provider> providers = query.Select(collection => new Provider
+            ISet<ProviderEntity> providers = query.Select(collection => new ProviderEntity
             {
                 id = collection.p.id,
                 name = collection.p.name,
-                street = collection.p.street,
-                streetnumber = collection.p.streetnumber,
-                postalcode = collection.p.postalcode,
+                address_id = collection.p.address_id,
                 mail = collection.p.mail,
                 phone = collection.p.phone,
-                organisation = collection.p.organisation,
-                country = collection.p.country,
-                city = collection.p.city
+                organisation = collection.p.organisation
 
             }).ToHashSet();
 
             return collectAllResources(providers);
         }
 
-        private Compilation collectAllResources(ISet<Provider> providers)
+        private Compilation collectAllResources(ISet<ProviderEntity> providers)
         {
             Compilation comp = new Compilation() { offers = new List<Offer>() };
 
-            foreach (Provider provider in providers)
+            foreach (ProviderEntity provider in providers)
             {
                 var que = from c in _context.consumable where c.provider_id == provider.id select c;
-                List<Consumable> consumables = que.Select(c => new Consumable
-                {
-                    id = c.id,
-                    provider_id = c.provider_id,
-                    category = c.category,
-                    name = c.name,
-                    manufacturer = c.manufacturer,
-                    ordernumber = c.ordernumber,
-                    postalcode = c.postalcode,
-                    amount = c.amount
-                }).ToList();
+                List<Consumable> consumables = que.Select(c => Consumable.of(c).build(queryAddress(c.id))).ToList();
 
                 var que2 = from d in _context.device where d.provider_id == provider.id select d;
-                List<Device> devices = que2.Select(d => new Device
-                {
-                    id = d.id,
-                    provider_id = d.provider_id,
-                    category = d.category,
-                    name = d.name,
-                    manufacturer = d.manufacturer,
-                    ordernumber = d.ordernumber,
-                    postalcode = d.postalcode,
-                    amount = d.amount
-                }).ToList();
+                List<Device> devices = que2.Select(d => Device.of(d).build(queryAddress(d.id))).ToList();
 
                 var que3 = from p in _context.personal where p.provider_id == provider.id select p;
                 List<Personal> personals = que3.Select(p => new Personal
@@ -196,13 +167,11 @@ namespace Pirat.Services
                 query = query.Where(collection => collection.m.experience_rt_pcr); ;
             }
 
-            ISet<Provider> providers = query.Select(collection => new Provider
+            ISet<ProviderEntity> providers = query.Select(collection => new ProviderEntity
             {
                 id = collection.p.id,
                 name = collection.p.name,
-                street = collection.p.street,
-                streetnumber = collection.p.streetnumber,
-                postalcode = collection.p.postalcode,
+                address_id = collection.p.address_id,
                 mail = collection.p.mail,
                 phone = collection.p.phone
             }).ToHashSet();
@@ -210,14 +179,14 @@ namespace Pirat.Services
             return collectAllResources(providers);
         }
 
-        public void update(Consumable consumable)
+        public void update(ConsumableEntity consumable)
         {
 
             _context.Add(consumable);
             _context.SaveChanges();
         }
 
-        public void update(Device device)
+        public void update(DeviceEntity device)
         {
             _context.Add(device);
             _context.SaveChanges();
@@ -229,7 +198,7 @@ namespace Pirat.Services
             _context.SaveChanges();
         }
 
-        public void update(Provider provider)
+        public void update(ProviderEntity provider)
         {
             _context.Add(provider);
             _context.SaveChanges();
@@ -241,6 +210,12 @@ namespace Pirat.Services
             _context.SaveChanges();
         }
 
+        private void update(AddressEntity address)
+        {
+            _context.Add(address);
+            _context.SaveChanges();
+        }
+
         public string update(Offer offer)
         {
             var provider = offer.provider;
@@ -249,14 +224,22 @@ namespace Pirat.Services
             try
             {
                 var mailAdress = new System.Net.Mail.MailAddress(mail);
-            } catch
+            }
+            catch
             {
                 throw new MailException("Mail does not exist");
             }
 
-            if (!exists(provider))
+            var providerEntity = ProviderEntity.of(provider);
+            if (!exists(providerEntity))
             {
-                update(provider);
+                var addressEntity = AddressEntity.of(provider.address);
+
+                AddressMaker.SetCoordinates(addressEntity);
+                update(addressEntity);
+
+                providerEntity.address_id = addressEntity.id;
+                update(providerEntity);
             }
 
             int key = retrieveKeyFromProvider(provider);
@@ -267,9 +250,16 @@ namespace Pirat.Services
 
             foreach (var c in offer.consumables)
             {
-                c.provider_id = key;
-                update(c);
-                consumable_ids.Add(c.id);
+                var consumableEntity = ConsumableEntity.of(c);
+                var addressEntity = AddressEntity.of(c.address);
+
+                AddressMaker.SetCoordinates(addressEntity);
+                update(addressEntity);
+
+                consumableEntity.provider_id = key;
+                consumableEntity.address_id = addressEntity.id;
+                update(consumableEntity);
+                consumable_ids.Add(consumableEntity.id);
             }
             foreach (var m in offer.personals)
             {
@@ -279,9 +269,16 @@ namespace Pirat.Services
             }
             foreach (var d in offer.devices)
             {
-                d.provider_id = key;
-                update(d);
-                device_ids.Add(d.id);
+                var deviceEntity = DeviceEntity.of(d);
+                var addressEntity = AddressEntity.of(d.address);
+
+                AddressMaker.SetCoordinates(addressEntity);
+                update(addressEntity);
+
+                deviceEntity.provider_id = key;
+                deviceEntity.address_id = addressEntity.id;
+                update(deviceEntity);
+                device_ids.Add(deviceEntity.id);
             }
             var link = new Link { token = createLink(), consumable_ids = consumable_ids.ToArray(), device_ids = device_ids.ToArray(), manpower_ids = manpower_ids.ToArray() };
             update(link);
@@ -304,25 +301,21 @@ namespace Pirat.Services
             return keys.First();
         }
 
-        private bool exists(Provider provider)
+        private bool exists(ProviderEntity provider)
         {
             var query = from p in _context.provider
                                        where p.name.Equals(provider.name)
                                        && p.mail.Equals(provider.mail)
                                        select p;
 
-            List<Provider> providers = query.Select(p => new Provider
+            List<ProviderEntity> providers = query.Select(p => new ProviderEntity
             {
                 id = p.id,
                 name = p.name,
-                street = p.street,
-                streetnumber = p.streetnumber,
-                postalcode = p.postalcode,
+                address_id = p.address_id,
                 mail = p.mail,
                 phone = p.phone,
-                organisation = p.organisation,
-                country = p.country,
-                city = p.city
+                organisation = p.organisation
             }).ToList();
 
             if (providers.Count() == 1)
@@ -342,11 +335,15 @@ namespace Pirat.Services
             var aggregation = new Aggregate() { consumables = new List<Consumable>(), devices = new List<Device>(), personals = new List<Personal>()};
             foreach(int k in linkResult.consumable_ids)
             {
-                aggregation.devices.Add(_context.device.Find(k));
+                ConsumableEntity e = _context.consumable.Find(k);
+
+                aggregation.consumables.Add(Consumable.of(e).build(queryAddress(e.address_id)));
             }
             foreach(int k in linkResult.device_ids)
             {
-                aggregation.devices.Add(_context.device.Find(k));
+                DeviceEntity e = _context.device.Find(k);
+
+                aggregation.devices.Add(Device.of(e).build(queryAddress(e.address_id)));
             }
             foreach(int k in linkResult.manpower_ids)
             {
@@ -450,6 +447,13 @@ namespace Pirat.Services
             client.Dispose();
             return fullLink;
         }
+
+        private Address queryAddress(int addressKey)
+        {
+            AddressEntity a = _context.address.Find(addressKey);
+            return Address.of(a);
+        }
+
 
     }
 }

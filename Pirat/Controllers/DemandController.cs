@@ -42,7 +42,7 @@ namespace Pirat.Controllers
         public IActionResult Get([FromQuery] Consumable consumable)
         {
             try { 
-                return Ok(_service.queryProviders(consumable));
+                return Ok(_service.queryProviders(ConsumableEntity.of(consumable)));
             } catch (ArgumentException)
             {
                 return BadRequest("Some obligatory value is missing");
@@ -61,7 +61,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                return Ok(_service.queryProviders(device));
+                return Ok(_service.queryProviders(DeviceEntity.of(device)));
             } catch (ArgumentException)
             {
                 return BadRequest("Some obligatory value is missing");

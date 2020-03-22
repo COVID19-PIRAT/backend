@@ -9,9 +9,9 @@ using Pirat.Model;
 
 namespace Pirat.Services
 {
-	class AddressService
+	public class AddressMaker
 	{
-		public void SetCoordinates(Address address)
+		public static void SetCoordinates(AddressEntity address)
 		{
 			string apiKey = Environment.GetEnvironmentVariable("PIRAT_GOOGLE_API_KEY");
 			string addressString = address.ToString();
@@ -37,9 +37,9 @@ namespace Pirat.Services
 			decimal lat = location.GetValue("lat").ToObject<decimal>();
 			decimal lng = location.GetValue("lng").ToObject<decimal>();
 
-			address.Latitude = lat;
-			address.Longitude = lng;
-			address.HasCoordinates = true;
+			address.latitude = lat;
+			address.longitude = lng;
+			address.hascoordinates = true;
 		}
 	}
 }

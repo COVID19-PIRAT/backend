@@ -8,9 +8,9 @@ namespace Pirat.Services
 {
     public interface IDemandService
     {
-        public Compilation queryProviders(Consumable consumable);
+        public Compilation queryProviders(ConsumableEntity consumable);
 
-        public Compilation queryProviders(Device device);
+        public Compilation queryProviders(DeviceEntity device);
 
         public Compilation queryProviders(Manpower manpower);
 
@@ -18,13 +18,6 @@ namespace Pirat.Services
 
         public string update(Offer offer);
 
-        public void update(Provider provider);
-
-        public void update(Consumable consumable);
-
-        public void update(Personal manpower);
-
-        public void update(Device device);
 
         public void delete(string link);
     }

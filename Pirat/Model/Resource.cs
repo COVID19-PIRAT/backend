@@ -8,17 +8,8 @@ using System.Threading.Tasks;
 
 namespace Pirat.Model
 {
-    public abstract class Resource
+    public abstract class ResourceBase
     {
-        [System.Text.Json.Serialization.JsonIgnore]
-        [JsonIgnore]
-        [FromQuery(Name = "id")]
-        public int id { get; set; }
-
-        [System.Text.Json.Serialization.JsonIgnore]
-        [JsonIgnore]
-        [FromQuery(Name = "provider_id")]
-        public int provider_id { get; set; }
 
         [JsonProperty]
         [Required]
@@ -37,26 +28,113 @@ namespace Pirat.Model
         [FromQuery(Name = "ordernumber")]
         public string ordernumber { get; set; }
 
-        //[JsonProperty]
-        //[FromQuery(Name = "street")]
-        //public string street { get; set; }
-
-        [JsonProperty]
-        [Required]
-        [FromQuery(Name = "postalcode")]
-        public string postalcode { get; set; }
-
-        //[JsonProperty]
-        //[FromQuery(Name = "street_number")]
-        //public string streetnumber { get; set; }
-
         [JsonProperty]
         [FromQuery(Name = "amount")]
         public int amount { get; set; }
 
     }
 
-    public class Device : Resource { }
+    public class Resource : ResourceBase
+    {
+        [JsonProperty]
+        [FromQuery(Name = "address")]
+        public Address address { get; set; }
+    }
 
-    public class Consumable : Resource { }
+
+    public class Device : Resource
+    {
+
+        public static Device of(DeviceEntity d)
+        {
+            return new Device()
+            {
+                category = d.category,
+                name = d.name,
+                manufacturer = d.manufacturer,
+                ordernumber = d.ordernumber,
+                amount = d.amount
+            };
+        }
+
+        public Device build(Address a)
+        {
+            address = a;
+            return this;
+        }
+    }
+
+
+    public class Consumable : Resource
+    {
+        public static Consumable of(ConsumableEntity c)
+        {
+            return new Consumable()
+            {
+                category = c.category,
+                name = c.name,
+                manufacturer = c.manufacturer,
+                ordernumber = c.ordernumber,
+                amount = c.amount
+            };
+        }
+
+        public Consumable build(Address a)
+        {
+            address = a;
+            return this;
+        }
+    }
+
+    public abstract class ResourceEntity : ResourceBase
+    {
+
+        public int id { get; set; }
+
+        public int provider_id { get; set; }
+
+        public int address_id { get; set; }
+    }
+
+    public class ConsumableEntity : ResourceEntity
+    {
+        public static ConsumableEntity of(Consumable c)
+        {
+            return new ConsumableEntity()
+            {
+                category = c.category,
+                name = c.name,
+                manufacturer = c.manufacturer,
+                ordernumber = c.ordernumber,
+                amount = c.amount
+            };
+        }
+
+        public ConsumableEntity build(AddressEntity a)
+        {
+            address_id = a.id;
+            return this;
+        }
+    }
+
+    public class DeviceEntity : ResourceEntity
+    {
+        public static DeviceEntity of(Device d)
+        {
+            return new DeviceEntity()
+            {
+                category = d.category,
+                name = d.name,
+                manufacturer = d.manufacturer,
+                ordernumber = d.ordernumber,
+                amount = d.amount
+            };
+        }
+
+        public DeviceEntity build(AddressEntity a)
+        {
+            address_id = a.id;
+            return this;
+        }
+    }
 }
