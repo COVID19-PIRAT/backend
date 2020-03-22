@@ -35,7 +35,7 @@ namespace Pirat.Services
             var query = from p in _context.provider join c in _context.consumable
                              on p.id equals c.provider_id
                         where consumable.category.Equals(c.category)
-                        && consumable.postalcode.Equals(c.postalcode)
+                        && consumable.postalcode[0] == c.postalcode[0]
                         select new { p, c };
 
 
@@ -76,7 +76,7 @@ namespace Pirat.Services
             var query = from p in _context.provider
                         join d in _context.device 
                         on p.id equals d.provider_id
-                        where device.postalcode.Equals(d.postalcode)
+                        where device.postalcode[0] == d.postalcode[0]
                         && device.category.Equals(d.category)
                         select new { p, d };
 
