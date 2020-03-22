@@ -25,4 +25,10 @@ namespace Pirat.Model
         public Provider provider { get; set; }
 
     }
+
+    public class Compilation
+    {
+        [JsonProperty]
+        public List<Offer> offers { get; set; }
+    }
 }

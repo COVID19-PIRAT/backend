@@ -25,7 +25,7 @@ namespace Pirat.Services
             _context = context;
         }
 
-        public ISet<Provider> queryProviders(Consumable consumable)
+        public Compilation queryProviders(Consumable consumable)
         {
             if(string.IsNullOrEmpty(consumable.category) || string.IsNullOrEmpty(consumable.postalcode))
             {
@@ -67,10 +67,10 @@ namespace Pirat.Services
                 city = collection.p.city
             }).ToHashSet();
 
-            return providers;
+            return collectAllResources(providers);
         }
 
-        public ISet<Provider> queryProviders(Device device)
+        public Compilation queryProviders(Device device)
         {
             if (string.IsNullOrEmpty(device.category) || string.IsNullOrEmpty(device.postalcode))
             {
@@ -112,10 +112,61 @@ namespace Pirat.Services
 
             }).ToHashSet();
 
-            return providers;
+            return collectAllResources(providers);
         }
 
-        public ISet<Provider> queryProviders(Manpower manpower)
+        private Compilation collectAllResources(ISet<Provider> providers)
+        {
+            Compilation comp = new Compilation() { offers = new List<Offer>() };
+
+            foreach (Provider provider in providers)
+            {
+                var que = from c in _context.consumable where c.provider_id == provider.id select c;
+                List<Consumable> consumables = que.Select(c => new Consumable
+                {
+                    id = c.id,
+                    provider_id = c.provider_id,
+                    category = c.category,
+                    name = c.name,
+                    manufacturer = c.manufacturer,
+                    ordernumber = c.ordernumber,
+                    postalcode = c.postalcode,
+                    amount = c.amount
+                }).ToList();
+
+                var que2 = from d in _context.device where d.provider_id == provider.id select d;
+                List<Device> devices = que2.Select(d => new Device
+                {
+                    id = d.id,
+                    provider_id = d.provider_id,
+                    category = d.category,
+                    name = d.name,
+                    manufacturer = d.manufacturer,
+                    ordernumber = d.ordernumber,
+                    postalcode = d.postalcode,
+                    amount = d.amount
+                }).ToList();
+
+                var que3 = from p in _context.personal where p.provider_id == provider.id select p;
+                List<Personal> personals = que3.Select(p => new Personal
+                {
+                    id = p.id,
+                    provider_id = p.provider_id,
+                    qualification = p.qualification,
+                    institution = p.institution,
+                    researchgroup = p.researchgroup,
+                    area = p.area,
+                    experience_rt_pcr = p.experience_rt_pcr,
+                    annotation = p.annotation
+                }).ToList();
+
+                comp.offers.Add(new Offer() { personals = personals, devices = devices, consumables = consumables });
+            }
+
+            return comp;
+        }
+
+        public Compilation queryProviders(Manpower manpower)
         {
             var query = from p in _context.provider
                         join m in _context.personal
@@ -156,7 +207,7 @@ namespace Pirat.Services
                 phone = collection.p.phone
             }).ToHashSet();
 
-            return providers;
+            return collectAllResources(providers);
         }
 
         public void update(Consumable consumable)

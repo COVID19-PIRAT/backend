@@ -34,7 +34,7 @@ namespace Pirat.Controllers
 
 
         [HttpGet("consumables")]
-        [ProducesResponseType(typeof(HashSet<Provider>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Compilation), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
@@ -52,7 +52,7 @@ namespace Pirat.Controllers
 
 
         [HttpGet("devices")]
-        [ProducesResponseType(typeof(HashSet<Provider>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Compilation), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
@@ -69,7 +69,7 @@ namespace Pirat.Controllers
         }
 
         [HttpGet("manpower")]
-        [ProducesResponseType(typeof(HashSet<Provider>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Compilation), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
