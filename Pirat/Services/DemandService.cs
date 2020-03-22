@@ -285,7 +285,7 @@ namespace Pirat.Services
             }
             var link = new Link { token = createLink(), consumable_ids = consumable_ids.ToArray(), device_ids = device_ids.ToArray(), manpower_ids = manpower_ids.ToArray() };
             update(link);
-            return sendLinkToMail(provider.mail, link.token);
+            return sendLinkToMail(provider, link.token);
         }
 
         private int retrieveKeyFromProvider(Provider provider)
@@ -396,7 +396,7 @@ namespace Pirat.Services
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        private string sendLinkToMail(string mailNameReceiver, string token)
+        private string sendLinkToMail(Provider provider, string token)
         {
 
             var host = Environment.GetEnvironmentVariable("PIRAT_HOST");
@@ -412,20 +412,20 @@ namespace Pirat.Services
             var password = "2JCBnCs7t3PdyA8";
 
             _logger.LogDebug($"Sender: {mailNameSender}");
-            _logger.LogDebug($"Receiver: {mailNameReceiver}");
+            _logger.LogDebug($"Receiver: {provider.name}");
             _logger.LogDebug($"Link: {fullLink}");
 
             MimeMessage message = new MimeMessage();
             MailboxAddress from = new MailboxAddress(mailNameSender);
             message.From.Add(from);
 
-            MailboxAddress to = new MailboxAddress(mailNameReceiver);
+            MailboxAddress to = new MailboxAddress(provider.mail);
             message.To.Add(to);
 
             message.Subject = "Dein Bearbeitungslink";
 
             BodyBuilder arnold = new BodyBuilder();
-            arnold.TextBody = $"Hallo,\n\ndanke für dein Angebot!\n\nHier ist dein Bearbeitungslink: {fullLink}\n\nLiebe Grüße,\ndein PIRAT Team";
+            arnold.TextBody = $"Hallo {provider.name},\n\nvielen dank, dass Sie Ihre Laborressourcen zur Verfügung stellen möchten.\n\nHier ist Ihr Bearbeitungslink: {fullLink}\n\nLiebe Grüße,\Ihr PIRAT Team";
             message.Body = arnold.ToMessageBody();
 
             SmtpClient client = new SmtpClient();
