@@ -425,7 +425,7 @@ namespace Pirat.Services
             message.Subject = "Dein Bearbeitungslink";
 
             BodyBuilder arnold = new BodyBuilder();
-            arnold.TextBody = fullLink;
+            arnold.TextBody = $"Hallo,\n\ndanke für dein Angebot!\n\nHier ist dein Bearbeitungslink: {fullLink}\n\nLiebe Grüße,\ndein PIRAT Team";
             message.Body = arnold.ToMessageBody();
 
             SmtpClient client = new SmtpClient();
