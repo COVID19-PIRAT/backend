@@ -248,38 +248,48 @@ namespace Pirat.Services
             List<int> device_ids = new List<int>();
             List<int> manpower_ids = new List<int>();
 
-            foreach (var c in offer.consumables)
+            if(!(offer.consumables is null))
             {
-                var consumableEntity = ConsumableEntity.of(c);
-                var addressEntity = AddressEntity.of(c.address);
+                foreach (var c in offer.consumables)
+                {
+                    var consumableEntity = ConsumableEntity.of(c);
+                    var addressEntity = AddressEntity.of(c.address);
 
-                AddressMaker.SetCoordinates(addressEntity);
-                update(addressEntity);
+                    AddressMaker.SetCoordinates(addressEntity);
+                    update(addressEntity);
 
-                consumableEntity.provider_id = key;
-                consumableEntity.address_id = addressEntity.id;
-                update(consumableEntity);
-                consumable_ids.Add(consumableEntity.id);
+                    consumableEntity.provider_id = key;
+                    consumableEntity.address_id = addressEntity.id;
+                    update(consumableEntity);
+                    consumable_ids.Add(consumableEntity.id);
+                }
             }
-            foreach (var m in offer.personals)
+            if(!(offer.personals is null))
             {
-                m.provider_id = key;
-                update(m);
-                manpower_ids.Add(m.id);
+                foreach (var m in offer.personals)
+                {
+                    m.provider_id = key;
+                    update(m);
+                    manpower_ids.Add(m.id);
+                }
             }
-            foreach (var d in offer.devices)
+            if(!(offer.devices is null))
             {
-                var deviceEntity = DeviceEntity.of(d);
-                var addressEntity = AddressEntity.of(d.address);
+                foreach (var d in offer.devices)
+                {
+                    var deviceEntity = DeviceEntity.of(d);
+                    var addressEntity = AddressEntity.of(d.address);
 
-                AddressMaker.SetCoordinates(addressEntity);
-                update(addressEntity);
+                    AddressMaker.SetCoordinates(addressEntity);
+                    update(addressEntity);
 
-                deviceEntity.provider_id = key;
-                deviceEntity.address_id = addressEntity.id;
-                update(deviceEntity);
-                device_ids.Add(deviceEntity.id);
+                    deviceEntity.provider_id = key;
+                    deviceEntity.address_id = addressEntity.id;
+                    update(deviceEntity);
+                    device_ids.Add(deviceEntity.id);
+                }
             }
+
             var link = new Link { token = createLink(), consumable_ids = consumable_ids.ToArray(), device_ids = device_ids.ToArray(), manpower_ids = manpower_ids.ToArray() };
             update(link);
             return sendLinkToMail(provider, link.token);
