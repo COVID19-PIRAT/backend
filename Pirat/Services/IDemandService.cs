@@ -25,5 +25,7 @@ namespace Pirat.Services
         public void update(Personal manpower);
 
         public void update(Device device);
+
+        public void delete(string link);
     }
 }

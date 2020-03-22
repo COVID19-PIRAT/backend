@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using MimeKit;
 using Pirat.DatabaseContext;
+using Pirat.Exceptions;
 using Pirat.Model;
 using System;
 using System.Collections.Generic;
@@ -60,7 +61,10 @@ namespace Pirat.Services
                 streetnumber = collection.p.streetnumber,
                 postalcode = collection.p.postalcode,
                 mail = collection.p.mail,
-                phone = collection.p.phone
+                phone = collection.p.phone,
+                organisation = collection.p.organisation,
+                country = collection.p.country,
+                city = collection.p.city
             }).ToHashSet();
 
             return providers;
@@ -101,7 +105,11 @@ namespace Pirat.Services
                 streetnumber = collection.p.streetnumber,
                 postalcode = collection.p.postalcode,
                 mail = collection.p.mail,
-                phone = collection.p.phone
+                phone = collection.p.phone,
+                organisation = collection.p.organisation,
+                country = collection.p.country,
+                city = collection.p.city
+
             }).ToHashSet();
 
             return providers;
@@ -186,6 +194,15 @@ namespace Pirat.Services
         {
             var provider = offer.provider;
 
+            var mail = provider.mail;
+            try
+            {
+                var mailAdress = new System.Net.Mail.MailAddress(mail);
+            } catch
+            {
+                throw new MailException("Mail does not exist");
+            }
+
             if (!exists(provider))
             {
                 update(provider);
@@ -251,7 +268,10 @@ namespace Pirat.Services
                 streetnumber = p.streetnumber,
                 postalcode = p.postalcode,
                 mail = p.mail,
-                phone = p.phone
+                phone = p.phone,
+                organisation = p.organisation,
+                country = p.country,
+                city = p.city
             }).ToList();
 
             if (providers.Count() == 1)
@@ -266,6 +286,32 @@ namespace Pirat.Services
         }
 
         public Aggregate queryLink(string link)
+        {
+            var linkResult = retrieveLink(link);
+            var aggregation = new Aggregate() { consumables = new List<Consumable>(), devices = new List<Device>(), personals = new List<Personal>()};
+            foreach(int k in linkResult.consumable_ids)
+            {
+                aggregation.devices.Add(_context.device.Find(k));
+            }
+            foreach(int k in linkResult.device_ids)
+            {
+                aggregation.devices.Add(_context.device.Find(k));
+            }
+            foreach(int k in linkResult.manpower_ids)
+            {
+                aggregation.personals.Add(_context.personal.Find(k));
+            }
+            return aggregation;
+        }
+
+        public void delete(string link)
+        {
+            Link l = retrieveLink(link);
+            _context.link.Remove(l);
+            _context.SaveChanges();
+        }
+
+        private Link retrieveLink(string link)
         {
             var query = from l in _context.link
                         where l.link.Equals(link)
@@ -287,22 +333,9 @@ namespace Pirat.Services
             {
                 throw new Exception();
             }
-            var linkResult = links.First();
-            var aggregation = new Aggregate() { consumables = new List<Consumable>(), devices = new List<Device>(), personals = new List<Personal>()};
-            foreach(int k in linkResult.consumable_ids)
-            {
-                aggregation.devices.Add(_context.device.Find(k));
-            }
-            foreach(int k in linkResult.device_ids)
-            {
-                aggregation.devices.Add(_context.device.Find(k));
-            }
-            foreach(int k in linkResult.manpower_ids)
-            {
-                aggregation.personals.Add(_context.personal.Find(k));
-            }
-            return aggregation;
+            return links.First();
         }
+
 
         private string createLink()
         {
@@ -315,10 +348,21 @@ namespace Pirat.Services
         private string sendLinkToMail(string mailNameReceiver, string link)
         {
 
-            var fullLink = "https://localhost:5000/offers/" + link;
+            var host = Environment.GetEnvironmentVariable("PIRAT_HOST");
+            if (string.IsNullOrEmpty(host))
+            {
+                host = "localhost:5000";
+                _logger.LogWarning("Could not find host. Set to localhost:5000");
+            }
+
+            var fullLink = "https://" + host + "/offers/" + link;
             var userName = "pirat.hilfsmittel";
             var mailNameSender = "pirat.hilfsmittel@gmail.com";
             var password = "2JCBnCs7t3PdyA8";
+
+            _logger.LogDebug($"Sender: {mailNameSender}");
+            _logger.LogDebug($"Receiver: {mailNameReceiver}");
+            _logger.LogDebug($"Link: {fullLink}");
 
             MimeMessage message = new MimeMessage();
             MailboxAddress from = new MailboxAddress(mailNameSender);

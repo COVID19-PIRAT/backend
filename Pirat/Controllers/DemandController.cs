@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Pirat.DatabaseContext;
+using Pirat.Exceptions;
 using Pirat.Model;
 using Pirat.Services;
 using System;
@@ -109,7 +110,27 @@ namespace Pirat.Controllers
         [Produces("application/json")]
         public IActionResult Post([FromBody] Offer offer)
         {
-            return Ok(_service.update(offer));
+            try
+            {
+                return Ok(_service.update(offer));
+            } catch (MailException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+
+        //***********DELETE REQUESTS
+        [HttpDelete("offers/{link}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public IActionResult Delete(string link)
+        {
+            _service.delete(link);
+            return Ok();
         }
 
     }
