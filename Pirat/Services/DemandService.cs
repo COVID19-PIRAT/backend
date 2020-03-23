@@ -25,6 +25,164 @@ namespace Pirat.Services
             _context = context;
         }
 
+        public Task<List<OfferItem<Consumable>>> QueryOffers(ConsumableEntity consumable)
+        {
+            if (string.IsNullOrEmpty(consumable.category)) // || string.IsNullOrEmpty(consumable.address.postalcode)
+            {
+                throw new ArgumentException();
+            }
+
+            var query = from p in _context.provider
+                join c in _context.consumable on p.id equals c.provider_id
+                join ap in _context.address on p.address_id equals ap.id
+                join ac in _context.address on c.address_id equals ac.id
+                where consumable.category.Equals(c.category)
+                //&& consumable.address.postalcode.Equals(c.address.postalcode) //TODO
+                select new { p, c, ap, ac };
+
+            if (!string.IsNullOrEmpty(consumable.name))
+            {
+                query = query.Where(collection => consumable.name.Equals(collection.c.name));
+            }
+            if (!string.IsNullOrEmpty(consumable.manufacturer))
+            {
+                query = query.Where(collection => consumable.manufacturer.Equals(collection.c.manufacturer)); ;
+            }
+            if (consumable.amount > 0)
+            {
+                query = query.Where(collection => consumable.amount <= collection.c.amount);
+            }
+
+            List<OfferItem<Consumable>> items = new List<OfferItem<Consumable>>();
+            var results = query.Select(x => x).ToList();
+            foreach (var x in results)
+            {
+                var provider = Provider.of(x.p);
+                var item = Consumable.of(x.c);
+                var providerAddress = Address.of(x.ap);
+                var itemAddress = Address.of(x.ac);
+
+                provider.address = providerAddress;
+                item.address = itemAddress;
+                var o = new OfferItem<Consumable>()
+                {
+                    item = item,
+                    provider = provider
+                };
+                items.Add(o);
+            }
+
+            return Task.FromResult(items);
+        }
+
+        public Task<List<OfferItem<Device>>> QueryOffers(DeviceEntity device)
+        {
+            if (string.IsNullOrEmpty(device.category)) // || string.IsNullOrEmpty(consumable.address.postalcode)
+            {
+                throw new ArgumentException();
+            }
+
+            var query = from p in _context.provider
+                join d in _context.device on p.id equals d.provider_id
+                join ap in _context.address on p.address_id equals ap.id
+                join ac in _context.address on d.address_id equals ac.id
+                where device.category.Equals(d.category)
+                //&& consumable.address.postalcode.Equals(c.address.postalcode) //TODO
+                select new { p, d, ap, ac };
+
+            if (!string.IsNullOrEmpty(device.name))
+            {
+                query = query.Where(collection => device.name.Equals(collection.d.name));
+            }
+            if (!string.IsNullOrEmpty(device.manufacturer))
+            {
+                query = query.Where(collection => device.manufacturer.Equals(collection.d.manufacturer)); ;
+            }
+            if (device.amount > 0)
+            {
+                query = query.Where(collection => device.amount <= collection.d.amount);
+            }
+
+            List<OfferItem<Device>> items = new List<OfferItem<Device>>();
+            var results = query.Select(x => x).ToList();
+            foreach (var x in results)
+            {
+                var provider = Provider.of(x.p);
+                var item = Device.of(x.d);
+                var providerAddress = Address.of(x.ap);
+                var itemAddress = Address.of(x.ac);
+
+                provider.address = providerAddress;
+                item.address = itemAddress;
+                var o = new OfferItem<Device>()
+                {
+                    item = item,
+                    provider = provider
+                };
+                items.Add(o);
+            }
+
+            return Task.FromResult(items);
+        }
+
+        public Task<List<OfferItem<Personal>>> QueryOffers(Manpower manpower)
+        {
+            var query = from provider in _context.provider
+                join personal in _context.personal on provider.id equals personal.provider_id
+                join ap in _context.address on provider.address_id equals ap.id
+                select new { provider, personal, ap };
+
+            if (manpower.qualification.Any())
+            {
+                query = query.Where(collection => manpower.qualification.Contains(collection.personal.qualification));
+            }
+            if (manpower.area.Any())
+            {
+                query = query.Where(collection => manpower.area.Contains(collection.personal.area));
+            }
+
+            if (!string.IsNullOrEmpty(manpower.institution))
+            {
+                query = query.Where(collection => manpower.institution.Equals(collection.personal.institution)); ;
+            }
+            if (!string.IsNullOrEmpty(manpower.researchgroup))
+            {
+                query = query.Where(collection => manpower.researchgroup.Equals(collection.personal.researchgroup)); ;
+            }
+            if (manpower.experience_rt_pcr)
+            {
+                query = query.Where(collection => collection.personal.experience_rt_pcr); ;
+            }
+
+            List<OfferItem<Personal>> items = new List<OfferItem<Personal>>();
+            var results = query.Select(x => x).ToList();
+            foreach (var x in results)
+            {
+                var provider = Provider.of(x.provider);
+                var item = new Personal()
+                {
+                    id = x.personal.id,
+                    annotation = x.personal.annotation,
+                    area = x.personal.area,
+                    experience_rt_pcr = x.personal.experience_rt_pcr,
+                    institution = x.personal.institution,
+                    provider_id = x.personal.provider_id,
+                    qualification = x.personal.qualification,
+                    researchgroup = x.personal.researchgroup
+                };
+                var providerAddress = Address.of(x.ap);
+                provider.address = providerAddress;
+                var o = new OfferItem<Personal>()
+                {
+                    item = item,
+                    provider = provider
+                };
+                items.Add(o);
+            }
+
+            return Task.FromResult(items);
+        }
+
         public Task<Compilation> queryProviders(ConsumableEntity consumable)
         {
 
@@ -113,10 +271,20 @@ namespace Pirat.Services
             foreach (ProviderEntity provider in providers)
             {
                 var que = from c in _context.consumable where c.provider_id == provider.id select c;
-                List<Consumable> consumables = que.Select(c => Consumable.of(c).build(queryAddress(c.id))).ToList();
-
+                List<ConsumableEntity> consumableEntities = que.Select(c => c).ToList();
+                List<Consumable> consumables = new List<Consumable>();
+                foreach (ConsumableEntity c in consumableEntities)
+                {
+                    consumables.Add(Consumable.of(c).build(queryAddress(c.address_id)));
+                }
+                
                 var que2 = from d in _context.device where d.provider_id == provider.id select d;
-                List<Device> devices = que2.Select(d => Device.of(d).build(queryAddress(d.id))).ToList();
+                List<DeviceEntity> deviceEntities = que2.Select(d => d).ToList();
+                List<Device> devices = new List<Device>();
+                foreach (DeviceEntity d in deviceEntities)
+                {
+                    devices.Add(Device.of(d).build(queryAddress(d.address_id)));
+                }
 
                 var que3 = from p in _context.personal where p.provider_id == provider.id select p;
                 List<Personal> personals = que3.Select(p => new Personal
@@ -131,7 +299,7 @@ namespace Pirat.Services
                     annotation = p.annotation
                 }).ToList();
 
-                comp.offers.Add(new Offer() { personals = personals, devices = devices, consumables = consumables });
+                comp.offers.Add(new Offer() { personals = personals, devices = devices, consumables = consumables, provider = Provider.of(provider) });
             }
 
             return Task.FromResult(comp);

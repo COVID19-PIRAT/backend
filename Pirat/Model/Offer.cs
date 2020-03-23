@@ -31,4 +31,14 @@ namespace Pirat.Model
         [JsonProperty]
         public List<Offer> offers { get; set; }
     }
+
+
+    public class OfferItem<T>
+    {
+        [JsonProperty]
+        public Provider provider { get; set; }
+
+        [JsonProperty]
+        public T item { get; set; }
+    }
 }

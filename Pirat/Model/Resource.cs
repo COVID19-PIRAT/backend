@@ -32,6 +32,13 @@ namespace Pirat.Model
         [FromQuery(Name = "amount")]
         public int amount { get; set; }
 
+
+        public override string ToString()
+        {
+            String s = "{category=" + category + ", name=" + name + ", manufacturer=" + manufacturer
+                + ", ordernumber=" + ordernumber + ", amount=" + amount + "}";
+            return s;
+        }
     }
 
     public class Resource : ResourceBase
@@ -39,6 +46,14 @@ namespace Pirat.Model
         [JsonProperty]
         [FromQuery(Name = "address")]
         public Address address { get; set; }
+
+
+        public override string ToString()
+        {
+            string baseString = base.ToString();
+            string s = "{base=" + baseString + ", address=" + address + "}";
+            return s;
+        }
     }
 
 

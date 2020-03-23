@@ -34,25 +34,25 @@ namespace Pirat.Controllers
 
 
         [HttpGet("consumables")]
-        [ProducesResponseType(typeof(Compilation), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<OfferItem<Consumable>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> Get([FromQuery] Consumable consumable)
         {
-            try { 
-                return Ok(await _service.queryProviders(ConsumableEntity.of(consumable)));
+            try {
+                return Ok(await _service.QueryOffers(ConsumableEntity.of(consumable)));
             } catch (ArgumentException)
             {
                 return BadRequest("Some obligatory value is missing");
             }
-}
+        }
 
 
 
         [HttpGet("devices")]
-        [ProducesResponseType(typeof(Compilation), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<OfferItem<Device>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
@@ -61,7 +61,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                return Ok(await _service.queryProviders(DeviceEntity.of(device)));
+                return Ok(await _service.QueryOffers(DeviceEntity.of(device)));
             } catch (ArgumentException)
             {
                 return BadRequest("Some obligatory value is missing");
@@ -69,7 +69,7 @@ namespace Pirat.Controllers
         }
 
         [HttpGet("manpower")]
-        [ProducesResponseType(typeof(Compilation), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<OfferItem<Personal>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
@@ -78,7 +78,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                return Ok(await _service.queryProviders(manpower));
+                return Ok(await _service.QueryOffers(manpower));
             } catch (ArgumentException)
             {
                 return BadRequest("Some obligatory value is missing");
