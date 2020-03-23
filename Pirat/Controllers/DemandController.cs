@@ -42,10 +42,12 @@ namespace Pirat.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> Get([FromQuery] Consumable consumable)
+        public async Task<IActionResult> Get([FromQuery] Consumable consumable, [FromQuery] Address address)
         {
-            try {
-                return Ok(await _demandService.QueryOffers(ConsumableEntity.of(consumable)));
+            try
+            {
+                consumable.address = address;
+                return Ok(await _demandService.QueryOffers(consumable));
             } catch (ArgumentException)
             {
                 return BadRequest("Some obligatory value is missing");
@@ -60,11 +62,12 @@ namespace Pirat.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> Get([FromQuery] Device device)
+        public async Task<IActionResult> Get([FromQuery] Device device, [FromQuery] Address address)
         {
             try
             {
-                return Ok(await _demandService.QueryOffers(DeviceEntity.of(device)));
+                device.address = address;
+                return Ok(await _demandService.QueryOffers(device));
             } catch (ArgumentException)
             {
                 return BadRequest("Some obligatory value is missing");

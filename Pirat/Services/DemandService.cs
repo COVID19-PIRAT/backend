@@ -25,9 +25,13 @@ namespace Pirat.Services
             _context = context;
         }
 
-        public Task<List<OfferItem<Consumable>>> QueryOffers(ConsumableEntity consumable)
+        public Task<List<OfferItem<Consumable>>> QueryOffers(Consumable con)
         {
-            if (string.IsNullOrEmpty(consumable.category)) // || string.IsNullOrEmpty(consumable.address.postalcode)
+            var consumable = ConsumableEntity.of(con);
+            var maxDistance = con.kilometer;
+            var consumableAddress = con.address;
+
+            if (string.IsNullOrEmpty(consumable.category))
             {
                 throw new ArgumentException();
             }
@@ -57,13 +61,32 @@ namespace Pirat.Services
             var results = query.Select(x => x).ToList();
             foreach (var x in results)
             {
-                var provider = Provider.of(x.p);
+
                 var item = Consumable.of(x.c);
+                if (maxDistance > 0)
+                {
+                    var location = AddressEntity.of(consumableAddress);
+                    AddressMaker.SetCoordinates(location);
+
+                    var yLatitude = x.ac.latitude;
+                    var yLongitude = x.ac.longitude;
+
+                    var distance = computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
+                    if (distance > maxDistance)
+                    {
+                        continue;
+                    }
+
+                    item.kilometer = (int) Math.Round(distance);
+                }
+
+                var provider = Provider.of(x.p);
                 var providerAddress = Address.of(x.ap);
                 var itemAddress = Address.of(x.ac);
 
                 provider.address = providerAddress;
                 item.address = itemAddress;
+
                 var o = new OfferItem<Consumable>()
                 {
                     item = item,
@@ -75,8 +98,12 @@ namespace Pirat.Services
             return Task.FromResult(items);
         }
 
-        public Task<List<OfferItem<Device>>> QueryOffers(DeviceEntity device)
+        public Task<List<OfferItem<Device>>> QueryOffers(Device dev)
         {
+            var device = DeviceEntity.of(dev);
+            var maxDistance = dev.kilometer;
+            var deviceAddress = dev.address;
+
             if (string.IsNullOrEmpty(device.category)) // || string.IsNullOrEmpty(consumable.address.postalcode)
             {
                 throw new ArgumentException();
@@ -107,8 +134,25 @@ namespace Pirat.Services
             var results = query.Select(x => x).ToList();
             foreach (var x in results)
             {
-                var provider = Provider.of(x.p);
                 var item = Device.of(x.d);
+                if (maxDistance > 0)
+                {
+                    var location = AddressEntity.of(deviceAddress);
+                    AddressMaker.SetCoordinates(location);
+
+                    var yLatitude = x.ac.latitude;
+                    var yLongitude = x.ac.longitude;
+
+                    var distance = computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
+                    if (distance > maxDistance)
+                    {
+                        continue;
+                    }
+
+                    item.kilometer = (int)Math.Round(distance);
+                }
+
+                var provider = Provider.of(x.p);
                 var providerAddress = Address.of(x.ap);
                 var itemAddress = Address.of(x.ac);
 

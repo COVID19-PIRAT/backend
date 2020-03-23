@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Pirat.Model
 {
@@ -33,6 +34,10 @@ namespace Pirat.Model
         [JsonProperty]
         public Address address { get; set; }
 
+        [JsonProperty]
+        [FromQuery(Name = "kilometer")]
+        public int kilometer { get; set; }
+
         public static Provider of(ProviderEntity p)
         {
             return new Provider()
@@ -47,6 +52,12 @@ namespace Pirat.Model
         public Provider build(Address a)
         {
             address = a;
+            return this;
+        }
+
+        public Provider build(int kilometer)
+        {
+            this.kilometer = kilometer;
             return this;
         }
 

@@ -47,9 +47,11 @@ namespace Pirat.Model
 
     public class Resource : ResourceBase
     {
-        [JsonProperty]
-        [FromQuery(Name = "address")]
         public Address address { get; set; }
+
+        [JsonProperty]
+        [FromQuery(Name = "kilometer")]
+        public int kilometer { get; set; }
 
 
         public override string ToString()

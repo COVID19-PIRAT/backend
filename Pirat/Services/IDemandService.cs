@@ -8,18 +8,12 @@ namespace Pirat.Services
 {
     public interface IDemandService
     {
-        public Task<List<OfferItem<Consumable>>> QueryOffers(ConsumableEntity consumable);
+        public Task<List<OfferItem<Consumable>>> QueryOffers(Consumable consumable);
 
-        public Task<List<OfferItem<Device>>> QueryOffers(DeviceEntity device);
+        public Task<List<OfferItem<Device>>> QueryOffers(Device device);
 
         public Task<List<OfferItem<Personal>>> QueryOffers(Manpower manpower);
-
-        public Task<Compilation> queryProviders(ConsumableEntity consumable);
-
-        public Task<Compilation> queryProviders(DeviceEntity device);
-
-        public Task<Compilation> queryProviders(Manpower manpower);
-
+        
         public Task<Offer> queryLink(string link);
 
         public Task<string> update(Offer offer);

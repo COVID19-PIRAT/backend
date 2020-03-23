@@ -92,6 +92,13 @@ namespace Pirat.Model
 			};
 		}
 
+        public static AddressEntity of(string postalcode)
+        {
+			var address = new AddressEntity();
+            address.postalcode = postalcode;
+            return address;
+        }
+
 		public override string ToString()
 		{
 			var builder = new StringBuilder();
