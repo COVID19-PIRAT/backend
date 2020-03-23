@@ -14,7 +14,7 @@ namespace Pirat.Services
 
         public Task<Compilation> queryProviders(Manpower manpower);
 
-        public Task <Aggregate> queryLink(string link);
+        public Task<Offer> queryLink(string link);
 
         public Task<string> update(Offer offer);
 

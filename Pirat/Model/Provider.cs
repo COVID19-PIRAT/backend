@@ -44,6 +44,12 @@ namespace Pirat.Model
             };
         }
 
+        public Provider build(Address a)
+        {
+            address = a;
+            return this;
+        }
+
         public override bool Equals(object obj)
         {
             if(obj == null)
@@ -57,6 +63,7 @@ namespace Pirat.Model
             var p = (Provider)obj;
             return (name.Equals(p.name) && organisation.Equals(p.organisation) && address.Equals(p.address) && mail.Equals(p.mail) && phone.Equals(p.phone));
         }
+
     }
 
     public class ProviderEntity : ProviderBase

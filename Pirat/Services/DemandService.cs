@@ -290,7 +290,7 @@ namespace Pirat.Services
                 }
             }
 
-            var link = new Link { token = createLink(), consumable_ids = consumable_ids.ToArray(), device_ids = device_ids.ToArray(), manpower_ids = manpower_ids.ToArray() };
+            var link = new Link { token = createLink(), provider_id = key, consumable_ids = consumable_ids.ToArray(), device_ids = device_ids.ToArray(), manpower_ids = manpower_ids.ToArray() };
             update(link);
             return sendLinkToMail(provider, link.token);
         }
@@ -339,27 +339,31 @@ namespace Pirat.Services
             return false;
         }
 
-        public Task<Aggregate> queryLink(string link)
+        public Task<Offer> queryLink(string link)
         {
             var linkResult = retrieveLink(link);
-            var aggregation = new Aggregate() { consumables = new List<Consumable>(), devices = new List<Device>(), personals = new List<Personal>()};
+
+            var providerEntity = _context.provider.Find(linkResult.provider_id);
+            var provider = Provider.of(providerEntity).build(queryAddress(providerEntity.address_id));
+
+            var offer = new Offer() { provider = provider, consumables = new List<Consumable>(), devices = new List<Device>(), personals = new List<Personal>()};
             foreach(int k in linkResult.consumable_ids)
             {
                 ConsumableEntity e = _context.consumable.Find(k);
 
-                aggregation.consumables.Add(Consumable.of(e).build(queryAddress(e.address_id)));
+                offer.consumables.Add(Consumable.of(e).build(queryAddress(e.address_id)));
             }
             foreach(int k in linkResult.device_ids)
             {
                 DeviceEntity e = _context.device.Find(k);
 
-                aggregation.devices.Add(Device.of(e).build(queryAddress(e.address_id)));
+                offer.devices.Add(Device.of(e).build(queryAddress(e.address_id)));
             }
             foreach(int k in linkResult.manpower_ids)
             {
-                aggregation.personals.Add(_context.personal.Find(k));
+                offer.personals.Add(_context.personal.Find(k));
             }
-            return Task.FromResult(aggregation);
+            return Task.FromResult(offer);
         }
 
         public Task<string> delete(string link)
@@ -381,7 +385,8 @@ namespace Pirat.Services
                 token = l.token,
                 consumable_ids = l.consumable_ids,
                 device_ids = l.device_ids,
-                manpower_ids = l.manpower_ids
+                manpower_ids = l.manpower_ids,
+                provider_id = l.provider_id
             }).ToList();
 
             if (links.Count() <= 0)

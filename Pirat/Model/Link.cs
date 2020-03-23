@@ -11,6 +11,8 @@ namespace Pirat.Model
         [Key]
         public string token { get; set; }
 
+        public int provider_id { get; set; }
+
         public int[] consumable_ids { get; set; }
 
         public int[] device_ids { get; set; }
