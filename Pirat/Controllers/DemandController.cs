@@ -121,6 +121,9 @@ namespace Pirat.Controllers
         {
             try
             {
+                if (!_mailService.verifyMail(offer.provider.mail)){
+                    return NotFound("Mail address is invalid");
+                }
                 var token = await _demandService.update(offer);
                 var host = Environment.GetEnvironmentVariable("PIRAT_HOST");
                 if (string.IsNullOrEmpty(host))
@@ -131,9 +134,6 @@ namespace Pirat.Controllers
                 var fullLink = $"http://{host}/resources/offers/{token}";
                 _mailService.sendConfirmationMail(fullLink, offer.provider.mail, offer.provider.name);
                 return Ok(fullLink);
-            } catch (MailException e)
-            {
-                return NotFound(e.Message);
             } catch (UnknownAdressException e)
             {
                 return NotFound(e.Message);

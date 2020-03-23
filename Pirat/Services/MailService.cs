@@ -17,6 +17,11 @@ namespace Pirat.Services
             _logger = logger;
         }
 
+        public bool verifyMail(string mailAddress)
+        {
+            return MailboxAddress.TryParse(mailAddress, out _);
+        }
+
         public async void sendConfirmationMail(string confirmationLink, string receiverMailAddress, string receiverMailUserName)
         {
             await Task.Run(() =>
@@ -44,7 +49,9 @@ namespace Pirat.Services
 
                 MimeMessage message = new MimeMessage();
                 MailboxAddress from = new MailboxAddress(mailSenderAddress);
+
                 message.From.Add(from);
+
 
                 MailboxAddress to = new MailboxAddress(receiverMailAddress);
                 message.To.Add(to);

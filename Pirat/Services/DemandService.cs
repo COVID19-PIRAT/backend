@@ -388,16 +388,6 @@ namespace Pirat.Services
         {
             var provider = offer.provider;
 
-            var mail = provider.mail;
-            try
-            {
-                var mailAdress = new System.Net.Mail.MailAddress(mail);
-            }
-            catch
-            {
-                throw new MailException("Mail does not exist");
-            }
-
             var providerEntity = ProviderEntity.of(provider);
             if (!exists(providerEntity))
             {

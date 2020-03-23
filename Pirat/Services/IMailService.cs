@@ -8,5 +8,7 @@ namespace Pirat.Services
     public interface IMailService
     {
         public void sendConfirmationMail(string confirmationLink, string receiverMailAddress, string receiverMailUserName);
+
+        public bool verifyMail(string mailAddress);
     }
 }
