@@ -48,7 +48,7 @@ namespace Pirat.Services
                     _logger.LogWarning("No passowrd is set for credentials");
                 }
 
-                var fullLink = $"http://{host}/change/{token}";
+                var fullLink = $"{host}/change/{token}";
 
                 _logger.LogDebug($"Sender: {mailSenderAddress}");
                 _logger.LogDebug($"Receiver: {receiverMailUserName}");
@@ -62,10 +62,10 @@ namespace Pirat.Services
                 MailboxAddress to = new MailboxAddress(receiverMailAddress);
                 message.To.Add(to);
 
-                message.Subject = "Dein Bearbeitungslink";
+                message.Subject = "PIRAT: Dein Bearbeitungslink";
 
                 BodyBuilder arnold = new BodyBuilder();
-                arnold.TextBody = $"Hallo {receiverMailUserName},\n\nvielen dank, dass Sie Ihre Laborressourcen zur Verfügung stellen möchten.\n\nHier ist Ihr Bearbeitungslink: {fullLink}\n\nLiebe Grüße,\nIhr PIRAT Team";
+                arnold.TextBody = $"Hallo {receiverMailUserName},\n\nvielen Dank, dass Sie Ihre Laborressourcen zur Verfügung stellen möchten.\n\nUnter diesem Link können Sie Ihr Angebot einsehen und bearbeiten: {fullLink}\n\nLiebe Grüße,\nIhr PIRAT Team";
                 message.Body = arnold.ToMessageBody();
 
                 SmtpClient client = new SmtpClient();
