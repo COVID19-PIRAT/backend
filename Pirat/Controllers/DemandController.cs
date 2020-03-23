@@ -125,15 +125,8 @@ namespace Pirat.Controllers
                     return NotFound("Mail address is invalid");
                 }
                 var token = await _demandService.update(offer);
-                var host = Environment.GetEnvironmentVariable("PIRAT_HOST");
-                if (string.IsNullOrEmpty(host))
-                {
-                    _logger.LogError("Could not find host");
-                    return StatusCode(StatusCodes.Status500InternalServerError);
-                }
-                var fullLink = $"http://{host}/resources/offers/{token}";
-                _mailService.sendConfirmationMail(fullLink, offer.provider.mail, offer.provider.name);
-                return Ok(fullLink);
+                _mailService.sendConfirmationMail(token, offer.provider.mail, offer.provider.name);
+                return Ok(token);
             } catch (UnknownAdressException e)
             {
                 return NotFound(e.Message);

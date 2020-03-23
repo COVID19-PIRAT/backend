@@ -22,7 +22,7 @@ namespace Pirat.Services
             return MailboxAddress.TryParse(mailAddress, out _);
         }
 
-        public async void sendConfirmationMail(string confirmationLink, string receiverMailAddress, string receiverMailUserName)
+        public async void sendConfirmationMail(string token, string receiverMailAddress, string receiverMailUserName)
         {
             await Task.Run(() =>
             {
@@ -30,6 +30,11 @@ namespace Pirat.Services
                 var mailSenderUserName = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_USERNAME");
                 var mailSenderPassword = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_PASSWORD");
 
+                var host = Environment.GetEnvironmentVariable("PIRAT_HOST");
+                if (string.IsNullOrEmpty(host))
+                {
+                    _logger.LogError("Could not find host");
+                }
                 if (string.IsNullOrEmpty(mailSenderAddress))
                 {
                     _logger.LogWarning("No sender address is set for sending mails");
@@ -43,9 +48,10 @@ namespace Pirat.Services
                     _logger.LogWarning("No passowrd is set for credentials");
                 }
 
+                var fullLink = $"http://{host}/change/{token}";
+
                 _logger.LogDebug($"Sender: {mailSenderAddress}");
                 _logger.LogDebug($"Receiver: {receiverMailUserName}");
-                _logger.LogDebug($"Link: {confirmationLink}");
 
                 MimeMessage message = new MimeMessage();
                 MailboxAddress from = new MailboxAddress(mailSenderAddress);
@@ -59,7 +65,7 @@ namespace Pirat.Services
                 message.Subject = "Dein Bearbeitungslink";
 
                 BodyBuilder arnold = new BodyBuilder();
-                arnold.TextBody = $"Hallo {receiverMailUserName},\n\nvielen dank, dass Sie Ihre Laborressourcen zur Verfügung stellen möchten.\n\nHier ist Ihr Bearbeitungslink: {confirmationLink}\n\nLiebe Grüße,\nIhr PIRAT Team";
+                arnold.TextBody = $"Hallo {receiverMailUserName},\n\nvielen dank, dass Sie Ihre Laborressourcen zur Verfügung stellen möchten.\n\nHier ist Ihr Bearbeitungslink: {fullLink}\n\nLiebe Grüße,\nIhr PIRAT Team";
                 message.Body = arnold.ToMessageBody();
 
                 SmtpClient client = new SmtpClient();
