@@ -32,11 +32,15 @@ namespace Pirat.Model
         [FromQuery(Name = "amount")]
         public int amount { get; set; }
 
+        [JsonProperty]
+        [FromQuery(Name = "annotation")]
+        public string annotation { get; set; }
+
 
         public override string ToString()
         {
             String s = "{category=" + category + ", name=" + name + ", manufacturer=" + manufacturer
-                + ", ordernumber=" + ordernumber + ", amount=" + amount + "}";
+                + ", ordernumber=" + ordernumber + ", amount=" + amount + ", annotation=" + annotation + "}";
             return s;
         }
     }
@@ -68,7 +72,8 @@ namespace Pirat.Model
                 name = d.name,
                 manufacturer = d.manufacturer,
                 ordernumber = d.ordernumber,
-                amount = d.amount
+                amount = d.amount,
+                annotation = d.annotation
             };
         }
 
@@ -95,7 +100,8 @@ namespace Pirat.Model
                 manufacturer = c.manufacturer,
                 ordernumber = c.ordernumber,
                 amount = c.amount,
-                unit = c.unit
+                unit = c.unit,
+                annotation = c.annotation
             };
         }
 
@@ -131,7 +137,8 @@ namespace Pirat.Model
                 manufacturer = c.manufacturer,
                 ordernumber = c.ordernumber,
                 amount = c.amount,
-                unit = c.unit
+                unit = c.unit,
+                annotation = c.annotation
             };
         }
 
@@ -152,7 +159,8 @@ namespace Pirat.Model
                 name = d.name,
                 manufacturer = d.manufacturer,
                 ordernumber = d.ordernumber,
-                amount = d.amount
+                amount = d.amount,
+                annotation = d.annotation
             };
         }
 
