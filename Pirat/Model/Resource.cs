@@ -82,6 +82,10 @@ namespace Pirat.Model
 
     public class Consumable : Resource
     {
+        [JsonProperty]
+        [FromQuery(Name = "unit")]
+        public string unit { get; set; }
+
         public static Consumable of(ConsumableEntity c)
         {
             return new Consumable()
@@ -90,7 +94,8 @@ namespace Pirat.Model
                 name = c.name,
                 manufacturer = c.manufacturer,
                 ordernumber = c.ordernumber,
-                amount = c.amount
+                amount = c.amount,
+                unit = c.unit
             };
         }
 
@@ -113,6 +118,10 @@ namespace Pirat.Model
 
     public class ConsumableEntity : ResourceEntity
     {
+
+        public string unit { get; set; }
+
+
         public static ConsumableEntity of(Consumable c)
         {
             return new ConsumableEntity()
@@ -121,7 +130,8 @@ namespace Pirat.Model
                 name = c.name,
                 manufacturer = c.manufacturer,
                 ordernumber = c.ordernumber,
-                amount = c.amount
+                amount = c.amount,
+                unit = c.unit
             };
         }
 
