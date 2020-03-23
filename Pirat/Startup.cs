@@ -77,7 +77,7 @@ namespace Pirat
             if (env.IsDevelopment())
             {
                 logger.LogInformation("In Development environment");
-                Environment.SetEnvironmentVariable("PIRAT_HOST", "localhost:5000");
+                Environment.SetEnvironmentVariable("PIRAT_HOST", "http://localhost:4200");
                 app.UseDeveloperExceptionPage();
             }
             if (env.IsProduction())
@@ -88,7 +88,7 @@ namespace Pirat
             var host = Environment.GetEnvironmentVariable("PIRAT_HOST");
             if (string.IsNullOrEmpty(host))
             {
-                logger.LogWarning("No enviromnet for host given.");
+                logger.LogWarning("No environment for host given.");
             }
 
             app.UseSwagger();
