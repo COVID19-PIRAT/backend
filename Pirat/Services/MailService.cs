@@ -17,9 +17,9 @@ namespace Pirat.Services
             _logger = logger;
         }
 
-        public Task sendConfirmationMail(string confirmationLink, string receiverMailAddress, string receiverMailUserName)
+        public async void sendConfirmationMail(string confirmationLink, string receiverMailAddress, string receiverMailUserName)
         {
-            return Task.Run(() =>
+            await Task.Run(() =>
             {
                 var mailSenderAddress = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_ADDRESS");
                 var mailSenderUserName = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_USERNAME");

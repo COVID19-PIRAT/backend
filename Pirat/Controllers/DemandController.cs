@@ -129,7 +129,7 @@ namespace Pirat.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
                 var fullLink = $"http://{host}/resources/offers/{token}";
-                await _mailService.sendConfirmationMail(fullLink, offer.provider.mail, offer.provider.name);
+                _mailService.sendConfirmationMail(fullLink, offer.provider.mail, offer.provider.name);
                 return Ok(fullLink);
             } catch (MailException e)
             {

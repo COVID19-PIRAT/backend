@@ -7,6 +7,6 @@ namespace Pirat.Services
 {
     public interface IMailService
     {
-        public Task sendConfirmationMail(string confirmationLink, string receiverMailAddress, string receiverMailUserName);
+        public void sendConfirmationMail(string confirmationLink, string receiverMailAddress, string receiverMailUserName);
     }
 }
