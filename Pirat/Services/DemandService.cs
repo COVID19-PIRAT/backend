@@ -1,4 +1,4 @@
-﻿using MailKit.Net.Smtp;
+﻿
 using Microsoft.Extensions.Logging;
 using MimeKit;
 using Pirat.DatabaseContext;
@@ -460,7 +460,7 @@ namespace Pirat.Services
 
             var link = new Link { token = createLink(), provider_id = key, consumable_ids = consumable_ids.ToArray(), device_ids = device_ids.ToArray(), manpower_ids = manpower_ids.ToArray() };
             update(link);
-            return sendLinkToMail(provider, link.token);
+            return Task.FromResult(link.token);
         }
 
         private int retrieveKeyFromProvider(Provider provider)
@@ -575,62 +575,6 @@ namespace Pirat.Services
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
             return new string(Enumerable.Repeat(chars, 30)
               .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
-
-        private Task<string> sendLinkToMail(Provider provider, string token)
-        {
-            var fullLink = "";
-            var host = Environment.GetEnvironmentVariable("PIRAT_HOST");
-
-            var mailSenderAddress = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_ADDRESS");
-            var mailSenderUserName = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_USERNAME");
-            var mailSenderPassword = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_PASSWORD");
-
-            if (string.IsNullOrEmpty(host))
-            {
-                _logger.LogWarning("Could not find host. Set to localhost:5000");
-            }
-            if (string.IsNullOrEmpty(mailSenderAddress))
-            {
-                _logger.LogWarning("No sender address is set for sending mails");
-            }
-            if (string.IsNullOrEmpty(mailSenderUserName))
-            {
-                _logger.LogWarning("No user name is set for credentials");
-            }
-            if (string.IsNullOrEmpty(mailSenderPassword))
-            {
-                _logger.LogWarning("No passowrd is set for credentials");
-            }
-
-            fullLink = "http://" + host + "/change/" + token;
-
-            _logger.LogDebug($"Sender: {mailSenderAddress}");
-            _logger.LogDebug($"Receiver: {provider.name}");
-            _logger.LogDebug($"Link: {fullLink}");
-
-            MimeMessage message = new MimeMessage();
-            MailboxAddress from = new MailboxAddress(mailSenderAddress);
-            message.From.Add(from);
-
-            MailboxAddress to = new MailboxAddress(provider.mail);
-            message.To.Add(to);
-
-            message.Subject = "Dein Bearbeitungslink";
-
-            BodyBuilder arnold = new BodyBuilder();
-            arnold.TextBody = $"Hallo {provider.name},\n\nvielen dank, dass Sie Ihre Laborressourcen zur Verfügung stellen möchten.\n\nHier ist Ihr Bearbeitungslink: {fullLink}\n\nLiebe Grüße,\nIhr PIRAT Team";
-            message.Body = arnold.ToMessageBody();
-
-            SmtpClient client = new SmtpClient();
-            client.Connect("imap.gmail.com", 465, true);
-            client.Authenticate(mailSenderUserName, mailSenderPassword);
-
-            client.Send(message);
-            client.Disconnect(true);
-            client.Dispose();
-
-            return Task.FromResult(token);
         }
 
         private Address queryAddress(int addressKey)

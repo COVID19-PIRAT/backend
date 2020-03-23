@@ -22,12 +22,15 @@ namespace Pirat.Controllers
 
         private readonly ILogger<DemandController> _logger;
 
-        private readonly IDemandService _service;
+        private readonly IDemandService _demandService;
 
-        public DemandController(ILogger<DemandController> logger, IDemandService service)
+        private readonly IMailService _mailService;
+
+        public DemandController(ILogger<DemandController> logger, IDemandService demandService, IMailService mailService)
         {
             _logger = logger;
-            _service = service;
+            _demandService = demandService;
+            _mailService = mailService;
         }
 
         //***********GET REQUESTS
@@ -42,7 +45,7 @@ namespace Pirat.Controllers
         public async Task<IActionResult> Get([FromQuery] Consumable consumable)
         {
             try {
-                return Ok(await _service.QueryOffers(ConsumableEntity.of(consumable)));
+                return Ok(await _demandService.QueryOffers(ConsumableEntity.of(consumable)));
             } catch (ArgumentException)
             {
                 return BadRequest("Some obligatory value is missing");
@@ -61,7 +64,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                return Ok(await _service.QueryOffers(DeviceEntity.of(device)));
+                return Ok(await _demandService.QueryOffers(DeviceEntity.of(device)));
             } catch (ArgumentException)
             {
                 return BadRequest("Some obligatory value is missing");
@@ -78,7 +81,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                return Ok(await _service.QueryOffers(manpower));
+                return Ok(await _demandService.QueryOffers(manpower));
             } catch (ArgumentException)
             {
                 return BadRequest("Some obligatory value is missing");
@@ -96,7 +99,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                return Ok(await _service.queryLink(token));
+                return Ok(await _demandService.queryLink(token));
             } catch (ArgumentException e)
             {
                 return NotFound(e.Message);
@@ -111,13 +114,23 @@ namespace Pirat.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> Post([FromBody] Offer offer)
         {
             try
             {
-                return Ok(await _service.update(offer));
+                var token = await _demandService.update(offer);
+                var host = Environment.GetEnvironmentVariable("PIRAT_HOST");
+                if (string.IsNullOrEmpty(host))
+                {
+                    _logger.LogError("Could not find host");
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+                }
+                var fullLink = $"http://{host}/resources/offers/{token}";
+                await _mailService.sendConfirmationMail(fullLink, offer.provider.mail, offer.provider.name);
+                return Ok(fullLink);
             } catch (MailException e)
             {
                 return NotFound(e.Message);
@@ -139,7 +152,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                return Ok(await _service.delete(token));
+                return Ok(await _demandService.delete(token));
             } catch(ArgumentException e)
             {
                 return NotFound(e.Message);
