@@ -435,7 +435,7 @@ namespace Pirat.Services
                 _logger.LogWarning("No passowrd is set for credentials");
             }
 
-            fullLink = "http://" + host + "/resources/offers/" + token;
+            fullLink = "http://" + host + "/change/" + token;
 
             _logger.LogDebug($"Sender: {mailSenderAddress}");
             _logger.LogDebug($"Receiver: {provider.name}");
@@ -462,8 +462,7 @@ namespace Pirat.Services
             client.Disconnect(true);
             client.Dispose();
 
-
-            return Task.FromResult(fullLink);
+            return Task.FromResult(token);
         }
 
         private Address queryAddress(int addressKey)
