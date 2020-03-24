@@ -28,7 +28,7 @@ namespace Pirat.Services
 
         public Task<List<OfferItem<Consumable>>> QueryOffers(Consumable con)
         {
-            if (string.IsNullOrEmpty(con.category) || string.IsNullOrEmpty(con.address.postalcode))
+            if (string.IsNullOrEmpty(con.category) || string.IsNullOrEmpty(con.address.postalcode) ||string.IsNullOrEmpty(con.address.country))
             {
                 throw new ArgumentException("Missing in required attributes");
             }
@@ -99,7 +99,7 @@ namespace Pirat.Services
         public Task<List<OfferItem<Device>>> QueryOffers(Device dev)
         {
 
-            if (string.IsNullOrEmpty(dev.category) || string.IsNullOrEmpty(dev.address.postalcode))
+            if (string.IsNullOrEmpty(dev.category) || string.IsNullOrEmpty(dev.address.postalcode) || string.IsNullOrEmpty(dev.address.country))
             {
                 throw new ArgumentException("Missing in required attributes");
             }

@@ -29,7 +29,7 @@ namespace Pirat.Extensions
 
         private readonly IReCaptchaService _captchaService;
 
-        private const string key = "recaptchaResponse";
+        private const string HeaderKey = "recaptcha";
 
         private readonly List<string> blackList = new List<string>(){ "/resources"};
 
@@ -46,7 +46,7 @@ namespace Pirat.Extensions
             if (blackList.Contains(path) && method.ToUpper().Equals(WebRequestMethods.Http.Post))
             {
 
-                var headerValue = context.Request.Headers["ReCaptcha"].ToString();
+                var headerValue = context.Request.Headers[HeaderKey].ToString();
                 if (string.IsNullOrEmpty(headerValue))
                 {
                     context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;

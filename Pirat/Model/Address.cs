@@ -29,6 +29,7 @@ namespace Pirat.Model
         public string city { get; set; }
 
         [JsonProperty]
+        [Required]
         [FromQuery(Name = "country")]
         public string country { get; set; }
 
