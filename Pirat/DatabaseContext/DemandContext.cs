@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Pirat.Model.Entity;
 
 namespace Pirat.DatabaseContext
 {
@@ -15,9 +16,9 @@ namespace Pirat.DatabaseContext
 
         public DbSet<DeviceEntity> device { get; set; }
 
-        public DbSet<Personal> personal { get; set; }
+        public DbSet<PersonalEntity> personal { get; set; }
 
-        public DbSet<Link> link { get; set; }
+        public DbSet<LinkEntity> link { get; set; }
 
         public DbSet<AddressEntity> address { get; set; }
 

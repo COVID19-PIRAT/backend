@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Pirat.Model.Entity;
 
 namespace Pirat.Model
 {
@@ -61,115 +62,5 @@ namespace Pirat.Model
             return s;
         }
     }
-
-
-    public class Device : Resource
-    {
-
-        public static Device of(DeviceEntity d)
-        {
-            return new Device()
-            {
-                category = d.category,
-                name = d.name,
-                manufacturer = d.manufacturer,
-                ordernumber = d.ordernumber,
-                amount = d.amount,
-                annotation = d.annotation
-            };
-        }
-
-        public Device build(Address a)
-        {
-            address = a;
-            return this;
-        }
-    }
-
-
-    public class Consumable : Resource
-    {
-        [JsonProperty]
-        [FromQuery(Name = "unit")]
-        public string unit { get; set; }
-
-        public static Consumable of(ConsumableEntity c)
-        {
-            return new Consumable()
-            {
-                category = c.category,
-                name = c.name,
-                manufacturer = c.manufacturer,
-                ordernumber = c.ordernumber,
-                amount = c.amount,
-                unit = c.unit,
-                annotation = c.annotation
-            };
-        }
-
-        public Consumable build(Address a)
-        {
-            address = a;
-            return this;
-        }
-    }
-
-    public abstract class ResourceEntity : ResourceBase
-    {
-
-        public int id { get; set; }
-
-        public int provider_id { get; set; }
-
-        public int address_id { get; set; }
-    }
-
-    public class ConsumableEntity : ResourceEntity
-    {
-
-        public string unit { get; set; }
-
-
-        public static ConsumableEntity of(Consumable c)
-        {
-            return new ConsumableEntity()
-            {
-                category = c.category,
-                name = c.name,
-                manufacturer = c.manufacturer,
-                ordernumber = c.ordernumber,
-                amount = c.amount,
-                unit = c.unit,
-                annotation = c.annotation
-            };
-        }
-
-        public ConsumableEntity build(AddressEntity a)
-        {
-            address_id = a.id;
-            return this;
-        }
-    }
-
-    public class DeviceEntity : ResourceEntity
-    {
-        public static DeviceEntity of(Device d)
-        {
-            return new DeviceEntity()
-            {
-                category = d.category,
-                name = d.name,
-                manufacturer = d.manufacturer,
-                ordernumber = d.ordernumber,
-                amount = d.amount,
-                annotation = d.annotation
-            };
-        }
-
-        public DeviceEntity build(AddressEntity a)
-        {
-            address_id = a.id;
-            return this;
-        }
-    }
+    
 }

@@ -65,7 +65,7 @@ namespace Pirat.Services
                 message.Subject = "PIRAT: Dein Bearbeitungslink";
 
                 BodyBuilder arnold = new BodyBuilder();
-                arnold.TextBody = $"Hallo {receiverMailUserName},\n\nvielen Dank, dass Sie Ihre Laborressourcen zur Verfügung stellen möchten.\n\nUnter diesem Link können Sie Ihr Angebot einsehen und bearbeiten: {fullLink}\n\nLiebe Grüße,\nIhr PIRAT Team";
+                arnold.TextBody = $"Hallo {receiverMailUserName},\n\nvielen Dank, dass Sie Ihre Laborressourcen zur Verfügung stellen möchten.\n\nUnter diesem LinkEntity können Sie Ihr Angebot einsehen und bearbeiten: {fullLink}\n\nLiebe Grüße,\nIhr PIRAT Team";
                 message.Body = arnold.ToMessageBody();
 
                 SmtpClient client = new SmtpClient();

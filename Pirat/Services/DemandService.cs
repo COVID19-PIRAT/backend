@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using Pirat.Model.Entity;
 
 namespace Pirat.Services
 {
@@ -198,12 +199,10 @@ namespace Pirat.Services
                 var provider = Provider.of(x.provider);
                 var item = new Personal()
                 {
-                    id = x.personal.id,
                     annotation = x.personal.annotation,
                     area = x.personal.area,
                     experience_rt_pcr = x.personal.experience_rt_pcr,
                     institution = x.personal.institution,
-                    provider_id = x.personal.provider_id,
                     qualification = x.personal.qualification,
                     researchgroup = x.personal.researchgroup
                 };
@@ -301,48 +300,8 @@ namespace Pirat.Services
             return collectAllResources(providers);
         }
 
-        private Task<Compilation> collectAllResources(ISet<ProviderEntity> providers)
-        {
-            Compilation comp = new Compilation() { offers = new List<Offer>() };
 
-            foreach (ProviderEntity provider in providers)
-            {
-                var que = from c in _context.consumable where c.provider_id == provider.id select c;
-                List<ConsumableEntity> consumableEntities = que.Select(c => c).ToList();
-                List<Consumable> consumables = new List<Consumable>();
-                foreach (ConsumableEntity c in consumableEntities)
-                {
-                    consumables.Add(Consumable.of(c).build(queryAddress(c.address_id)));
-                }
-                
-                var que2 = from d in _context.device where d.provider_id == provider.id select d;
-                List<DeviceEntity> deviceEntities = que2.Select(d => d).ToList();
-                List<Device> devices = new List<Device>();
-                foreach (DeviceEntity d in deviceEntities)
-                {
-                    devices.Add(Device.of(d).build(queryAddress(d.address_id)));
-                }
-
-                var que3 = from p in _context.personal where p.provider_id == provider.id select p;
-                List<Personal> personals = que3.Select(p => new Personal
-                {
-                    id = p.id,
-                    provider_id = p.provider_id,
-                    qualification = p.qualification,
-                    institution = p.institution,
-                    researchgroup = p.researchgroup,
-                    area = p.area,
-                    experience_rt_pcr = p.experience_rt_pcr,
-                    annotation = p.annotation
-                }).ToList();
-
-                comp.offers.Add(new Offer() { personals = personals, devices = devices, consumables = consumables, provider = Provider.of(provider) });
-            }
-
-            return Task.FromResult(comp);
-        }
-
-        public Task<Compilation> queryProviders(Manpower manpower)
+        public Task<Compilation> queryProviders(Personal manpower)
         {
             var query = from p in _context.provider
                         join m in _context.personal
@@ -384,6 +343,45 @@ namespace Pirat.Services
             return collectAllResources(providers);
         }
 
+        private Task<Compilation> collectAllResources(ISet<ProviderEntity> providers)
+        {
+            Compilation comp = new Compilation() { offers = new List<Offer>() };
+
+            foreach (ProviderEntity provider in providers)
+            {
+                var que = from c in _context.consumable where c.provider_id == provider.id select c;
+                List<ConsumableEntity> consumableEntities = que.Select(c => c).ToList();
+                List<Consumable> consumables = new List<Consumable>();
+                foreach (ConsumableEntity c in consumableEntities)
+                {
+                    consumables.Add(Consumable.of(c).build(queryAddress(c.address_id)));
+                }
+
+                var que2 = from d in _context.device where d.provider_id == provider.id select d;
+                List<DeviceEntity> deviceEntities = que2.Select(d => d).ToList();
+                List<Device> devices = new List<Device>();
+                foreach (DeviceEntity d in deviceEntities)
+                {
+                    devices.Add(Device.of(d).build(queryAddress(d.address_id)));
+                }
+
+                var que3 = from p in _context.personal where p.provider_id == provider.id select p;
+                List<Personal> personals = que3.Select(p => new Personal
+                {
+                    qualification = p.qualification,
+                    institution = p.institution,
+                    researchgroup = p.researchgroup,
+                    area = p.area,
+                    experience_rt_pcr = p.experience_rt_pcr,
+                    annotation = p.annotation
+                }).ToList();
+
+                comp.offers.Add(new Offer() { personals = personals, devices = devices, consumables = consumables, provider = Provider.of(provider) });
+            }
+
+            return Task.FromResult(comp);
+        }
+
         public void update(ConsumableEntity consumable)
         {
 
@@ -397,9 +395,9 @@ namespace Pirat.Services
             _context.SaveChanges();
         }
 
-        public void update(Personal personal)
+        public void update(PersonalEntity personalEntity)
         {
-            _context.Add(personal);
+            _context.Add(personalEntity);
             _context.SaveChanges();
         }
 
@@ -409,9 +407,9 @@ namespace Pirat.Services
             _context.SaveChanges();
         }
 
-        private void update(Link link)
+        private void update(LinkEntity linkEntity)
         {
-            _context.Add(link);
+            _context.Add(linkEntity);
             _context.SaveChanges();
         }
 
@@ -437,11 +435,12 @@ namespace Pirat.Services
                 update(providerEntity);
             }
 
-            int key = retrieveKeyFromProvider(provider);
+            //TODO retrieving key from DB based on attributes is not good
+            int key = retrieveKeyFromProvider(providerEntity);
 
             List<int> consumable_ids = new List<int>();
             List<int> device_ids = new List<int>();
-            List<int> manpower_ids = new List<int>();
+            List<int> personal_ids = new List<int>();
 
             if(!(offer.consumables is null))
             {
@@ -461,11 +460,12 @@ namespace Pirat.Services
             }
             if(!(offer.personals is null))
             {
-                foreach (var m in offer.personals)
+                foreach (var p in offer.personals)
                 {
-                    m.provider_id = key;
-                    update(m);
-                    manpower_ids.Add(m.id);
+                    var personalEntity = PersonalEntity.of(p);
+                    personalEntity.provider_id = key;
+                    update(personalEntity);
+                    personal_ids.Add(personalEntity.id);
                 }
             }
             if(!(offer.devices is null))
@@ -485,12 +485,12 @@ namespace Pirat.Services
                 }
             }
 
-            var link = new Link { token = createLink(), provider_id = key, consumable_ids = consumable_ids.ToArray(), device_ids = device_ids.ToArray(), manpower_ids = manpower_ids.ToArray() };
+            var link = new LinkEntity { token = createLink(), provider_id = key, consumable_ids = consumable_ids.ToArray(), device_ids = device_ids.ToArray(), personal_ids = personal_ids.ToArray() };
             update(link);
             return Task.FromResult(link.token);
         }
 
-        private int retrieveKeyFromProvider(Provider provider)
+        private int retrieveKeyFromProvider(ProviderEntity provider)
         {
             var key = from p in _context.provider
                       where p.name.Equals(provider.name)
@@ -554,7 +554,7 @@ namespace Pirat.Services
 
                 offer.devices.Add(Device.of(e).build(queryAddress(e.address_id)));
             }
-            foreach(int k in linkResult.manpower_ids)
+            foreach(int k in linkResult.personal_ids)
             {
                 offer.personals.Add(_context.personal.Find(k));
             }
@@ -563,24 +563,24 @@ namespace Pirat.Services
 
         public Task<string> delete(string link)
         {
-            Link l = retrieveLink(link);
+            LinkEntity l = retrieveLink(link);
             _context.link.Remove(l);
             _context.SaveChanges();
             return Task.FromResult("Offer deleted");
         }
 
-        private Link retrieveLink(string link)
+        private LinkEntity retrieveLink(string link)
         {
             var query = from l in _context.link
                         where l.token.Equals(link)
                         select l;
 
-            List<Link> links = query.Select(l => new Link
+            List<LinkEntity> links = query.Select(l => new LinkEntity
             {
                 token = l.token,
                 consumable_ids = l.consumable_ids,
                 device_ids = l.device_ids,
-                manpower_ids = l.manpower_ids,
+                personal_ids = l.personal_ids,
                 provider_id = l.provider_id
             }).ToList();
 

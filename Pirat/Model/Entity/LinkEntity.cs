@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Pirat.Model
 {
-    public class Link
+    public class LinkEntity
     {
         [Key]
         public string token { get; set; }
@@ -17,6 +17,6 @@ namespace Pirat.Model
 
         public int[] device_ids { get; set; }
 
-        public int[] manpower_ids { get; set; }
+        public int[] personal_ids { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Pirat.Model.Entity;
 
 namespace Pirat.Model
 {
@@ -77,25 +78,5 @@ namespace Pirat.Model
 
     }
 
-    public class ProviderEntity : ProviderBase
-    {
-        [System.Text.Json.Serialization.JsonIgnore]
-        [JsonIgnore]
-        public int id { get; set; }
-
-        [System.Text.Json.Serialization.JsonIgnore]
-        [JsonIgnore]
-        public int address_id { get; set; }
-
-        public static ProviderEntity of(Provider p)
-        {
-            return new ProviderEntity()
-            {
-                name = p.name,
-                organisation = p.organisation,
-                phone = p.phone,
-                mail = p.mail
-            };
-        }
-    }
+    
 }
