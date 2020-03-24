@@ -45,33 +45,23 @@ namespace Pirat.Extensions
             var method = context.Request.Method;
             if (blackList.Contains(path) && method.ToUpper().Equals(WebRequestMethods.Http.Post))
             {
-                context.Request.EnableBuffering();
-                var stream = context.Request.Body;
 
-                using (var reader = new StreamReader(stream))
+                var headerValue = context.Request.Headers["ReCaptcha"].ToString();
+                if (string.IsNullOrEmpty(headerValue))
                 {
-                    var body = await reader.ReadToEndAsync();
-                    if (stream.CanSeek)
-                        stream.Seek(0, SeekOrigin.Begin);
-
-                    try
-                    {
-                        var recaptcha = JsonConvert.DeserializeObject<ReCaptchaResponse>(body);
-                        if (await _captchaService.ValidateResponse(recaptcha.recaptchaResponse))
-                        {
-                            await _next.Invoke(context);
-                        }
-                        else
-                        {
-                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                            await context.Response.WriteAsync("Wron ReCaptcha");
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                        await context.Response.WriteAsync("Missing ReCaptcha");
-                    }
+                    context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                    await context.Response.WriteAsync("Missing ReCaptcha");
+                    return;
+                }
+                if (await _captchaService.ValidateResponse(headerValue))
+                {
+                    await _next.Invoke(context);
+                }
+                else
+                {
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    await context.Response.WriteAsync("Wrong ReCaptcha");
+                    return;
                 }
             }
 

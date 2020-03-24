@@ -18,9 +18,4 @@ namespace Pirat.Model
         public string hostname { get; set; }
     }
 
-    public class ReCaptchaResponse
-    {
-        [JsonProperty]
-        public string recaptchaResponse { get; set; }
-    }
 }
