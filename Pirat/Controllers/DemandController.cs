@@ -26,11 +26,19 @@ namespace Pirat.Controllers
 
         private readonly IMailService _mailService;
 
-        public DemandController(ILogger<DemandController> logger, IDemandService demandService, IMailService mailService)
+        private readonly IReCaptchaService _reCaptchaService;
+
+        public DemandController(
+            ILogger<DemandController> logger,
+            IDemandService demandService,
+            IMailService mailService,
+            IReCaptchaService reCaptchaService
+            )
         {
             _logger = logger;
             _demandService = demandService;
             _mailService = mailService;
+            _reCaptchaService = reCaptchaService;
         }
 
         //***********GET REQUESTS
