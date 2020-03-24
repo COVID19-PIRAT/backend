@@ -1,3 +1,5 @@
+![.NET Core](https://github.com/COVID19-PIRAT/backend/workflows/.NET%20Core/badge.svg)
+
 # Backend service
 
 # Requirements
