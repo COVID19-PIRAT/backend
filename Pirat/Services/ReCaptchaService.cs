@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Pirat.Model;
 
 namespace Pirat.Services
 {
@@ -10,9 +12,9 @@ namespace Pirat.Services
     {
         private readonly string _secret;
 
-        public ReCaptchaService()
+        public ReCaptchaService(string secret)
         {
-            this._secret = Environment.GetEnvironmentVariable("PIRAT_GOOGLE_RECAPTCHA_SECRET");
+            _secret = secret;
         }
 
         public async Task<bool> ValidateResponse(string response)
@@ -28,15 +30,8 @@ namespace Pirat.Services
             HttpResponseMessage res = await client.SendAsync(req);
             string content = await res.Content.ReadAsStringAsync();
             Console.WriteLine(content);
-            // TODO Max, kannst du das Parsen machen?
-            // Content should be:
-            // {
-            //     "success": true,
-            //     "challenge_ts": "2020-03-24T18:48:51Z",
-            //     "hostname": "localhost"
-            // }
-            // The value of success should be returned.
-            return true;
+
+            return JsonConvert.DeserializeObject<ReCaptchaVerification>(content).success;
         }
     }
 }

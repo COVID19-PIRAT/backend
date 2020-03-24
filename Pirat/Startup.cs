@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using Pirat.DatabaseContext;
+using Pirat.Extensions;
 using Pirat.Helper;
 using Pirat.Services;
 
@@ -39,7 +40,8 @@ namespace Pirat
             //Services
             services.AddTransient<IDemandService, DemandService>();
             services.AddTransient<IMailService, MailService>();
-            services.AddTransient<IReCaptchaService, ReCaptchaService>();
+            services.AddTransient<IReCaptchaService, ReCaptchaService>(s => 
+                new ReCaptchaService(Environment.GetEnvironmentVariable("PIRAT_GOOGLE_RECAPTCHA_SECRET")));
 
             //Cors
             services.AddCors(options =>
@@ -92,6 +94,12 @@ namespace Pirat
                 logger.LogWarning("No environment for host given.");
             }
 
+            app.UseRouting();
+
+            app.UseReCapture();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -100,12 +108,9 @@ namespace Pirat
 
             app.UseCors("AllowAll");
 
-            app.UseRouting();
 
             app.UseHealthChecks("/health");
 
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
