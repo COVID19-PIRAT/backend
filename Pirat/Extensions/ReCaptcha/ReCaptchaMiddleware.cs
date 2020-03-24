@@ -49,7 +49,7 @@ namespace Pirat.Extensions
                 var headerValue = context.Request.Headers[HeaderKey].ToString();
                 if (string.IsNullOrEmpty(headerValue))
                 {
-                    context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     await context.Response.WriteAsync("Missing ReCaptcha");
                     return;
                 }
