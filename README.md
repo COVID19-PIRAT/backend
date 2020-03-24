@@ -6,6 +6,10 @@
 
 See https://dotnet.microsoft.com/download/dotnet-core/3.1 to get the SDK
 
+# Developing
+
+Highly recommanded: Visual Studio 2019 with ReSharper ( hopefully you are a student for the licence ;) )
+
 # Running the project
 
 Set the following environment variables:
