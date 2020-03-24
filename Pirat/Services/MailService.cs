@@ -24,6 +24,7 @@ namespace Pirat.Services
 
         public async void sendConfirmationMail(string token, string receiverMailAddress, string receiverMailUserName)
         {
+            
             await Task.Run(() =>
             {
                 var mailSenderAddress = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_ADDRESS");

@@ -26,11 +26,19 @@ namespace Pirat.Controllers
 
         private readonly IMailService _mailService;
 
-        public DemandController(ILogger<DemandController> logger, IDemandService demandService, IMailService mailService)
+        private readonly IReCaptchaService _reCaptchaService;
+
+        public DemandController(
+            ILogger<DemandController> logger,
+            IDemandService demandService,
+            IMailService mailService,
+            IReCaptchaService reCaptchaService
+            )
         {
             _logger = logger;
             _demandService = demandService;
             _mailService = mailService;
+            _reCaptchaService = reCaptchaService;
         }
 
         //***********GET REQUESTS
@@ -120,8 +128,17 @@ namespace Pirat.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> Post([FromBody] Offer offer)
+        public async Task<IActionResult> Post([FromBody] ReCaptchaWrapper<Offer> body)
         {
+            string reCaptchaResponse = body.recaptchaResponse;
+            bool isValidRequest = await this._reCaptchaService.ValidateResponse(reCaptchaResponse);
+            if (!isValidRequest)
+            {
+                // TODO Maaaaaaaaaaxxxxx, Hilfe? Sinnvolle Antwort / Status code und sooo...
+                throw new Exception("No bots!");
+            }
+
+            Offer offer = body.inner;
             try
             {
                 if (!_mailService.verifyMail(offer.provider.mail)){

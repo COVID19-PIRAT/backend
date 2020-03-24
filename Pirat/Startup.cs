@@ -39,6 +39,7 @@ namespace Pirat
             //Services
             services.AddTransient<IDemandService, DemandService>();
             services.AddTransient<IMailService, MailService>();
+            services.AddTransient<IReCaptchaService, ReCaptchaService>();
 
             //Cors
             services.AddCors(options =>
