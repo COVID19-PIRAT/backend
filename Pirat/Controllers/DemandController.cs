@@ -48,9 +48,9 @@ namespace Pirat.Controllers
             {
                 consumable.address = address;
                 return Ok(await _demandService.QueryOffers(consumable));
-            } catch (ArgumentException)
+            } catch (ArgumentException e)
             {
-                return BadRequest("Some obligatory value is missing");
+                return BadRequest(e.Message);
             }
         }
 
@@ -68,9 +68,9 @@ namespace Pirat.Controllers
             {
                 device.address = address;
                 return Ok(await _demandService.QueryOffers(device));
-            } catch (ArgumentException)
+            } catch (ArgumentException e)
             {
-                return BadRequest("Some obligatory value is missing");
+                return BadRequest(e.Message);
             }
         }
 
@@ -85,9 +85,9 @@ namespace Pirat.Controllers
             try
             {
                 return Ok(await _demandService.QueryOffers(manpower));
-            } catch (ArgumentException)
+            } catch (ArgumentException e)
             {
-                return BadRequest("Some obligatory value is missing");
+                return BadRequest(e.Message);
             }
            
         }

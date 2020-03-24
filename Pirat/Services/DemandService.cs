@@ -27,21 +27,21 @@ namespace Pirat.Services
 
         public Task<List<OfferItem<Consumable>>> QueryOffers(Consumable con)
         {
+            if (string.IsNullOrEmpty(con.category) || string.IsNullOrEmpty(con.address.postalcode))
+            {
+                throw new ArgumentException("Missing in required attributes");
+            }
+
             var consumable = ConsumableEntity.of(con);
             var maxDistance = con.kilometer;
             var consumableAddress = con.address;
-
-            if (string.IsNullOrEmpty(consumable.category))
-            {
-                throw new ArgumentException();
-            }
+            var location = AddressEntity.of(consumableAddress);
 
             var query = from p in _context.provider
                 join c in _context.consumable on p.id equals c.provider_id
                 join ap in _context.address on p.address_id equals ap.id
                 join ac in _context.address on c.address_id equals ac.id
                 where consumable.category.Equals(c.category)
-                //&& consumable.address.postalcode.Equals(c.address.postalcode) //TODO
                 select new { p, c, ap, ac };
 
             if (!string.IsNullOrEmpty(consumable.name))
@@ -63,20 +63,16 @@ namespace Pirat.Services
             {
 
                 var item = Consumable.of(x.c);
+
                 if (maxDistance > 0)
                 {
-                    var location = AddressEntity.of(consumableAddress);
-                    AddressMaker.SetCoordinates(location);
-
                     var yLatitude = x.ac.latitude;
                     var yLongitude = x.ac.longitude;
-
                     var distance = computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
                     if (distance > maxDistance)
                     {
                         continue;
                     }
-
                     item.kilometer = (int) Math.Round(distance);
                 }
 
@@ -100,21 +96,22 @@ namespace Pirat.Services
 
         public Task<List<OfferItem<Device>>> QueryOffers(Device dev)
         {
+
+            if (string.IsNullOrEmpty(dev.category) || string.IsNullOrEmpty(dev.address.postalcode))
+            {
+                throw new ArgumentException("Missing in required attributes");
+            }
+
             var device = DeviceEntity.of(dev);
             var maxDistance = dev.kilometer;
             var deviceAddress = dev.address;
-
-            if (string.IsNullOrEmpty(device.category)) // || string.IsNullOrEmpty(consumable.address.postalcode)
-            {
-                throw new ArgumentException();
-            }
+            var location = AddressEntity.of(deviceAddress);
 
             var query = from p in _context.provider
                 join d in _context.device on p.id equals d.provider_id
                 join ap in _context.address on p.address_id equals ap.id
                 join ac in _context.address on d.address_id equals ac.id
                 where device.category.Equals(d.category)
-                //&& consumable.address.postalcode.Equals(c.address.postalcode) //TODO
                 select new { p, d, ap, ac };
 
             if (!string.IsNullOrEmpty(device.name))
@@ -135,20 +132,16 @@ namespace Pirat.Services
             foreach (var x in results)
             {
                 var item = Device.of(x.d);
+
                 if (maxDistance > 0)
                 {
-                    var location = AddressEntity.of(deviceAddress);
-                    AddressMaker.SetCoordinates(location);
-
                     var yLatitude = x.ac.latitude;
                     var yLongitude = x.ac.longitude;
-
                     var distance = computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
                     if (distance > maxDistance)
                     {
                         continue;
                     }
-
                     item.kilometer = (int)Math.Round(distance);
                 }
 
