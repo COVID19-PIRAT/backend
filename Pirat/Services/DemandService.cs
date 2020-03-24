@@ -37,6 +37,7 @@ namespace Pirat.Services
             var maxDistance = con.kilometer;
             var consumableAddress = con.address;
             var location = AddressEntity.of(consumableAddress);
+            AddressMaker.SetCoordinates(location);
 
             var query = from p in _context.provider
                 join c in _context.consumable on p.id equals c.provider_id
@@ -107,6 +108,7 @@ namespace Pirat.Services
             var maxDistance = dev.kilometer;
             var deviceAddress = dev.address;
             var location = AddressEntity.of(deviceAddress);
+            AddressMaker.SetCoordinates(location);
 
             var query = from p in _context.provider
                 join d in _context.device on p.id equals d.provider_id
