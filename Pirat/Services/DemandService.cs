@@ -593,7 +593,8 @@ namespace Pirat.Services
             }
             foreach(int k in linkResult.personal_ids)
             {
-                offer.personals.Add(_context.personal.Find(k));
+                PersonalEntity p = _context.personal.Find(k);
+                offer.personals.Add(new Personal().build(p).build(queryAddress(p.address_id)));
             }
             return Task.FromResult(offer);
         }

@@ -7,12 +7,16 @@ using Newtonsoft.Json;
 
 namespace Pirat.Model.Entity
 {
-    public class PersonalEntity : Personal
+    public class PersonalEntity : PersonalBase
     {
 
         public int provider_id { get; set; }
 
         public int address_id { get; set; }
+
+        public string qualification { get; set; }
+
+        public string area { get; set; }
 
         public PersonalEntity build(Personal p)
         {
