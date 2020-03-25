@@ -39,7 +39,7 @@ namespace Pirat.Extensions
             _captchaService = service;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task Invoke(HttpContext context)
         {
             var path = context.Request.Path.ToString();
             var method = context.Request.Method;
@@ -55,7 +55,7 @@ namespace Pirat.Extensions
                 }
                 if (await _captchaService.ValidateResponse(headerValue))
                 {
-                    await _next.Invoke(context);
+                    await _next(context);
                 }
                 else
                 {
@@ -65,7 +65,7 @@ namespace Pirat.Extensions
                 }
             }
 
-            await _next.Invoke(context);
+            await _next(context);
         }
 
     }

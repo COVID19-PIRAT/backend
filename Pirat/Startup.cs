@@ -96,6 +96,9 @@ namespace Pirat
 
             app.UseRouting();
 
+            app.UseHealthChecks("/health");
+
+
             app.UseReCapture();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -107,9 +110,6 @@ namespace Pirat
             });
 
             app.UseCors("AllowAll");
-
-
-            app.UseHealthChecks("/health");
 
 
             app.UseEndpoints(endpoints =>
