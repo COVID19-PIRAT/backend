@@ -14,19 +14,16 @@ namespace Pirat.Model
         [FromQuery(Name = "unit")]
         public string unit { get; set; }
 
-        public static Consumable of(ConsumableEntity c)
+        public Consumable build(ConsumableEntity c)
         {
-            return new Consumable()
-            {
-                id = c.id,
-                category = c.category,
-                name = c.name,
-                manufacturer = c.manufacturer,
-                ordernumber = c.ordernumber,
-                amount = c.amount,
-                unit = c.unit,
-                annotation = c.annotation
-            };
+            category = c.category;
+            name = c.name;
+            manufacturer = c.manufacturer;
+            ordernumber = c.ordernumber;
+            amount = c.amount;
+            unit = c.unit;
+            annotation = c.annotation;
+            return this;
         }
 
         public Consumable build(Address a)

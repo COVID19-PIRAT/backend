@@ -15,21 +15,19 @@ namespace Pirat.Model
 
 		public bool hascoordinates { get; set; } = false;
 
-		public static AddressEntity of(Address a)
+		public AddressEntity build(Address a)
 		{
-			return new AddressEntity()
-			{
-				street = a.street,
-				streetnumber = a.streetnumber,
-				postalcode = a.postalcode,
-				city = a.city,
-				country = a.country,
-				latitude = a.latitude,
-				longitude = a.longitude
-			};
-		}
+			street = a.street;
+			streetnumber = a.streetnumber;
+			postalcode = a.postalcode;
+			city = a.city;
+			country = a.country;
+			latitude = a.latitude;
+			longitude = a.longitude;
+            return this;
+        }
 
-        public static AddressEntity of(string postalcode)
+        public AddressEntity build(string postalcode)
         {
 			var address = new AddressEntity();
             address.postalcode = postalcode;

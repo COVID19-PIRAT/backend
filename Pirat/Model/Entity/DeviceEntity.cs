@@ -7,18 +7,15 @@ namespace Pirat.Model.Entity
 {
     public class DeviceEntity : ItemEntity
     {
-        public static DeviceEntity of(Device d)
+        public DeviceEntity build(Device d)
         {
-            return new DeviceEntity()
-            {
-                id = d.id,
-                category = d.category,
-                name = d.name,
-                manufacturer = d.manufacturer,
-                ordernumber = d.ordernumber,
-                amount = d.amount,
-                annotation = d.annotation
-            };
+            category = d.category;
+            name = d.name;
+            manufacturer = d.manufacturer;
+            ordernumber = d.ordernumber;
+            amount = d.amount;
+            annotation = d.annotation;
+            return this;
         }
 
         public DeviceEntity build(AddressEntity a)

@@ -11,19 +11,16 @@ namespace Pirat.Model.Entity
         public string unit { get; set; }
 
 
-        public static ConsumableEntity of(Consumable c)
+        public ConsumableEntity build(Consumable c)
         {
-            return new ConsumableEntity()
-            {
-                id = c.id,
-                category = c.category,
-                name = c.name,
-                manufacturer = c.manufacturer,
-                ordernumber = c.ordernumber,
-                amount = c.amount,
-                unit = c.unit,
-                annotation = c.annotation
-            };
+            category = c.category;
+            name = c.name;
+            manufacturer = c.manufacturer;
+            ordernumber = c.ordernumber;
+            amount = c.amount;
+            unit = c.unit;
+            annotation = c.annotation;
+            return this;
         }
 
         public ConsumableEntity build(AddressEntity a)

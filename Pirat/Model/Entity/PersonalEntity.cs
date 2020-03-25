@@ -12,18 +12,24 @@ namespace Pirat.Model.Entity
 
         public int provider_id { get; set; }
 
-        public static PersonalEntity of(Personal p)
+        public int address_id { get; set; }
+
+        public PersonalEntity build(Personal p)
         {
-            return new PersonalEntity()
-            {
-                id = p.id,
-                institution = p.institution,
-                researchgroup = p.researchgroup,
-                experience_rt_pcr = p.experience_rt_pcr,
-                annotation = p.annotation,
-                qualification = p.qualification,
-                area = p.area
-            };
+            institution = p.institution;
+            researchgroup = p.researchgroup;
+            experience_rt_pcr = p.experience_rt_pcr;
+            annotation = p.annotation;
+            qualification = p.qualification;
+            area = p.area;
+            return this;
+        }
+
+        public PersonalEntity build(AddressEntity a)
+        {
+
+            address_id = a.id;
+            return this;
         }
     }
 }
