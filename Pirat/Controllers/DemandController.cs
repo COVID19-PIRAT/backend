@@ -88,10 +88,11 @@ namespace Pirat.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> Get([FromQuery] Manpower manpower)
+        public async Task<IActionResult> Get([FromQuery] Manpower manpower, [FromQuery] Address address)
         {
             try
             {
+                manpower.address = address;
                 return Ok(await _demandService.QueryOffers(manpower));
             } catch (ArgumentException e)
             {
