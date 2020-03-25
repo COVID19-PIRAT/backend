@@ -8,7 +8,7 @@ using Pirat.Model.Entity;
 
 namespace Pirat.Model
 {
-    public class Consumable : Resource
+    public class Consumable : Item
     {
         [JsonProperty]
         [FromQuery(Name = "unit")]
@@ -18,6 +18,7 @@ namespace Pirat.Model
         {
             return new Consumable()
             {
+                id = c.id,
                 category = c.category,
                 name = c.name,
                 manufacturer = c.manufacturer,

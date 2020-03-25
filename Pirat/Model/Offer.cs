@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -33,12 +34,13 @@ namespace Pirat.Model
     }
 
 
-    public class OfferItem<T>
+    public class OfferResource<T>
     {
         [JsonProperty]
         public Provider provider { get; set; }
 
         [JsonProperty]
-        public T item { get; set; }
+        [Required]
+        public T resource { get; set; }
     }
 }

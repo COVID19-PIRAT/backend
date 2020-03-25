@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Pirat.Model.Entity
 {
-    public class ConsumableEntity : ResourceEntity
+    public class ConsumableEntity : ItemEntity
     {
 
         public string unit { get; set; }
@@ -15,6 +15,7 @@ namespace Pirat.Model.Entity
         {
             return new ConsumableEntity()
             {
+                id = c.id,
                 category = c.category,
                 name = c.name,
                 manufacturer = c.manufacturer,
