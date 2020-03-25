@@ -56,6 +56,7 @@ namespace Pirat.Extensions
                 if (await _captchaService.ValidateResponse(headerValue))
                 {
                     await _next(context);
+                    return;
                 }
                 else
                 {

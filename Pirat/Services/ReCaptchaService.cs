@@ -29,7 +29,6 @@ namespace Pirat.Services
             HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Post, url) { Content = new FormUrlEncodedContent(body) };
             HttpResponseMessage res = await client.SendAsync(req);
             string content = await res.Content.ReadAsStringAsync();
-            Console.WriteLine(content);
 
             return JsonConvert.DeserializeObject<ReCaptchaVerification>(content).success;
         }
