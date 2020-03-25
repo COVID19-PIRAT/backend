@@ -31,7 +31,7 @@ namespace Pirat.Extensions
 
         private const string HeaderKey = "recaptcha";
 
-        private readonly List<string> blackList = new List<string>(){ "/resources"};
+        private readonly List<string> blackList = new List<string>(){ "/resources", "/telephone-callback" };
 
         public ReCaptchaMiddleware(RequestDelegate next, IReCaptchaService service)
         {
