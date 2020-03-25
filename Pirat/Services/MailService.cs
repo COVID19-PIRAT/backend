@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Pirat.Model;
 
 namespace Pirat.Services
 {
@@ -73,6 +74,51 @@ namespace Pirat.Services
                 client.Connect("imap.gmail.com", 465, true);
                 client.Authenticate(mailSenderUserName, mailSenderPassword);
 
+                client.Send(message);
+                client.Disconnect(true);
+                client.Dispose();
+            });
+        }
+
+        public async void sendTelephoneCallbackMail(TelephoneCallbackRequest telephoneCallbackRequest)
+        {
+            await Task.Run(() =>
+            {
+                var mailSenderAddress = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_ADDRESS");
+                var mailSenderUserName = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_USERNAME");
+                var mailSenderPassword = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_PASSWORD");
+                var mailInternalReceiverMail = Environment.GetEnvironmentVariable("PIRAT_INTERNAL_RECEIVER_MAIL");
+
+                // Substring() to prevent too long subjects.
+                string subject = $"[Rückrufanfrage] " +
+                                 $"[Thema: {telephoneCallbackRequest.topic.Substring(0, Math.Min(telephoneCallbackRequest.topic.Length, 20))}] " +
+                                 $"von {telephoneCallbackRequest.name.Substring(0, Math.Min(telephoneCallbackRequest.name.Length, 30))}"; 
+                string content = $"Eine Rückrufanfrage:\n\nVon: {telephoneCallbackRequest.name}\n" +
+                                 $"Datum: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}\n" +
+                                 $"Thema: {telephoneCallbackRequest.topic}\n" +
+                                 $"Telefonnummer: {telephoneCallbackRequest.phone}\n" +
+                                 $"Email: {telephoneCallbackRequest.email}\n" +
+                                 $"Kommentar: {telephoneCallbackRequest.notes}\n\n\n" +
+                                 $"Liebe Grüße\nDein Backend-Server";
+
+                MimeMessage message = new MimeMessage();
+
+                MailboxAddress from = new MailboxAddress(mailSenderAddress);
+                message.From.Add(from);
+
+                MailboxAddress to = new MailboxAddress(mailInternalReceiverMail);
+                message.To.Add(to);
+                
+                message.Subject = subject;
+                
+                BodyBuilder arnold = new BodyBuilder();
+                arnold.TextBody = content;
+                message.Body = arnold.ToMessageBody();
+                
+                SmtpClient client = new SmtpClient();
+                client.Connect("imap.gmail.com", 465, true);
+                client.Authenticate(mailSenderUserName, mailSenderPassword);
+                
                 client.Send(message);
                 client.Disconnect(true);
                 client.Dispose();
