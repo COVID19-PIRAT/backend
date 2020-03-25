@@ -20,7 +20,6 @@ namespace Pirat.Model
         public string organisation { get; set; }
 
         [JsonProperty]
-        [Required]
         public string phone { get; set; }
 
         [JsonProperty]
