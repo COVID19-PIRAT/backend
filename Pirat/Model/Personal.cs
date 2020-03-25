@@ -41,18 +41,25 @@ namespace Pirat.Model
         [FromQuery(Name = "area")]
         public string area { get; set; }
 
-        public static Personal of(PersonalEntity p)
+        public Address address { get; set; }
+
+        public int kilometer { get; set; }
+
+        public Personal build(PersonalEntity p)
         {
-            return new Personal()
-            {
-                id = p.id,
-                institution = p.institution,
-                researchgroup = p.researchgroup,
-                experience_rt_pcr = p.experience_rt_pcr,
-                annotation = p.annotation,
-                qualification = p.qualification,
-                area = p.area
-            };
+            institution = p.institution;
+            researchgroup = p.researchgroup;
+            experience_rt_pcr = p.experience_rt_pcr;
+            annotation = p.annotation;
+            qualification = p.qualification;
+            area = p.area;
+            return this;
+        }
+
+        public Personal build(Address a)
+        {
+            address = a;
+            return this;
         }
     }
 
@@ -68,6 +75,12 @@ namespace Pirat.Model
         [JsonProperty]
         [FromQuery(Name = "area")]
         public List<string> area { get; set; }
+
+        public Address address { get; set; }
+
+        [JsonProperty]
+        [FromQuery(Name = "kilometer")]
+        public int kilometer { get; set; }
 
 
     }

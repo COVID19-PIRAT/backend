@@ -12,16 +12,13 @@ namespace Pirat.Model.Entity
 
         public int address_id { get; set; }
 
-        public static ProviderEntity of(Provider p)
+        public ProviderEntity build(Provider p)
         {
-            return new ProviderEntity()
-            {
-                name = p.name,
-                organisation = p.organisation,
-                phone = p.phone,
-                mail = p.mail,
-                ispublic = p.ispublic
-            };
+            name = p.name;
+            organisation = p.organisation;
+            phone = p.phone;
+            mail = p.mail;
+            return this;
         }
     }
 }

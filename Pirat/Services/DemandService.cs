@@ -33,10 +33,10 @@ namespace Pirat.Services
                 throw new ArgumentException("Missing in required attributes");
             }
 
-            var consumable = ConsumableEntity.of(con);
+            var consumable = new ConsumableEntity().build(con);
             var maxDistance = con.kilometer;
             var consumableAddress = con.address;
-            var location = AddressEntity.of(consumableAddress);
+            var location = new AddressEntity().build(consumableAddress);
             AddressMaker.SetCoordinates(location);
 
             var query = from p in _context.provider
@@ -64,7 +64,7 @@ namespace Pirat.Services
             foreach (var x in results)
             {
 
-                var resource = Consumable.of(x.c);
+                var resource = new Consumable().build(x.c);
 
                 if (maxDistance > 0)
                 {
@@ -78,9 +78,9 @@ namespace Pirat.Services
                     resource.kilometer = (int) Math.Round(distance);
                 }
 
-                var provider = Provider.of(x.p);
-                var providerAddress = Address.of(x.ap);
-                var resourceAddress = Address.of(x.ac);
+                var provider = new Provider().build(x.p);
+                var providerAddress = new Address().build(x.ap);
+                var resourceAddress = new Address().build(x.ac);
 
                 provider.address = providerAddress;
                 resource.address = resourceAddress;
@@ -107,10 +107,10 @@ namespace Pirat.Services
                 throw new ArgumentException("Missing in required attributes");
             }
 
-            var device = DeviceEntity.of(dev);
+            var device = new DeviceEntity().build(dev);
             var maxDistance = dev.kilometer;
             var deviceAddress = dev.address;
-            var location = AddressEntity.of(deviceAddress);
+            var location = new AddressEntity().build(deviceAddress);
             AddressMaker.SetCoordinates(location);
 
             var query = from p in _context.provider
@@ -137,7 +137,7 @@ namespace Pirat.Services
             var results = query.Select(x => x).ToList();
             foreach (var x in results)
             {
-                var resource = Device.of(x.d);
+                var resource = new Device().build(x.d);
 
                 if (maxDistance > 0)
                 {
@@ -151,9 +151,9 @@ namespace Pirat.Services
                     resource.kilometer = (int)Math.Round(distance);
                 }
 
-                var provider = Provider.of(x.p);
-                var providerAddress = Address.of(x.ap);
-                var resourceAddress = Address.of(x.ac);
+                var provider = new Provider().build(x.p);
+                var providerAddress = new Address().build(x.ap);
+                var resourceAddress = new Address().build(x.ac);
 
                 provider.address = providerAddress;
                 resource.address = resourceAddress;
@@ -173,10 +173,21 @@ namespace Pirat.Services
 
         public Task<List<OfferResource<Personal>>> QueryOffers(Manpower manpower)
         {
+            if (string.IsNullOrEmpty(manpower.address.postalcode) || string.IsNullOrEmpty(manpower.address.country))
+            {
+                throw new ArgumentException("Missing in required attributes");
+            }
+
+            var maxDistance = manpower.kilometer;
+            var manpowerAddress = manpower.address;
+            var location = new AddressEntity().build(manpowerAddress);
+            AddressMaker.SetCoordinates(location);
+
             var query = from provider in _context.provider
                 join personal in _context.personal on provider.id equals personal.provider_id
                 join ap in _context.address on provider.address_id equals ap.id
-                select new { provider, personal, ap };
+                join ac in _context.address on personal.address_id equals ac.id
+                        select new { provider, personal, ap, ac };
 
             if (manpower.qualification.Any())
             {
@@ -204,18 +215,27 @@ namespace Pirat.Services
             var results = query.Select(x => x).ToList();
             foreach (var x in results)
             {
-                var provider = Provider.of(x.provider);
-                var resource = new Personal()
+                var resource = new Personal().build(x.personal);
+
+                if (maxDistance > 0)
                 {
-                    annotation = x.personal.annotation,
-                    area = x.personal.area,
-                    experience_rt_pcr = x.personal.experience_rt_pcr,
-                    institution = x.personal.institution,
-                    qualification = x.personal.qualification,
-                    researchgroup = x.personal.researchgroup
-                };
-                var providerAddress = Address.of(x.ap);
+                    var yLatitude = x.ac.latitude;
+                    var yLongitude = x.ac.longitude;
+                    var distance = computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
+                    if (distance > maxDistance)
+                    {
+                        continue;
+                    }
+                    resource.kilometer = (int)Math.Round(distance);
+                }
+
+                var provider = new Provider().build(x.provider);
+                var providerAddress = new Address().build(x.ap);
+                var resourceAddress = new Address().build(x.ac);
+
                 provider.address = providerAddress;
+                resource.address = resourceAddress;
+
                 var o = new OfferResource<Personal>()
                 {
                     resource = resource
@@ -365,7 +385,7 @@ namespace Pirat.Services
                 List<Consumable> consumables = new List<Consumable>();
                 foreach (ConsumableEntity c in consumableEntities)
                 {
-                    consumables.Add(Consumable.of(c).build(queryAddress(c.address_id)));
+                    consumables.Add(new Consumable().build(c).build(queryAddress(c.address_id)));
                 }
 
                 var que2 = from d in _context.device where d.provider_id == provider.id select d;
@@ -373,7 +393,7 @@ namespace Pirat.Services
                 List<Device> devices = new List<Device>();
                 foreach (DeviceEntity d in deviceEntities)
                 {
-                    devices.Add(Device.of(d).build(queryAddress(d.address_id)));
+                    devices.Add(new Device().build(d).build(queryAddress(d.address_id)));
                 }
 
                 var que3 = from p in _context.personal where p.provider_id == provider.id select p;
@@ -387,7 +407,7 @@ namespace Pirat.Services
                     annotation = p.annotation
                 }).ToList();
 
-                comp.offers.Add(new Offer() { personals = personals, devices = devices, consumables = consumables, provider = Provider.of(provider) });
+                comp.offers.Add(new Offer() { personals = personals, devices = devices, consumables = consumables, provider = new Provider().build(provider) });
             }
 
             return Task.FromResult(comp);
@@ -434,10 +454,10 @@ namespace Pirat.Services
         {
             var provider = offer.provider;
 
-            var providerEntity = ProviderEntity.of(provider);
+            var providerEntity = new ProviderEntity().build(provider);
             if (!exists(providerEntity))
             {
-                var addressEntity = AddressEntity.of(provider.address);
+                var addressEntity = new AddressEntity().build(provider.address);
 
                 AddressMaker.SetCoordinates(addressEntity);
                 update(addressEntity);
@@ -457,8 +477,8 @@ namespace Pirat.Services
             {
                 foreach (var c in offer.consumables)
                 {
-                    var consumableEntity = ConsumableEntity.of(c);
-                    var addressEntity = AddressEntity.of(c.address);
+                    var consumableEntity = new ConsumableEntity().build(c);
+                    var addressEntity = new AddressEntity().build(c.address);
 
                     AddressMaker.SetCoordinates(addressEntity);
                     update(addressEntity);
@@ -473,8 +493,14 @@ namespace Pirat.Services
             {
                 foreach (var p in offer.personals)
                 {
-                    var personalEntity = PersonalEntity.of(p);
+                    var personalEntity = new PersonalEntity().build(p);
+                    var addressEntity = new AddressEntity().build(p.address);
+
+                    AddressMaker.SetCoordinates(addressEntity);
+                    update(addressEntity);
+
                     personalEntity.provider_id = key;
+                    personalEntity.address_id = addressEntity.id;
                     update(personalEntity);
                     personal_ids.Add(personalEntity.id);
                 }
@@ -483,8 +509,8 @@ namespace Pirat.Services
             {
                 foreach (var d in offer.devices)
                 {
-                    var deviceEntity = DeviceEntity.of(d);
-                    var addressEntity = AddressEntity.of(d.address);
+                    var deviceEntity = new DeviceEntity().build(d);
+                    var addressEntity = new AddressEntity().build(d.address);
 
                     AddressMaker.SetCoordinates(addressEntity);
                     update(addressEntity);
@@ -550,24 +576,25 @@ namespace Pirat.Services
             var linkResult = retrieveLink(link);
 
             var providerEntity = _context.provider.Find(linkResult.provider_id);
-            var provider = Provider.of(providerEntity).build(queryAddress(providerEntity.address_id));
+            var provider = new Provider().build(providerEntity).build(queryAddress(providerEntity.address_id));
 
             var offer = new Offer() { provider = provider, consumables = new List<Consumable>(), devices = new List<Device>(), personals = new List<Personal>()};
             foreach(int k in linkResult.consumable_ids)
             {
                 ConsumableEntity e = _context.consumable.Find(k);
 
-                offer.consumables.Add(Consumable.of(e).build(queryAddress(e.address_id)));
+                offer.consumables.Add(new Consumable().build(e).build(queryAddress(e.address_id)));
             }
             foreach(int k in linkResult.device_ids)
             {
                 DeviceEntity e = _context.device.Find(k);
 
-                offer.devices.Add(Device.of(e).build(queryAddress(e.address_id)));
+                offer.devices.Add(new Device().build(e).build(queryAddress(e.address_id)));
             }
             foreach(int k in linkResult.personal_ids)
             {
-                offer.personals.Add(_context.personal.Find(k));
+                PersonalEntity p = _context.personal.Find(k);
+                offer.personals.Add(new Personal().build(p).build(queryAddress(p.address_id)));
             }
             return Task.FromResult(offer);
         }
@@ -618,7 +645,7 @@ namespace Pirat.Services
         private Address queryAddress(int addressKey)
         {
             AddressEntity a = _context.address.Find(addressKey);
-            return Address.of(a);
+            return new Address().build(a);
         }
 
         private double computeDistance(decimal latitude1, decimal longitude1, decimal latitude2, decimal longitude2)

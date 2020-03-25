@@ -42,16 +42,13 @@ namespace Pirat.Model
         [FromQuery(Name = "kilometer")]
         public int kilometer { get; set; }
 
-        public static Provider of(ProviderEntity p)
+        public Provider build(ProviderEntity p)
         {
-            return new Provider()
-            {
-                name = p.name,
-                organisation = p.organisation,
-                phone = p.phone,
-                mail = p.mail,
-                ispublic = p.ispublic
-            };
+            name = p.name;
+            organisation = p.organisation;
+            phone = p.phone;
+            mail = p.mail;
+            return this;
         }
 
         public Provider build(Address a)

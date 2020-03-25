@@ -59,18 +59,16 @@ namespace Pirat.Model
                    && country.Equals(a.country) && latitude == a.latitude && longitude == a.longitude;
         }
 
-        public static Address of(AddressEntity e)
+        public Address build(AddressEntity e)
         {
-            return new Address()
-            {
-                street = e.street,
-                streetnumber = e.streetnumber,
-                postalcode = e.postalcode,
-                city = e.city,
-                country = e.country,
-                latitude = e.latitude,
-                longitude = e.longitude
-            };
+            street = e.street;
+            streetnumber = e.streetnumber;
+            postalcode = e.postalcode;
+            city = e.city;
+            country = e.country;
+            latitude = e.latitude;
+            longitude = e.longitude;
+            return this;
         }
     }
 }
