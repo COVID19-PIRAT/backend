@@ -10,7 +10,7 @@ using Pirat.Model.Entity;
 namespace Pirat.Model
 {
 
-    public abstract class PersonalBase
+    public abstract class PersonalBase : Resource
     {
 
         [JsonProperty]
@@ -45,6 +45,7 @@ namespace Pirat.Model
         {
             return new Personal()
             {
+                id = p.id,
                 institution = p.institution,
                 researchgroup = p.researchgroup,
                 experience_rt_pcr = p.experience_rt_pcr,

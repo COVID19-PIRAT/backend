@@ -26,7 +26,7 @@ namespace Pirat.Services
             _context = context;
         }
 
-        public Task<List<OfferItem<Consumable>>> QueryOffers(Consumable con)
+        public Task<List<OfferResource<Consumable>>> QueryOffers(Consumable con)
         {
             if (string.IsNullOrEmpty(con.category) || string.IsNullOrEmpty(con.address.postalcode) ||string.IsNullOrEmpty(con.address.country))
             {
@@ -59,12 +59,12 @@ namespace Pirat.Services
                 query = query.Where(collection => consumable.amount <= collection.c.amount);
             }
 
-            List<OfferItem<Consumable>> items = new List<OfferItem<Consumable>>();
+            List<OfferResource<Consumable>> resources = new List<OfferResource<Consumable>>();
             var results = query.Select(x => x).ToList();
             foreach (var x in results)
             {
 
-                var item = Consumable.of(x.c);
+                var resource = Consumable.of(x.c);
 
                 if (maxDistance > 0)
                 {
@@ -75,28 +75,31 @@ namespace Pirat.Services
                     {
                         continue;
                     }
-                    item.kilometer = (int) Math.Round(distance);
+                    resource.kilometer = (int) Math.Round(distance);
                 }
 
                 var provider = Provider.of(x.p);
                 var providerAddress = Address.of(x.ap);
-                var itemAddress = Address.of(x.ac);
+                var resourceAddress = Address.of(x.ac);
 
                 provider.address = providerAddress;
-                item.address = itemAddress;
+                resource.address = resourceAddress;
 
-                var o = new OfferItem<Consumable>()
+                var o = new OfferResource<Consumable>()
                 {
-                    item = item,
-                    provider = provider
+                    resource = resource
                 };
-                items.Add(o);
+                if (provider.ispublic)
+                {
+                    o.provider = provider;
+                }
+                resources.Add(o);
             }
 
-            return Task.FromResult(items);
+            return Task.FromResult(resources);
         }
 
-        public Task<List<OfferItem<Device>>> QueryOffers(Device dev)
+        public Task<List<OfferResource<Device>>> QueryOffers(Device dev)
         {
 
             if (string.IsNullOrEmpty(dev.category) || string.IsNullOrEmpty(dev.address.postalcode) || string.IsNullOrEmpty(dev.address.country))
@@ -130,11 +133,11 @@ namespace Pirat.Services
                 query = query.Where(collection => device.amount <= collection.d.amount);
             }
 
-            List<OfferItem<Device>> items = new List<OfferItem<Device>>();
+            List<OfferResource<Device>> resources = new List<OfferResource<Device>>();
             var results = query.Select(x => x).ToList();
             foreach (var x in results)
             {
-                var item = Device.of(x.d);
+                var resource = Device.of(x.d);
 
                 if (maxDistance > 0)
                 {
@@ -145,27 +148,30 @@ namespace Pirat.Services
                     {
                         continue;
                     }
-                    item.kilometer = (int)Math.Round(distance);
+                    resource.kilometer = (int)Math.Round(distance);
                 }
 
                 var provider = Provider.of(x.p);
                 var providerAddress = Address.of(x.ap);
-                var itemAddress = Address.of(x.ac);
+                var resourceAddress = Address.of(x.ac);
 
                 provider.address = providerAddress;
-                item.address = itemAddress;
-                var o = new OfferItem<Device>()
+                resource.address = resourceAddress;
+                var o = new OfferResource<Device>()
                 {
-                    item = item,
-                    provider = provider
+                    resource = resource
                 };
-                items.Add(o);
+                if (provider.ispublic)
+                {
+                    o.provider = provider;
+                }
+                resources.Add(o);
             }
 
-            return Task.FromResult(items);
+            return Task.FromResult(resources);
         }
 
-        public Task<List<OfferItem<Personal>>> QueryOffers(Manpower manpower)
+        public Task<List<OfferResource<Personal>>> QueryOffers(Manpower manpower)
         {
             var query = from provider in _context.provider
                 join personal in _context.personal on provider.id equals personal.provider_id
@@ -194,12 +200,12 @@ namespace Pirat.Services
                 query = query.Where(collection => collection.personal.experience_rt_pcr); ;
             }
 
-            List<OfferItem<Personal>> items = new List<OfferItem<Personal>>();
+            List<OfferResource<Personal>> resources = new List<OfferResource<Personal>>();
             var results = query.Select(x => x).ToList();
             foreach (var x in results)
             {
                 var provider = Provider.of(x.provider);
-                var item = new Personal()
+                var resource = new Personal()
                 {
                     annotation = x.personal.annotation,
                     area = x.personal.area,
@@ -210,15 +216,18 @@ namespace Pirat.Services
                 };
                 var providerAddress = Address.of(x.ap);
                 provider.address = providerAddress;
-                var o = new OfferItem<Personal>()
+                var o = new OfferResource<Personal>()
                 {
-                    item = item,
-                    provider = provider
+                    resource = resource
                 };
-                items.Add(o);
+                if (provider.ispublic)
+                {
+                    o.provider = provider;
+                }
+                resources.Add(o);
             }
 
-            return Task.FromResult(items);
+            return Task.FromResult(resources);
         }
 
         public Task<Compilation> queryProviders(ConsumableEntity consumable)

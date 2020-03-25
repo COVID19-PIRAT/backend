@@ -10,14 +10,13 @@ namespace Pirat.Model.Entity
     public class PersonalEntity : Personal
     {
 
-        public int id { get; set; }
-
         public int provider_id { get; set; }
 
         public static PersonalEntity of(Personal p)
         {
             return new PersonalEntity()
             {
+                id = p.id,
                 institution = p.institution,
                 researchgroup = p.researchgroup,
                 experience_rt_pcr = p.experience_rt_pcr,

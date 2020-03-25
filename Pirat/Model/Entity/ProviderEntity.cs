@@ -19,7 +19,8 @@ namespace Pirat.Model.Entity
                 name = p.name,
                 organisation = p.organisation,
                 phone = p.phone,
-                mail = p.mail
+                mail = p.mail,
+                ispublic = p.ispublic
             };
         }
     }

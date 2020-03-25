@@ -25,6 +25,10 @@ namespace Pirat.Model
         [JsonProperty]
         [Required]
         public string mail { get; set; }
+
+        [JsonProperty]
+        [Required]
+        public bool ispublic { get; set; }
     }
 
 
@@ -45,7 +49,8 @@ namespace Pirat.Model
                 name = p.name,
                 organisation = p.organisation,
                 phone = p.phone,
-                mail = p.mail
+                mail = p.mail,
+                ispublic = p.ispublic
             };
         }
 

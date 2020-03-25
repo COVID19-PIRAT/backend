@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 
 namespace Pirat.Model.Entity
 {
-    public abstract class ResourceEntity : ResourceBase
+    public abstract class ItemEntity : ItemBase
     {
-
-        public int id { get; set; }
 
         public int provider_id { get; set; }
 

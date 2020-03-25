@@ -6,13 +6,14 @@ using Pirat.Model.Entity;
 
 namespace Pirat.Model
 {
-    public class Device : Resource
+    public class Device : Item
     {
 
         public static Device of(DeviceEntity d)
         {
             return new Device()
             {
+                id = d.id,
                 category = d.category,
                 name = d.name,
                 manufacturer = d.manufacturer,
