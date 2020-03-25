@@ -12,6 +12,10 @@ See https://dotnet.microsoft.com/download/dotnet-core/3.1 to get the SDK
 
 Highly recommanded: Visual Studio 2019 with ReSharper ( hopefully you are a student for the licence ;) )
 
+Use Feature Branches for the development and open a pull request.
+
+After Friday try to implement also tests for Features.
+
 # Running the project
 
 Set the following environment variables:
