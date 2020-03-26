@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Pirat.DatabaseContext;
 
 namespace Pirat.Model.Entity
 {
-    public class PersonalEntity : PersonalBase
+    public class PersonalEntity : PersonalBase, Findable
     {
 
         public int provider_id { get; set; }
@@ -34,6 +35,11 @@ namespace Pirat.Model.Entity
 
             address_id = a.id;
             return this;
+        }
+
+        public Findable Find(DemandContext context, int id)
+        {
+            return context.personal.Find(id);
         }
     }
 }

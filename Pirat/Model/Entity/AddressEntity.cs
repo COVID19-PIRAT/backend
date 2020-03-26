@@ -4,11 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using Pirat.DatabaseContext;
+using Pirat.Model.Entity;
 
 namespace Pirat.Model
 {
 
-	public class AddressEntity : Address
+	public class AddressEntity : Address, Findable
 	{
 
 		public int id { get; set; }
@@ -60,7 +62,12 @@ namespace Pirat.Model
 			}
 			return builder.ToString();
 		}
-	}
+
+        public Findable Find(DemandContext context, int id)
+        {
+            return context.address.Find(id);
+        }
+    }
 
 	
 
