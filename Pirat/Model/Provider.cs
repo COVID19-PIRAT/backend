@@ -48,6 +48,7 @@ namespace Pirat.Model
             organisation = p.organisation;
             phone = p.phone;
             mail = p.mail;
+            ispublic = p.ispublic;
             return this;
         }
 
