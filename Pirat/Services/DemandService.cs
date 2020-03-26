@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Server.IIS.Core;
 using Pirat.Model.Entity;
 
 namespace Pirat.Services
@@ -248,6 +249,11 @@ namespace Pirat.Services
             }
 
             return Task.FromResult(resources);
+        }
+
+        public Task<Findable> Find(Findable findable, int id)
+        {
+            return Task.FromResult(findable.Find(_context, id));
         }
 
         public Task<Compilation> queryProviders(ConsumableEntity consumable)
@@ -581,19 +587,17 @@ namespace Pirat.Services
             var offer = new Offer() { provider = provider, consumables = new List<Consumable>(), devices = new List<Device>(), personals = new List<Personal>()};
             foreach(int k in linkResult.consumable_ids)
             {
-                ConsumableEntity e = _context.consumable.Find(k);
-
-                offer.consumables.Add(new Consumable().build(e).build(queryAddress(e.address_id)));
+                ConsumableEntity e = (ConsumableEntity) Find(new ConsumableEntity(), k).Result;
+                offer.consumables.Add((new Consumable().build(e).build(queryAddress(e.address_id))));
             }
             foreach(int k in linkResult.device_ids)
             {
-                DeviceEntity e = _context.device.Find(k);
-
+                DeviceEntity e = (DeviceEntity) Find(new DeviceEntity(), k).Result;
                 offer.devices.Add(new Device().build(e).build(queryAddress(e.address_id)));
             }
             foreach(int k in linkResult.personal_ids)
             {
-                PersonalEntity p = _context.personal.Find(k);
+                PersonalEntity p = (PersonalEntity) Find(new PersonalEntity(), k).Result;
                 offer.personals.Add(new Personal().build(p).build(queryAddress(p.address_id)));
             }
             return Task.FromResult(offer);

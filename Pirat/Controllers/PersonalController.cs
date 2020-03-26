@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Pirat.DatabaseContext;
 
-namespace Pirat.Model
+namespace Pirat.Controllers
 {
-    public class Resource
+    interface PersonalController
     {
-        public int id { get; set; }
-
     }
 }

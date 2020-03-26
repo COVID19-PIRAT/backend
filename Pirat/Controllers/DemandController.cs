@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Pirat.Model.Entity;
 
 namespace Pirat.Controllers
 {
@@ -119,6 +120,7 @@ namespace Pirat.Controllers
 
         }
 
+
         //*********POST REQUESTS
 
 
@@ -143,6 +145,93 @@ namespace Pirat.Controllers
             {
                 return NotFound(e.Message);
             }
+        }
+
+        [HttpPost("consumables/{id:int}/contact")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> ConsumableAnonymContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
+        {
+            if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
+            {
+                return NotFound("Mail address is invalid");
+            }
+            var consumable = (ConsumableEntity)await _demandService.Find(new ConsumableEntity(), id);
+            if (consumable is null)
+            {
+                return NotFound("Consumable not found");
+            }
+            var provider = (ProviderEntity)await _demandService.Find(new ProviderEntity(), consumable.provider_id);
+            if (provider is null)
+            {
+                return NotFound("Provider of consumable not found");
+            }
+            var mailAddressReceiver = provider.mail;
+            var mailUserNameReceiver = provider.name;
+            _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
+                mailUserNameReceiver);
+            return Ok();
+        }
+
+        [HttpPost("devices/{id:int}/contact")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> DeviceAnonymContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
+        {
+            if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
+            {
+                return NotFound("Mail address is invalid");
+            }
+            var device = (DeviceEntity)await _demandService.Find(new DeviceEntity(), id);
+            if (device is null)
+            {
+                return NotFound("Device not found");
+            }
+            var provider = (ProviderEntity)await _demandService.Find(new ProviderEntity(), device.provider_id);
+            if (provider is null)
+            {
+                return NotFound("Provider of device not found");
+            }
+            var mailAddressReceiver = provider.mail;
+            var mailUserNameReceiver = provider.name;
+            _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
+                mailUserNameReceiver);
+            return Ok();
+        }
+
+        [HttpPost("manpower/{id:int}/contact")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> PersonalAnonymContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
+        {
+            if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
+            {
+                return NotFound("Mail address is invalid");
+            }
+            var personal = (PersonalEntity)await _demandService.Find(new PersonalEntity(), id);
+            if (personal is null)
+            {
+                return NotFound("Personal not found");
+            }
+            var provider = (ProviderEntity)await _demandService.Find(new ProviderEntity(), personal.provider_id);
+            if (provider is null)
+            {
+                return NotFound("Provider of device not found");
+            }
+            var mailAddressReceiver = provider.mail;
+            var mailUserNameReceiver = provider.name;
+            _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
+                mailUserNameReceiver);
+            return Ok();
         }
 
 

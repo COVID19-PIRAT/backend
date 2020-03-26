@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Pirat.DatabaseContext;
 
 namespace Pirat.Model.Entity
 {
-    public class ConsumableEntity : ItemEntity
+    public class ConsumableEntity : ItemEntity, Findable
     {
 
         public string unit { get; set; }
@@ -27,6 +28,12 @@ namespace Pirat.Model.Entity
         {
             address_id = a.id;
             return this;
+        }
+
+        
+        public Findable Find(DemandContext context, int id)
+        {
+            return context.consumable.Find(id);
         }
     }
 }
