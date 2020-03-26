@@ -51,14 +51,14 @@ namespace Pirat.Services
                 sb.Append($"Hallo {receiverMailUserName},\n\n" +
                           $"es gibt einen Interessent für Ihr Angebot.\n\n" +
                           $"Kontaktdaten\n" +
-                          $"Name: ${demandInformation.senderName}\n" +
-                          $"Email: ${demandInformation.senderEmail}\n");
+                          $"Name: {demandInformation.senderName}\n" +
+                          $"Email: {demandInformation.senderEmail}\n");
                 if (!string.IsNullOrEmpty(demandInformation.senderEmail))
                 {
                     sb.Append($"Telefonnummer: {demandInformation.senderPhone}\n");
                 }
 
-                sb.Append("Institution: ${ demandInformation.senderInstitution}\n\n");
+                sb.Append($"Institution: {demandInformation.senderInstitution}\n\n");
                 sb.Append($"Der Interessent hat folgende Nachricht hinterlassen:\n\n{demandInformation.message}\n\n");
                 sb.Append($"Liebe Grüße,\nIhr PIRAT Team");
 
