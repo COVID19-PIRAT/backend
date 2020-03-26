@@ -49,7 +49,7 @@ namespace Pirat.Services
                 var sb = new StringBuilder();
 
                 sb.Append($"Hallo {receiverMailUserName},\n\n" +
-                          $"es gibt einen Interessent für Ihr Angebot.\n\n" +
+                          $"es gibt einen Interessenten für Ihr Angebot.\n\n" +
                           $"Kontaktdaten\n" +
                           $"Name: {demandInformation.senderName}\n" +
                           $"Email: {demandInformation.senderEmail}\n");
