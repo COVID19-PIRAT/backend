@@ -14,14 +14,27 @@ namespace Pirat.Services
     public class MailService : IMailService
     {
 
-        private const string ImapGmailHost = "imap.gmail.com";
-        private const int ImapGmailPort = 465; //On google site this is 993. Why does it work for us with 465?
+        private readonly MailSender _defaultMailSender;
+
+        // A copy of every email that this system sends out will also be sent to this address
+        private readonly string _internalArchiveAddress;
 
         private readonly ILogger<MailService> _logger;
 
         public MailService(ILogger<MailService> logger)
         {
             _logger = logger;
+
+            _defaultMailSender = new MailSender() 
+            {
+                mailSenderAddress = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_ADDRESS"),
+                mailSenderUserName = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_USERNAME"),
+                mailSenderPassword = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_PASSWORD"),
+                mailSenderSmtpHost = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_SMTP_HOST"),
+                mailSenderSmtpPort = 465,
+                mailSenderSmtpUseSsl = true
+            };
+            _internalArchiveAddress = Environment.GetEnvironmentVariable("PIRAT_INTERNAL_RECEIVER_MAIL");
         }
 
         public bool verifyMail(string mailAddress)
@@ -33,72 +46,103 @@ namespace Pirat.Services
         {
             await Task.Run(() =>
             {
-                var mailSenderAddress = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_ADDRESS");
-                var mailSenderUserName = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_USERNAME");
-                var mailSenderPassword = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_PASSWORD");
+                var subject = "PIRAT: Ihre Ressource wurde angefragt";
 
-                var sender = new MailSender()
-                {
-                    mailSenderAddress = mailSenderAddress,
-                    mailSenderUserName = mailSenderUserName,
-                    mailSenderPassword = mailSenderPassword
-                };
+                // TODO Add details to the resource that was demanded.
+                var content = $@"
+Liebe/r {receiverMailUserName},
 
-                var subject = "PIRAT: Interessent für Ihr Angebot";
+es gibt eine Anfrage für eine von Ihnen angebotene Ressource.
 
-                var sb = new StringBuilder();
+Im Folgenden finden Sie die Kontaktdaten des Anfragenden:
 
-                sb.Append($"Hallo {receiverMailUserName},\n\n" +
-                          $"es gibt einen Interessenten für Ihr Angebot.\n\n" +
-                          $"Kontaktdaten\n" +
-                          $"Name: {demandInformation.senderName}\n" +
-                          $"Email: {demandInformation.senderEmail}\n");
-                if (!string.IsNullOrEmpty(demandInformation.senderEmail))
-                {
-                    sb.Append($"Telefonnummer: {demandInformation.senderPhone}\n");
-                }
+Name: {demandInformation.senderName}
+Email: {demandInformation.senderEmail}
+{(!string.IsNullOrEmpty(demandInformation.senderPhone) ? ("Telefonnummer: " + demandInformation.senderPhone) : "")}
+Institution: {demandInformation.senderInstitution}
 
-                sb.Append($"Institution: {demandInformation.senderInstitution}\n\n");
-                sb.Append($"Der Interessent hat folgende Nachricht hinterlassen:\n\n{demandInformation.message}\n\n");
-                sb.Append($"Liebe Grüße,\nIhr PIRAT Team");
+Folgende Nachricht wurde für Sie hinterlassen:
 
-                var content = sb.ToString();
+{demandInformation.message}
 
-                sendMail(sender, mailAddressReceiver, subject, content, ImapGmailHost, ImapGmailPort);
+Bitte nehmen Sie Kontakt zum Anfragenden auf und klären Sie alle weiteren Details des Austausches direkt miteinander.
+
+Vielen Dank, dass Sie unser Angebot genutzt haben. Falls Sie noch Fragen zu PIRAT haben, melden Sie sich gerne jederzeit unter mail@pirat-tool.com.
+
+
+Beste Grüße,
+Ihr PIRAT-Team
+
+---
+
+pirat-tool.com
+mail@pirat-tool.com
+";
+                content = content.Trim();
+                sendMail(mailAddressReceiver, subject, content);
             });
         }
 
-        public async void sendConfirmationMail(string token, string receiverMailAddress, string receiverMailUserName)
+
+        public async void sendDemandConformationMailToDemander(ContactInformationDemand demandInformation)
+        {
+            await Task.Run(() =>
+            {
+                var subject = "PIRAT: Danke für Ihre Anfrage";
+
+                var content = $@"
+Liebe/r {demandInformation.senderName},
+
+vielen Dank für Ihre Anfrage! Diese wurde an den Anbieter weitergeleitet, der sich in Kürze bei Ihnen melden wird.
+
+PIRAT stellt nur den Kontakt zwischen Anbietern und Suchenden her, alle weiteren Absprachen treffen Sie also bitte direkt mit dem Anbieter.
+
+Vielen Dank, dass Sie unser Angebot genutzt haben. Falls Sie noch Fragen zu PIRAT haben, melden Sie sich gerne jederzeit unter mail@pirat-tool.com.
+
+Beste Grüße,
+Ihr PIRAT-Team
+
+---
+
+pirat-tool.com
+mail@pirat-tool.com
+";
+                content = content.Trim();
+                sendMail(demandInformation.senderEmail, subject, content);
+            });
+        }
+
+        public async void sendNewOfferConfirmationMail(string token, string receiverMailAddress, string receiverMailUserName)
         {
             
             await Task.Run(() =>
             {
-                var mailSenderAddress = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_ADDRESS");
-                var mailSenderUserName = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_USERNAME");
-                var mailSenderPassword = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_PASSWORD");
-
-                var sender = new MailSender()
-                {
-                    mailSenderAddress = mailSenderAddress,
-                    mailSenderUserName = mailSenderUserName,
-                    mailSenderPassword = mailSenderPassword
-                };
 
                 var piratHostServer = Environment.GetEnvironmentVariable("PIRAT_HOST");
 
                 var fullLink = $"{piratHostServer}/change/{token}";
 
-                _logger.LogDebug($"Sender: {mailSenderAddress}");
-                _logger.LogDebug($"Receiver: {receiverMailUserName}");
+                var subject = "PIRAT: Ihr Bearbeitungslink";
+                var content = $@"
+Liebe/r {receiverMailUserName},
 
-                var subject = "PIRAT: Dein Bearbeitungslink";
-                var content = $"Hallo {receiverMailUserName},\n\n" +
-                              $"vielen Dank, dass Sie Ihre Laborressourcen zur Verfügung stellen möchten.\n\n" +
-                              $"Unter diesem Link können Sie Ihr Angebot einsehen und bearbeiten: {fullLink}\n\n" +
-                              $"Liebe Grüße,\n" +
-                              $"Ihr PIRAT Team";
+vielen Dank, dass Sie sich entschieden haben, Laborressourcen und/oder personelle Unterstützung für den Kampf gegen Corona zur Verfügung zu stellen.
 
-                sendMail(sender, receiverMailAddress, subject, content, ImapGmailHost, ImapGmailPort);
+Unter folgendem Link können Sie Ihr Angebot einsehen: {fullLink}. Wenn Sie es bearbeiten oder löschen möchten, kontaktieren Sie uns bitte direkt unter mail@pirat-tool.com.
+
+Sobald es Interessenten für einen Austausch gibt, werden diese sich direkt bei Ihnen melden.
+
+
+Beste Grüße,
+Ihr PIRAT-Team
+
+---
+
+pirat-tool.com
+mail@pirat-tool.com
+";
+                content = content.Trim();
+                sendMail(receiverMailAddress, subject, content);
             });
         }
 
@@ -106,16 +150,6 @@ namespace Pirat.Services
         {
             await Task.Run(() =>
             {
-                var mailSenderAddress = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_ADDRESS");
-                var mailSenderUserName = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_USERNAME");
-                var mailSenderPassword = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_PASSWORD");
-
-                var sender = new MailSender()
-                {
-                    mailSenderAddress = mailSenderAddress,
-                    mailSenderUserName = mailSenderUserName,
-                    mailSenderPassword = mailSenderPassword
-                };
 
                 var mailInternalReceiverMail = Environment.GetEnvironmentVariable("PIRAT_INTERNAL_RECEIVER_MAIL");
 
@@ -131,12 +165,17 @@ namespace Pirat.Services
                                  $"Kommentar: {telephoneCallbackRequest.notes}\n\n\n" +
                                  $"Liebe Grüße\nDein Backend-Server";
 
-                sendMail(sender, mailInternalReceiverMail, subject, content, ImapGmailHost, ImapGmailPort);
+                sendMail(mailInternalReceiverMail, subject, content);
             });
         }
 
-        private void sendMail(MailSender sender, string mailReceiverAddress, string subject, string content,
-            string host, int port)
+
+        private void sendMail(string mailReceiverAddress, string subject, string content)
+        {
+            this.sendMail(this._defaultMailSender, mailReceiverAddress, subject, content);
+        }
+
+        private void sendMail(MailSender sender, string mailReceiverAddress, string subject, string content)
         {
             MimeMessage message = new MimeMessage();
 
@@ -146,14 +185,16 @@ namespace Pirat.Services
             MailboxAddress to = new MailboxAddress(mailReceiverAddress);
             message.To.Add(to);
 
+            MailboxAddress bcc = new MailboxAddress(_internalArchiveAddress);
+            message.Bcc.Add(bcc);
+
             message.Subject = subject;
 
-            BodyBuilder arnold = new BodyBuilder();
-            arnold.TextBody = content;
+            BodyBuilder arnold = new BodyBuilder {TextBody = content};
             message.Body = arnold.ToMessageBody();
 
             SmtpClient client = new SmtpClient();
-            client.Connect(host, port, true);
+            client.Connect(sender.mailSenderSmtpHost, sender.mailSenderSmtpPort, sender.mailSenderSmtpUseSsl);
             client.Authenticate(sender.mailSenderUserName, sender.mailSenderPassword);
 
             client.Send(message);
@@ -169,5 +210,10 @@ namespace Pirat.Services
 
         public string mailSenderPassword { get; set; }
 
+        public string mailSenderSmtpHost { get; set; }
+
+        public int mailSenderSmtpPort { get; set; }
+
+        public bool mailSenderSmtpUseSsl { get; set; }
     }
 }

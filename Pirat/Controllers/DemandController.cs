@@ -139,7 +139,7 @@ namespace Pirat.Controllers
                     return NotFound("Mail address is invalid");
                 }
                 var token = await _demandService.insert(offer);
-                _mailService.sendConfirmationMail(token, offer.provider.mail, offer.provider.name);
+                _mailService.sendNewOfferConfirmationMail(token, offer.provider.mail, offer.provider.name);
                 return Ok(token);
             } catch (UnknownAdressException e)
             {
@@ -173,6 +173,7 @@ namespace Pirat.Controllers
             var mailUserNameReceiver = offer.name;
             _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
                 mailUserNameReceiver);
+            _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
             return Ok();
         }
 
@@ -202,6 +203,7 @@ namespace Pirat.Controllers
             var mailUserNameReceiver = offer.name;
             _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
                 mailUserNameReceiver);
+            _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
             return Ok();
         }
 
@@ -231,6 +233,7 @@ namespace Pirat.Controllers
             var mailUserNameReceiver = offer.name;
             _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
                 mailUserNameReceiver);
+            _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
             return Ok();
         }
 
