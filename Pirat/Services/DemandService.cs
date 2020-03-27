@@ -434,6 +434,8 @@ namespace Pirat.Services
             List<int> device_ids = new List<int>();
             List<int> personal_ids = new List<int>();
 
+            DateTime timestampOfRequest = DateTime.Now;
+
             if(!(offer.consumables is null))
             {
                 foreach (var c in offer.consumables)
@@ -488,6 +490,7 @@ namespace Pirat.Services
             offerEntity.consumable_ids = consumable_ids.ToArray();
             offerEntity.device_ids = device_ids.ToArray();
             offerEntity.personal_ids = personal_ids.ToArray();
+            offerEntity.timestamp = timestampOfRequest;
             offerEntity.Update(_context);
 
             //Give back only the token
