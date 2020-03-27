@@ -23,7 +23,7 @@ namespace Pirat.Services
 
         public Task<Offer> queryLink(string token);
 
-        public Task<string> update(Offer offer);
+        public Task<string> insert(Offer offer);
 
         public Task<string> delete(string link);
     }

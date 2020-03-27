@@ -138,7 +138,7 @@ namespace Pirat.Controllers
                 if (!_mailService.verifyMail(offer.provider.mail)){
                     return NotFound("Mail address is invalid");
                 }
-                var token = await _demandService.update(offer);
+                var token = await _demandService.insert(offer);
                 _mailService.sendConfirmationMail(token, offer.provider.mail, offer.provider.name);
                 return Ok(token);
             } catch (UnknownAdressException e)

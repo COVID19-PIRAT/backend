@@ -400,42 +400,48 @@ namespace Pirat.Services
             return Task.FromResult(comp);
         }
 
-        public void update(ConsumableEntity consumable)
+        public void insert(ConsumableEntity consumable)
         {
 
             _context.Add(consumable);
             _context.SaveChanges();
         }
 
-        public void update(DeviceEntity device)
+        public void insert(DeviceEntity device)
         {
             _context.Add(device);
             _context.SaveChanges();
         }
 
-        public void update(PersonalEntity personalEntity)
+        public void insert(PersonalEntity personalEntity)
         {
             _context.Add(personalEntity);
             _context.SaveChanges();
         }
 
-        public void update(OfferEntity offer)
+        public void insert(OfferEntity offer)
         {
             _context.Add(offer);
             _context.SaveChanges();
         }
 
-        private void update(AddressEntity address)
+        public void update(OfferEntity offer)
+        {
+            _context.offer.Update(offer);
+            _context.SaveChanges();
+        }
+
+        private void insert(AddressEntity address)
         {
             _context.Add(address);
             _context.SaveChanges();
         }
 
-        public Task<string> update(Offer offer)
+        public Task<string> insert(Offer offer)
         {
-            if ((offer.consumables == null || offer.consumables.Any()) &&
-                (offer.devices == null || offer.devices.Any()) && 
-                (offer.personals == null || offer.personals.Any()))
+            if ((offer.consumables == null || !offer.consumables.Any()) &&
+                (offer.devices == null || !offer.devices.Any()) && 
+                (offer.personals == null || !offer.personals.Any()))
             {
                 throw new ArgumentException("The offer contains no resources!");
             }
@@ -450,12 +456,12 @@ namespace Pirat.Services
             //Create the coordinates and store the address of the offer
 
             AddressMaker.SetCoordinates(offerAddressEntity);
-            update(offerAddressEntity);
+            insert(offerAddressEntity);
 
-            //Store the offer including the address id as foreign key
-
+            //Store the offer including the address id as foreign key and the token
             offerEntity.address_id = offerAddressEntity.id;
-            update(offerEntity);
+            offerEntity.token = createToken();
+            insert(offerEntity);
 
             //create the entities for the resources, calculate their coordinates, give them the offer foreign key
 
@@ -473,11 +479,11 @@ namespace Pirat.Services
                     var addressEntity = new AddressEntity().build(c.address);
 
                     AddressMaker.SetCoordinates(addressEntity);
-                    update(addressEntity);
+                    insert(addressEntity);
 
                     consumableEntity.offer_id = offer_id;
                     consumableEntity.address_id = addressEntity.id;
-                    update(consumableEntity);
+                    insert(consumableEntity);
                     consumable_ids.Add(consumableEntity.id);
                 }
             }
@@ -489,11 +495,11 @@ namespace Pirat.Services
                     var addressEntity = new AddressEntity().build(p.address);
 
                     AddressMaker.SetCoordinates(addressEntity);
-                    update(addressEntity);
+                    insert(addressEntity);
 
                     personalEntity.offer_id = offer_id;
                     personalEntity.address_id = addressEntity.id;
-                    update(personalEntity);
+                    insert(personalEntity);
                     personal_ids.Add(personalEntity.id);
                 }
             }
@@ -505,18 +511,17 @@ namespace Pirat.Services
                     var addressEntity = new AddressEntity().build(d.address);
 
                     AddressMaker.SetCoordinates(addressEntity);
-                    update(addressEntity);
+                    insert(addressEntity);
 
                     deviceEntity.offer_id = offer_id;
                     deviceEntity.address_id = addressEntity.id;
-                    update(deviceEntity);
+                    insert(deviceEntity);
                     device_ids.Add(deviceEntity.id);
                 }
             }
 
-            //Update the provider we have just created with the ids of the resources and the token for the link
+            //Update the provider we have just created with the ids of the resources
 
-            offerEntity.token = createToken();
             offerEntity.consumable_ids = consumable_ids.ToArray();
             offerEntity.device_ids = device_ids.ToArray();
             offerEntity.personal_ids = personal_ids.ToArray();
