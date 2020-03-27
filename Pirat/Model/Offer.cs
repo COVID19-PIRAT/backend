@@ -11,6 +11,7 @@ namespace Pirat.Model
     public class Offer
     {
         [JsonProperty]
+        [Required]
         public Provider provider { get; set; }
 
         [JsonProperty]
@@ -22,6 +23,22 @@ namespace Pirat.Model
         [JsonProperty]
         public List<Device> devices { get; set; }
 
+        public bool isAddressSufficient()
+        {
+            if (!provider.isAddressSufficient())
+                return false;
+
+            if (personals.Any(p => !p.isAddressSufficient()))
+                return false;
+
+            if (devices.Any(d => !d.isAddressSufficient()))
+                return false;
+
+            if (consumables.Any(c => !c.isAddressSufficient()))
+                return false;
+
+            return true;
+        }
     }
 
     public class Compilation

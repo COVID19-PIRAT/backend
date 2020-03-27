@@ -32,5 +32,6 @@ namespace Pirat.Model
             address = a;
             return this;
         }
+
     }
 }

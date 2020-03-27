@@ -15,6 +15,7 @@ namespace Pirat.Model
 
         [JsonProperty]
         [FromQuery(Name = "institution")]
+        [Required]
         public string institution { get; set; }
 
         [JsonProperty]
@@ -35,10 +36,12 @@ namespace Pirat.Model
     {
         [JsonProperty]
         [FromQuery(Name = "qualification")]
+        [Required]
         public string qualification { get; set; }
 
         [JsonProperty]
         [FromQuery(Name = "area")]
+        [Required]
         public string area { get; set; }
 
         public Address address { get; set; }
@@ -62,6 +65,11 @@ namespace Pirat.Model
             address = a;
             return this;
         }
+
+        public bool isAddressSufficient()
+        {
+            return !string.IsNullOrEmpty(address.postalcode) && !string.IsNullOrEmpty(address.country);
+        }
     }
 
     
@@ -71,10 +79,12 @@ namespace Pirat.Model
 
         [JsonProperty]
         [FromQuery(Name = "qualification")]
+        [Required]
         public List<string> qualification { get; set; }
 
         [JsonProperty]
         [FromQuery(Name = "area")]
+        [Required]
         public List<string> area { get; set; }
 
         public Address address { get; set; }
@@ -83,6 +93,9 @@ namespace Pirat.Model
         [FromQuery(Name = "kilometer")]
         public int kilometer { get; set; }
 
-
+        public bool isAddressSufficient()
+        {
+            return !string.IsNullOrEmpty(address.postalcode) && !string.IsNullOrEmpty(address.country);
+        }
     }
 }

@@ -29,9 +29,9 @@ namespace Pirat.Services
 
         public Task<List<OfferResource<Consumable>>> QueryOffers(Consumable con)
         {
-            if (string.IsNullOrEmpty(con.category) || string.IsNullOrEmpty(con.address.postalcode) ||string.IsNullOrEmpty(con.address.country))
+            if (string.IsNullOrEmpty(con.category) || !con.isAddressSufficient())
             {
-                throw new ArgumentException("Missing in required attributes");
+                throw new ArgumentException("Missing required attributes");
             }
 
             var consumable = new ConsumableEntity().build(con);
@@ -103,7 +103,7 @@ namespace Pirat.Services
         public Task<List<OfferResource<Device>>> QueryOffers(Device dev)
         {
 
-            if (string.IsNullOrEmpty(dev.category) || string.IsNullOrEmpty(dev.address.postalcode) || string.IsNullOrEmpty(dev.address.country))
+            if (string.IsNullOrEmpty(dev.category) || !dev.isAddressSufficient())
             {
                 throw new ArgumentException("Missing in required attributes");
             }
@@ -174,7 +174,12 @@ namespace Pirat.Services
 
         public Task<List<OfferResource<Personal>>> QueryOffers(Manpower manpower)
         {
-            if (string.IsNullOrEmpty(manpower.address.postalcode) || string.IsNullOrEmpty(manpower.address.country))
+            if (manpower.qualification is null 
+                || !manpower.qualification.Any() 
+                || string.IsNullOrEmpty(manpower.institution) 
+                || manpower.area is null 
+                || manpower.area.Any()
+                || !manpower.isAddressSufficient())
             {
                 throw new ArgumentException("Missing in required attributes");
             }
@@ -189,6 +194,8 @@ namespace Pirat.Services
                 join ap in _context.address on o.address_id equals ap.id
                 join ac in _context.address on personal.address_id equals ac.id
                         select new { o, personal, ap, ac };
+
+            query = query.Where(collection => manpower.institution.Equals(collection.personal.institution));
 
             if (manpower.qualification.Any())
             {
@@ -402,12 +409,15 @@ namespace Pirat.Services
 
         public Task<string> insert(Offer offer)
         {
+            //check the resources
             if ((offer.consumables == null || !offer.consumables.Any()) &&
                 (offer.devices == null || !offer.devices.Any()) && 
                 (offer.personals == null || !offer.personals.Any()))
             {
                 throw new ArgumentException("The offer contains no resources!");
             }
+
+            //check the addresses
 
             var provider = offer.provider;
 
@@ -497,6 +507,11 @@ namespace Pirat.Services
 
         public Task<Offer> queryLink(string token)
         {
+            if (token is null)
+            {
+                throw new ArgumentException("No token received");
+            }
+
             var offerEntity = retrieveOfferFromToken(token);
 
             //Build the provider from the offerEntity and the address we retrieve from the address id
@@ -526,6 +541,11 @@ namespace Pirat.Services
 
         public Task<string> delete(string token)
         {
+            if (token is null)
+            {
+                throw new ArgumentException("No token received");
+            }
+
             OfferEntity o = retrieveOfferFromToken(token);
 
             //The ids in the offer entity are no foreign key so we have to delete the associated rows here manually 
@@ -554,17 +574,15 @@ namespace Pirat.Services
             var query = from o in _context.offer
                         where o.token.Equals(token)
                         select o;
-
             List<OfferEntity> offers = query.Select(o => o).ToList();
 
-            if (offers.Count() <= 0)
+            if (!offers.Any())
             {
-                throw new ArgumentException($"No offer for {token} exists");
+                throw new DataNotFoundException($"No offer for {token} exists");
             }
-            if (offers.Count() > 1)
+            if (1 < offers.Count())
             {
-                //TODO a state that never should be reached
-                throw new Exception();
+                throw new InvalidDataStateException("More than one entry for the token");
             }
             return offers.First();
         }
