@@ -16,6 +16,7 @@ namespace Pirat.Model
 
         public Consumable build(ConsumableEntity c)
         {
+            id = c.id;
             category = c.category;
             name = c.name;
             manufacturer = c.manufacturer;

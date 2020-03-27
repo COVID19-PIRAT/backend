@@ -11,6 +11,7 @@ namespace Pirat.Model
 
         public Device build(DeviceEntity d)
         {
+            id = d.id;
             category = d.category;
             name = d.name;
             manufacturer = d.manufacturer;

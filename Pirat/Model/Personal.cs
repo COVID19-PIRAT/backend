@@ -47,6 +47,7 @@ namespace Pirat.Model
 
         public Personal build(PersonalEntity p)
         {
+            id = p.id;
             institution = p.institution;
             researchgroup = p.researchgroup;
             experience_rt_pcr = p.experience_rt_pcr;
