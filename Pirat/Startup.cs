@@ -82,6 +82,11 @@ namespace Pirat
                 logger.LogInformation("In Development environment");
                 Environment.SetEnvironmentVariable("PIRAT_HOST", "http://localhost:4200");
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pirat API");
+                });
             }
             if (env.IsProduction())
             {
@@ -102,12 +107,6 @@ namespace Pirat
             app.UseReCapture();
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pirat API");
-            });
 
             app.UseCors("AllowAll");
 
