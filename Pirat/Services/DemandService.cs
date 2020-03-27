@@ -174,12 +174,7 @@ namespace Pirat.Services
 
         public Task<List<OfferResource<Personal>>> QueryOffers(Manpower manpower)
         {
-            if (manpower.qualification is null 
-                || !manpower.qualification.Any() 
-                || string.IsNullOrEmpty(manpower.institution) 
-                || manpower.area is null 
-                || manpower.area.Any()
-                || !manpower.isAddressSufficient())
+            if (!manpower.isAddressSufficient())
             {
                 throw new ArgumentException("Missing in required attributes");
             }
@@ -195,7 +190,10 @@ namespace Pirat.Services
                 join ac in _context.address on personal.address_id equals ac.id
                         select new { o, personal, ap, ac };
 
-            query = query.Where(collection => manpower.institution.Equals(collection.personal.institution));
+            if (!string.IsNullOrEmpty(manpower.institution))
+            {
+                query = query.Where(collection => manpower.institution.Equals(collection.personal.institution)); ;
+            }
 
             if (manpower.qualification.Any())
             {
@@ -206,10 +204,6 @@ namespace Pirat.Services
                 query = query.Where(collection => manpower.area.Contains(collection.personal.area));
             }
 
-            if (!string.IsNullOrEmpty(manpower.institution))
-            {
-                query = query.Where(collection => manpower.institution.Equals(collection.personal.institution)); ;
-            }
             if (!string.IsNullOrEmpty(manpower.researchgroup))
             {
                 query = query.Where(collection => manpower.researchgroup.Equals(collection.personal.researchgroup)); ;
