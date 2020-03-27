@@ -10,15 +10,13 @@ namespace Pirat.DatabaseContext
 {
     public class DemandContext : DbContext
     {
-        public DbSet<ProviderEntity> provider { get; set; }
+        public DbSet<OfferEntity> offer { get; set; }
 
         public DbSet<ConsumableEntity> consumable { get; set; }
 
         public DbSet<DeviceEntity> device { get; set; }
 
         public DbSet<PersonalEntity> personal { get; set; }
-
-        public DbSet<LinkEntity> link { get; set; }
 
         public DbSet<AddressEntity> address { get; set; }
 

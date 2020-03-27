@@ -40,12 +40,12 @@ namespace Pirat.Services
             var location = new AddressEntity().build(consumableAddress);
             AddressMaker.SetCoordinates(location);
 
-            var query = from p in _context.provider
-                join c in _context.consumable on p.id equals c.provider_id
-                join ap in _context.address on p.address_id equals ap.id
+            var query = from o in _context.offer
+                join c in _context.consumable on o.id equals c.offer_id
+                join ap in _context.address on o.address_id equals ap.id
                 join ac in _context.address on c.address_id equals ac.id
                 where consumable.category.Equals(c.category)
-                select new { p, c, ap, ac };
+                select new { o, c, ap, ac };
 
             if (!string.IsNullOrEmpty(consumable.name))
             {
@@ -79,7 +79,7 @@ namespace Pirat.Services
                     resource.kilometer = (int) Math.Round(distance);
                 }
 
-                var provider = new Provider().build(x.p);
+                var provider = new Provider().build(x.o);
                 var providerAddress = new Address().build(x.ap);
                 var resourceAddress = new Address().build(x.ac);
 
@@ -114,12 +114,12 @@ namespace Pirat.Services
             var location = new AddressEntity().build(deviceAddress);
             AddressMaker.SetCoordinates(location);
 
-            var query = from p in _context.provider
-                join d in _context.device on p.id equals d.provider_id
-                join ap in _context.address on p.address_id equals ap.id
+            var query = from o in _context.offer
+                join d in _context.device on o.id equals d.offer_id
+                join ap in _context.address on o.address_id equals ap.id
                 join ac in _context.address on d.address_id equals ac.id
                 where device.category.Equals(d.category)
-                select new { p, d, ap, ac };
+                select new { o, d, ap, ac };
 
             if (!string.IsNullOrEmpty(device.name))
             {
@@ -152,7 +152,7 @@ namespace Pirat.Services
                     resource.kilometer = (int)Math.Round(distance);
                 }
 
-                var provider = new Provider().build(x.p);
+                var provider = new Provider().build(x.o);
                 var providerAddress = new Address().build(x.ap);
                 var resourceAddress = new Address().build(x.ac);
 
@@ -184,11 +184,11 @@ namespace Pirat.Services
             var location = new AddressEntity().build(manpowerAddress);
             AddressMaker.SetCoordinates(location);
 
-            var query = from provider in _context.provider
-                join personal in _context.personal on provider.id equals personal.provider_id
-                join ap in _context.address on provider.address_id equals ap.id
+            var query = from o in _context.offer
+                join personal in _context.personal on o.id equals personal.offer_id
+                join ap in _context.address on o.address_id equals ap.id
                 join ac in _context.address on personal.address_id equals ac.id
-                        select new { provider, personal, ap, ac };
+                        select new { o, personal, ap, ac };
 
             if (manpower.qualification.Any())
             {
@@ -230,7 +230,7 @@ namespace Pirat.Services
                     resource.kilometer = (int)Math.Round(distance);
                 }
 
-                var provider = new Provider().build(x.provider);
+                var provider = new Provider().build(x.o);
                 var providerAddress = new Address().build(x.ap);
                 var resourceAddress = new Address().build(x.ac);
 
@@ -264,11 +264,11 @@ namespace Pirat.Services
                 throw new ArgumentException();
             }
 
-            var query = from p in _context.provider join c in _context.consumable
-                             on p.id equals c.provider_id
+            var query = from o in _context.offer join c in _context.consumable
+                             on o.id equals c.offer_id
                         where consumable.category.Equals(c.category)
                         //&& consumable.address.postalcode.Equals(c.address.postalcode) //TODO
-                        select new { p, c };
+                        select new { o, c };
 
 
             if (!string.IsNullOrEmpty(consumable.name))
@@ -284,17 +284,17 @@ namespace Pirat.Services
                 query = query.Where(collection => consumable.amount <= collection.c.amount);
             }
 
-            var providers = query.Select(collection => new ProviderEntity
+            var offers = query.Select(collection => new OfferEntity()
             {
-                id = collection.p.id,
-                name = collection.p.name,
-                address_id = collection.p.address_id,
-                mail = collection.p.mail,
-                phone = collection.p.phone,
-                organisation = collection.p.organisation
+                id = collection.o.id,
+                name = collection.o.name,
+                address_id = collection.o.address_id,
+                mail = collection.o.mail,
+                phone = collection.o.phone,
+                organisation = collection.o.organisation
             }).ToHashSet();
 
-            return collectAllResources(providers);
+            return collectAllResources(offers);
         }
 
         public Task<Compilation> queryProviders(DeviceEntity device)
@@ -304,11 +304,11 @@ namespace Pirat.Services
                 throw new ArgumentException();
             }
 
-            var query = from p in _context.provider
+            var query = from o in _context.offer
                         join d in _context.device 
-                        on p.id equals d.provider_id where
+                        on o.id equals d.offer_id where
                         device.category.Equals(d.category) //where device.address.postalcode.Equals(d.address.postalcode) //TODO
-                        select new { p, d };
+                        select new { o, d };
 
             if (!string.IsNullOrEmpty(device.name))
             {
@@ -323,27 +323,18 @@ namespace Pirat.Services
                 query = query.Where(collection => device.amount <= collection.d.amount);
             }
 
-            ISet<ProviderEntity> providers = query.Select(collection => new ProviderEntity
-            {
-                id = collection.p.id,
-                name = collection.p.name,
-                address_id = collection.p.address_id,
-                mail = collection.p.mail,
-                phone = collection.p.phone,
-                organisation = collection.p.organisation
+            ISet<OfferEntity> offers = query.Select(collection => collection.o).ToHashSet();
 
-            }).ToHashSet();
-
-            return collectAllResources(providers);
+            return collectAllResources(offers);
         }
 
 
         public Task<Compilation> queryProviders(Personal manpower)
         {
-            var query = from p in _context.provider
+            var query = from o in _context.offer
                         join m in _context.personal
-                        on p.id equals m.provider_id
-                        select new { p, m };
+                        on o.id equals m.offer_id
+                        select new { o, m };
 
             if (manpower.qualification.Any())
             {
@@ -368,25 +359,18 @@ namespace Pirat.Services
                 query = query.Where(collection => collection.m.experience_rt_pcr); ;
             }
 
-            ISet<ProviderEntity> providers = query.Select(collection => new ProviderEntity
-            {
-                id = collection.p.id,
-                name = collection.p.name,
-                address_id = collection.p.address_id,
-                mail = collection.p.mail,
-                phone = collection.p.phone
-            }).ToHashSet();
+            ISet<OfferEntity> offers = query.Select(collection => collection.o).ToHashSet();
 
-            return collectAllResources(providers);
+            return collectAllResources(offers);
         }
 
-        private Task<Compilation> collectAllResources(ISet<ProviderEntity> providers)
+        private Task<Compilation> collectAllResources(ISet<OfferEntity> offers)
         {
             Compilation comp = new Compilation() { offers = new List<Offer>() };
 
-            foreach (ProviderEntity provider in providers)
+            foreach (OfferEntity offer in offers)
             {
-                var que = from c in _context.consumable where c.provider_id == provider.id select c;
+                var que = from c in _context.consumable where c.offer_id == offer.id select c;
                 List<ConsumableEntity> consumableEntities = que.Select(c => c).ToList();
                 List<Consumable> consumables = new List<Consumable>();
                 foreach (ConsumableEntity c in consumableEntities)
@@ -394,7 +378,7 @@ namespace Pirat.Services
                     consumables.Add(new Consumable().build(c).build(queryAddress(c.address_id)));
                 }
 
-                var que2 = from d in _context.device where d.provider_id == provider.id select d;
+                var que2 = from d in _context.device where d.offer_id == offer.id select d;
                 List<DeviceEntity> deviceEntities = que2.Select(d => d).ToList();
                 List<Device> devices = new List<Device>();
                 foreach (DeviceEntity d in deviceEntities)
@@ -402,18 +386,15 @@ namespace Pirat.Services
                     devices.Add(new Device().build(d).build(queryAddress(d.address_id)));
                 }
 
-                var que3 = from p in _context.personal where p.provider_id == provider.id select p;
-                List<Personal> personals = que3.Select(p => new Personal
+                var que3 = from p in _context.personal where p.offer_id == offer.id select p;
+                List<PersonalEntity> personalEntities = que3.Select(p => p).ToList();
+                List<Personal> personals = new List<Personal>();
+                foreach (PersonalEntity p in personalEntities)
                 {
-                    qualification = p.qualification,
-                    institution = p.institution,
-                    researchgroup = p.researchgroup,
-                    area = p.area,
-                    experience_rt_pcr = p.experience_rt_pcr,
-                    annotation = p.annotation
-                }).ToList();
+                    personals.Add(new Personal().build(queryAddress(p.address_id)));
+                }
 
-                comp.offers.Add(new Offer() { personals = personals, devices = devices, consumables = consumables, provider = new Provider().build(provider) });
+                comp.offers.Add(new Offer() { personals = personals, devices = devices, consumables = consumables, provider = new Provider().build(offer) });
             }
 
             return Task.FromResult(comp);
@@ -438,15 +419,9 @@ namespace Pirat.Services
             _context.SaveChanges();
         }
 
-        public void update(ProviderEntity provider)
+        public void update(OfferEntity offer)
         {
-            _context.Add(provider);
-            _context.SaveChanges();
-        }
-
-        private void update(LinkEntity linkEntity)
-        {
-            _context.Add(linkEntity);
+            _context.Add(offer);
             _context.SaveChanges();
         }
 
@@ -458,22 +433,33 @@ namespace Pirat.Services
 
         public Task<string> update(Offer offer)
         {
-            var provider = offer.provider;
-
-            var providerEntity = new ProviderEntity().build(provider);
-            if (!exists(providerEntity))
+            if ((offer.consumables == null || offer.consumables.Any()) &&
+                (offer.devices == null || offer.devices.Any()) && 
+                (offer.personals == null || offer.personals.Any()))
             {
-                var addressEntity = new AddressEntity().build(provider.address);
-
-                AddressMaker.SetCoordinates(addressEntity);
-                update(addressEntity);
-
-                providerEntity.address_id = addressEntity.id;
-                update(providerEntity);
+                throw new ArgumentException("The offer contains no resources!");
             }
 
-            //TODO retrieving key from DB based on attributes is not good
-            int key = retrieveKeyFromProvider(providerEntity);
+            var provider = offer.provider;
+
+            //Build as entities
+
+            var offerEntity = new OfferEntity().build(provider);
+            var offerAddressEntity = new AddressEntity().build(provider.address);
+            
+            //Create the coordinates and store the address of the offer
+
+            AddressMaker.SetCoordinates(offerAddressEntity);
+            update(offerAddressEntity);
+
+            //Store the offer including the address id as foreign key
+
+            offerEntity.address_id = offerAddressEntity.id;
+            update(offerEntity);
+
+            //create the entities for the resources, calculate their coordinates, give them the offer foreign key
+
+            int offer_id = offerEntity.id;
 
             List<int> consumable_ids = new List<int>();
             List<int> device_ids = new List<int>();
@@ -489,7 +475,7 @@ namespace Pirat.Services
                     AddressMaker.SetCoordinates(addressEntity);
                     update(addressEntity);
 
-                    consumableEntity.provider_id = key;
+                    consumableEntity.offer_id = offer_id;
                     consumableEntity.address_id = addressEntity.id;
                     update(consumableEntity);
                     consumable_ids.Add(consumableEntity.id);
@@ -505,7 +491,7 @@ namespace Pirat.Services
                     AddressMaker.SetCoordinates(addressEntity);
                     update(addressEntity);
 
-                    personalEntity.provider_id = key;
+                    personalEntity.offer_id = offer_id;
                     personalEntity.address_id = addressEntity.id;
                     update(personalEntity);
                     personal_ids.Add(personalEntity.id);
@@ -521,81 +507,48 @@ namespace Pirat.Services
                     AddressMaker.SetCoordinates(addressEntity);
                     update(addressEntity);
 
-                    deviceEntity.provider_id = key;
+                    deviceEntity.offer_id = offer_id;
                     deviceEntity.address_id = addressEntity.id;
                     update(deviceEntity);
                     device_ids.Add(deviceEntity.id);
                 }
             }
 
-            var link = new LinkEntity { token = createLink(), provider_id = key, consumable_ids = consumable_ids.ToArray(), device_ids = device_ids.ToArray(), personal_ids = personal_ids.ToArray() };
-            update(link);
-            return Task.FromResult(link.token);
+            //Update the provider we have just created with the ids of the resources and the token for the link
+
+            offerEntity.token = createToken();
+            offerEntity.consumable_ids = consumable_ids.ToArray();
+            offerEntity.device_ids = device_ids.ToArray();
+            offerEntity.personal_ids = personal_ids.ToArray();
+            update(offerEntity);
+
+            //Give back only the token
+
+            return Task.FromResult(offerEntity.token);
         }
 
-        private int retrieveKeyFromProvider(ProviderEntity provider)
+        public Task<Offer> queryLink(string token)
         {
-            var key = from p in _context.provider
-                      where p.name.Equals(provider.name)
-                      && p.mail.Equals(provider.mail)
-                      select p;
+            var offerEntity = retrieveOfferFromToken(token);
 
-            List<int> keys = key.Select(p => p.id).ToList();
-            if(keys.Count() != 1)
-            {
-                throw new Exception();
-            }
+            //Build the provider from the offerEntity and the address we retrieve from the address id
 
-            return keys.First();
-        }
+            var provider = new Provider().build(offerEntity).build(queryAddress(offerEntity.address_id));
 
-        private bool exists(ProviderEntity provider)
-        {
-            var query = from p in _context.provider
-                                       where p.name.Equals(provider.name)
-                                       && p.mail.Equals(provider.mail)
-                                       select p;
-
-            List<ProviderEntity> providers = query.Select(p => new ProviderEntity
-            {
-                id = p.id,
-                name = p.name,
-                address_id = p.address_id,
-                mail = p.mail,
-                phone = p.phone,
-                organisation = p.organisation
-            }).ToList();
-
-            if (providers.Count() == 1)
-            {
-                return true;
-            }
-            if (providers.Count() > 1)
-            {
-                throw new Exception();
-            }
-            return false;
-        }
-
-        public Task<Offer> queryLink(string link)
-        {
-            var linkResult = retrieveLink(link);
-
-            var providerEntity = _context.provider.Find(linkResult.provider_id);
-            var provider = new Provider().build(providerEntity).build(queryAddress(providerEntity.address_id));
+            //Create the offer we will send back and retrieve all associated resources
 
             var offer = new Offer() { provider = provider, consumables = new List<Consumable>(), devices = new List<Device>(), personals = new List<Personal>()};
-            foreach(int k in linkResult.consumable_ids)
+            foreach(int k in offerEntity.consumable_ids)
             {
                 ConsumableEntity e = (ConsumableEntity) Find(new ConsumableEntity(), k).Result;
                 offer.consumables.Add((new Consumable().build(e).build(queryAddress(e.address_id))));
             }
-            foreach(int k in linkResult.device_ids)
+            foreach(int k in offerEntity.device_ids)
             {
                 DeviceEntity e = (DeviceEntity) Find(new DeviceEntity(), k).Result;
                 offer.devices.Add(new Device().build(e).build(queryAddress(e.address_id)));
             }
-            foreach(int k in linkResult.personal_ids)
+            foreach(int k in offerEntity.personal_ids)
             {
                 PersonalEntity p = (PersonalEntity) Find(new PersonalEntity(), k).Result;
                 offer.personals.Add(new Personal().build(p).build(queryAddress(p.address_id)));
@@ -603,42 +556,36 @@ namespace Pirat.Services
             return Task.FromResult(offer);
         }
 
-        public Task<string> delete(string link)
+        public Task<string> delete(string token)
         {
-            LinkEntity l = retrieveLink(link);
-            _context.link.Remove(l);
+            OfferEntity o = retrieveOfferFromToken(token);
+            _context.offer.Remove(o);
             _context.SaveChanges();
             return Task.FromResult("Offer deleted");
         }
 
-        private LinkEntity retrieveLink(string link)
+        private OfferEntity retrieveOfferFromToken(string token)
         {
-            var query = from l in _context.link
-                        where l.token.Equals(link)
-                        select l;
+            var query = from o in _context.offer
+                        where o.token.Equals(token)
+                        select o;
 
-            List<LinkEntity> links = query.Select(l => new LinkEntity
-            {
-                token = l.token,
-                consumable_ids = l.consumable_ids,
-                device_ids = l.device_ids,
-                personal_ids = l.personal_ids,
-                provider_id = l.provider_id
-            }).ToList();
+            List<OfferEntity> offers = query.Select(o => o).ToList();
 
-            if (links.Count() <= 0)
+            if (offers.Count() <= 0)
             {
-                throw new ArgumentException($"{link} does not exist");
+                throw new ArgumentException($"No offer for {token} exists");
             }
-            if (links.Count() > 1)
+            if (offers.Count() > 1)
             {
+                //TODO a state that never should be reached
                 throw new Exception();
             }
-            return links.First();
+            return offers.First();
         }
 
 
-        private string createLink()
+        private string createToken()
         {
             Random random = new Random();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
@@ -648,7 +595,7 @@ namespace Pirat.Services
 
         private Address queryAddress(int addressKey)
         {
-            AddressEntity a = _context.address.Find(addressKey);
+            AddressEntity a = (AddressEntity) new AddressEntity().Find(_context, addressKey);
             return new Address().build(a);
         }
 
