@@ -10,7 +10,7 @@ using Pirat.Model.Entity;
 namespace Pirat.Model
 {
 
-	public class AddressEntity : Address, Findable
+	public class AddressEntity : Address, Findable, Deletable, Updatable, Insertable
 	{
 
 		public int id { get; set; }
@@ -63,11 +63,30 @@ namespace Pirat.Model
 			return builder.ToString();
 		}
 
+        public Insertable Insert(DemandContext context)
+        {
+            context.address.Add(this);
+            context.SaveChanges();
+            return this;
+        }
+
         public Findable Find(DemandContext context, int id)
         {
             return context.address.Find(id);
         }
-    }
+
+        public void Update(DemandContext context)
+        {
+            context.address.Update(this);
+            context.SaveChanges();
+        }
+
+        public void Delete(DemandContext context)
+        {
+            context.address.Remove(this);
+            context.SaveChanges();
+        }
+	}
 
 	
 

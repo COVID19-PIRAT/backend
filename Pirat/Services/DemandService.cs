@@ -400,43 +400,6 @@ namespace Pirat.Services
             return Task.FromResult(comp);
         }
 
-        public void insert(ConsumableEntity consumable)
-        {
-
-            _context.Add(consumable);
-            _context.SaveChanges();
-        }
-
-        public void insert(DeviceEntity device)
-        {
-            _context.Add(device);
-            _context.SaveChanges();
-        }
-
-        public void insert(PersonalEntity personalEntity)
-        {
-            _context.Add(personalEntity);
-            _context.SaveChanges();
-        }
-
-        public void insert(OfferEntity offer)
-        {
-            _context.Add(offer);
-            _context.SaveChanges();
-        }
-
-        public void update(OfferEntity offer)
-        {
-            _context.offer.Update(offer);
-            _context.SaveChanges();
-        }
-
-        private void insert(AddressEntity address)
-        {
-            _context.Add(address);
-            _context.SaveChanges();
-        }
-
         public Task<string> insert(Offer offer)
         {
             if ((offer.consumables == null || !offer.consumables.Any()) &&
@@ -456,12 +419,12 @@ namespace Pirat.Services
             //Create the coordinates and store the address of the offer
 
             AddressMaker.SetCoordinates(offerAddressEntity);
-            insert(offerAddressEntity);
+            offerAddressEntity.Insert(_context);
 
             //Store the offer including the address id as foreign key and the token
             offerEntity.address_id = offerAddressEntity.id;
             offerEntity.token = createToken();
-            insert(offerEntity);
+            offerEntity.Insert(_context);
 
             //create the entities for the resources, calculate their coordinates, give them the offer foreign key
 
@@ -479,11 +442,11 @@ namespace Pirat.Services
                     var addressEntity = new AddressEntity().build(c.address);
 
                     AddressMaker.SetCoordinates(addressEntity);
-                    insert(addressEntity);
+                    addressEntity.Insert(_context);
 
                     consumableEntity.offer_id = offer_id;
                     consumableEntity.address_id = addressEntity.id;
-                    insert(consumableEntity);
+                    consumableEntity.Insert(_context);
                     consumable_ids.Add(consumableEntity.id);
                 }
             }
@@ -495,11 +458,11 @@ namespace Pirat.Services
                     var addressEntity = new AddressEntity().build(p.address);
 
                     AddressMaker.SetCoordinates(addressEntity);
-                    insert(addressEntity);
+                    addressEntity.Insert(_context);
 
                     personalEntity.offer_id = offer_id;
                     personalEntity.address_id = addressEntity.id;
-                    insert(personalEntity);
+                    personalEntity.Insert(_context);
                     personal_ids.Add(personalEntity.id);
                 }
             }
@@ -511,11 +474,11 @@ namespace Pirat.Services
                     var addressEntity = new AddressEntity().build(d.address);
 
                     AddressMaker.SetCoordinates(addressEntity);
-                    insert(addressEntity);
+                    addressEntity.Insert(_context);
 
                     deviceEntity.offer_id = offer_id;
                     deviceEntity.address_id = addressEntity.id;
-                    insert(deviceEntity);
+                    deviceEntity.Insert(_context);
                     device_ids.Add(deviceEntity.id);
                 }
             }
@@ -525,7 +488,7 @@ namespace Pirat.Services
             offerEntity.consumable_ids = consumable_ids.ToArray();
             offerEntity.device_ids = device_ids.ToArray();
             offerEntity.personal_ids = personal_ids.ToArray();
-            update(offerEntity);
+            offerEntity.Update(_context);
 
             //Give back only the token
 
@@ -564,8 +527,25 @@ namespace Pirat.Services
         public Task<string> delete(string token)
         {
             OfferEntity o = retrieveOfferFromToken(token);
-            _context.offer.Remove(o);
-            _context.SaveChanges();
+
+            //The ids in the offer entity are no foreign key so we have to delete the associated rows here manually 
+
+            foreach (int k in o.consumable_ids)
+            {
+                var c = (ConsumableEntity) new ConsumableEntity().Find(_context, k);
+                c.Delete(_context);
+            }
+            foreach (int k in o.device_ids)
+            {
+                var d = (DeviceEntity)new DeviceEntity().Find(_context, k);
+                d.Delete(_context);
+            }
+            foreach (int k in o.personal_ids)
+            {
+                var p = (PersonalEntity)new PersonalEntity().Find(_context, k);
+                p.Delete(_context);
+            }
+            o.Delete(_context);
             return Task.FromResult("Offer deleted");
         }
 

@@ -9,7 +9,7 @@ namespace Pirat.Model.Entity
     /// <summary>
     /// An offer made by the user. Data is stored in table offer on the database.
     /// </summary>
-    public class OfferEntity : ProviderBase, Findable
+    public class OfferEntity : ProviderBase, Findable, Deletable, Updatable, Insertable
     {
         //***Key
         public int id { get; set; }
@@ -42,6 +42,25 @@ namespace Pirat.Model.Entity
         public Findable Find(DemandContext context, int id)
         {
             return context.offer.Find(id);
+        }
+
+        public void Delete(DemandContext context)
+        {
+            context.offer.Remove(this);
+            context.SaveChanges();
+        }
+
+        public void Update(DemandContext context)
+        {
+            context.offer.Update(this);
+            context.SaveChanges();
+        }
+
+        public Insertable Insert(DemandContext context)
+        {
+            context.offer.Add(this);
+            context.SaveChanges();
+            return this;
         }
     }
 }

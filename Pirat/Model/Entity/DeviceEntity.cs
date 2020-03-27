@@ -6,7 +6,7 @@ using Pirat.DatabaseContext;
 
 namespace Pirat.Model.Entity
 {
-    public class DeviceEntity : ItemEntity, Findable
+    public class DeviceEntity : ItemEntity, Findable, Deletable, Updatable, Insertable
     {
         public DeviceEntity build(Device d)
         {
@@ -28,6 +28,25 @@ namespace Pirat.Model.Entity
         public Findable Find(DemandContext context, int id)
         {
             return context.device.Find(id);
+        }
+
+        public void Delete(DemandContext context)
+        {
+            context.device.Remove(this);
+            context.SaveChanges();
+        }
+
+        public void Update(DemandContext context)
+        {
+            context.device.Update(this);
+            context.SaveChanges();
+        }
+
+        public Insertable Insert(DemandContext context)
+        {
+            context.device.Add(this);
+            context.SaveChanges();
+            return this;
         }
     }
 }

@@ -8,7 +8,7 @@ using Pirat.DatabaseContext;
 
 namespace Pirat.Model.Entity
 {
-    public class PersonalEntity : PersonalBase, Findable
+    public class PersonalEntity : PersonalBase, Findable, Deletable, Updatable, Insertable
     {
 
         public int offer_id { get; set; }
@@ -40,6 +40,25 @@ namespace Pirat.Model.Entity
         public Findable Find(DemandContext context, int id)
         {
             return context.personal.Find(id);
+        }
+
+        public void Delete(DemandContext context)
+        {
+            context.personal.Remove(this);
+            context.SaveChanges();
+        }
+
+        public void Update(DemandContext context)
+        {
+            context.personal.Update(this);
+            context.SaveChanges();
+        }
+
+        public Insertable Insert(DemandContext context)
+        {
+            context.personal.Add(this);
+            context.SaveChanges();
+            return this;
         }
     }
 }
