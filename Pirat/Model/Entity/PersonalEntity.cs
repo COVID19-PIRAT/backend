@@ -11,7 +11,7 @@ namespace Pirat.Model.Entity
     public class PersonalEntity : PersonalBase, Findable
     {
 
-        public int provider_id { get; set; }
+        public int offer_id { get; set; }
 
         public int address_id { get; set; }
 

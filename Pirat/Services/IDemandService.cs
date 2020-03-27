@@ -21,9 +21,9 @@ namespace Pirat.Services
          */
         public Task<Findable> Find(Findable findable, int id);
 
-        public Task<Offer> queryLink(string link);
+        public Task<Offer> queryLink(string token);
 
-        public Task<string> update(Offer offer);
+        public Task<string> insert(Offer offer);
 
         public Task<string> delete(string link);
     }

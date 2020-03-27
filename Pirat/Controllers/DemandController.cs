@@ -103,7 +103,7 @@ namespace Pirat.Controllers
         }
 
         [HttpGet("offers/{token}")]
-        [ProducesResponseType(typeof(Aggregate), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Offer), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
@@ -138,7 +138,7 @@ namespace Pirat.Controllers
                 if (!_mailService.verifyMail(offer.provider.mail)){
                     return NotFound("Mail address is invalid");
                 }
-                var token = await _demandService.update(offer);
+                var token = await _demandService.insert(offer);
                 _mailService.sendConfirmationMail(token, offer.provider.mail, offer.provider.name);
                 return Ok(token);
             } catch (UnknownAdressException e)
@@ -164,13 +164,13 @@ namespace Pirat.Controllers
             {
                 return NotFound("Consumable not found");
             }
-            var provider = (ProviderEntity)await _demandService.Find(new ProviderEntity(), consumable.provider_id);
-            if (provider is null)
+            var offer = (OfferEntity)await _demandService.Find(new OfferEntity(), consumable.offer_id);
+            if (offer is null)
             {
-                return NotFound("Provider of consumable not found");
+                return NotFound("Offer from consumable not found");
             }
-            var mailAddressReceiver = provider.mail;
-            var mailUserNameReceiver = provider.name;
+            var mailAddressReceiver = offer.mail;
+            var mailUserNameReceiver = offer.name;
             _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
                 mailUserNameReceiver);
             return Ok();
@@ -193,13 +193,13 @@ namespace Pirat.Controllers
             {
                 return NotFound("Device not found");
             }
-            var provider = (ProviderEntity)await _demandService.Find(new ProviderEntity(), device.provider_id);
-            if (provider is null)
+            var offer = (OfferEntity)await _demandService.Find(new OfferEntity(), device.offer_id);
+            if (offer is null)
             {
-                return NotFound("Provider of device not found");
+                return NotFound("Offer from device not found");
             }
-            var mailAddressReceiver = provider.mail;
-            var mailUserNameReceiver = provider.name;
+            var mailAddressReceiver = offer.mail;
+            var mailUserNameReceiver = offer.name;
             _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
                 mailUserNameReceiver);
             return Ok();
@@ -222,13 +222,13 @@ namespace Pirat.Controllers
             {
                 return NotFound("Personal not found");
             }
-            var provider = (ProviderEntity)await _demandService.Find(new ProviderEntity(), personal.provider_id);
-            if (provider is null)
+            var offer = (OfferEntity)await _demandService.Find(new OfferEntity(), personal.offer_id);
+            if (offer is null)
             {
-                return NotFound("Provider of device not found");
+                return NotFound("Offer from personal not found");
             }
-            var mailAddressReceiver = provider.mail;
-            var mailUserNameReceiver = provider.name;
+            var mailAddressReceiver = offer.mail;
+            var mailUserNameReceiver = offer.name;
             _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
                 mailUserNameReceiver);
             return Ok();
