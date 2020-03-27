@@ -29,6 +29,8 @@ namespace Pirat.Model.Entity
 
         public int[] personal_ids { get; set; }
 
+        public DateTime timestamp { get; set; }
+
         public OfferEntity build(Provider p)
         {
             name = p.name;
