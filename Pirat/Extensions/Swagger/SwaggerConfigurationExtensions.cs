@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Pirat.Extensions.Swagger.SwaggerConfiguration;
 using Pirat.Helper;
 using Pirat.SwaggerConfiguration;
 using Swashbuckle.AspNetCore.Filters;
@@ -17,8 +18,12 @@ namespace Pirat.Extensions.Swagger
         public static void AddSwagger(this IServiceCollection services)
         {
 
-            services.AddSwaggerExamplesFromAssemblyOf<OfferModelExample>();
-            //Add more examples here for swagger
+            services.AddSwaggerExamplesFromAssemblyOf<OfferResponseExample>();
+            services.AddSwaggerExamplesFromAssemblyOf<OfferRequestExample>();
+            
+            services.AddSwaggerExamplesFromAssemblyOf<ErrorCodeResponseExample>();
+            //Add more examples here for swagger response and swagger request
+
 
             services.AddSwaggerGen(c =>
             {

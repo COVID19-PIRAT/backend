@@ -7,7 +7,7 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace Pirat.SwaggerConfiguration
 {
-    public class OfferModelExample : IExamplesProvider<object>
+    public class OfferRequestExample : IExamplesProvider<object>
     {
         public object GetExamples()
         {

@@ -10,11 +10,14 @@ using Pirat.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Pirat.Codes;
+using Pirat.Extensions.Swagger.SwaggerConfiguration;
 using Pirat.Model.Entity;
 using Pirat.SwaggerConfiguration;
+using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Pirat.Controllers
@@ -22,10 +25,10 @@ namespace Pirat.Controllers
 
     [ApiController]
     [Route("/resources")]
-    public class DemandController : ControllerBase
+    public class ResourceController : ControllerBase
     {
 
-        private readonly ILogger<DemandController> _logger;
+        private readonly ILogger<ResourceController> _logger;
 
         private readonly IDemandService _demandService;
 
@@ -33,8 +36,8 @@ namespace Pirat.Controllers
 
         private readonly IReCaptchaService _reCaptchaService;
 
-        public DemandController(
-            ILogger<DemandController> logger,
+        public ResourceController(
+            ILogger<ResourceController> logger,
             IDemandService demandService,
             IMailService mailService,
             IReCaptchaService reCaptchaService
@@ -57,10 +60,12 @@ namespace Pirat.Controllers
         /// <response code="200">Returns the list of consumables. Empty if no consumable found.</response>
         /// <response code="400">If arguments in the query are invalid.</response> 
         [HttpGet("consumables")]
-        [ProducesResponseType(typeof(List<OfferResource<Consumable>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(List<OfferResource<Consumable>>))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OfferConsumableResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> Get([FromQuery] Consumable consumable, [FromQuery] Address address)
         {
             try
@@ -88,10 +93,12 @@ namespace Pirat.Controllers
         /// <response code="200">Returns the list of devices. Empty if no device found.</response>
         /// <response code="400">If arguments in the query are invalid.</response> 
         [HttpGet("devices")]
-        [ProducesResponseType(typeof(List<OfferResource<Device>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(List<OfferResource<Device>>))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OfferDeviceResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> Get([FromQuery] Device device, [FromQuery] Address address)
         {
             try
@@ -118,10 +125,12 @@ namespace Pirat.Controllers
         /// <response code="200">Returns the list of personals. Empty if no personal found.</response>
         /// <response code="400">If arguments in the query are invalid.</response> 
         [HttpGet("manpower")]
-        [ProducesResponseType(typeof(List<OfferResource<Personal>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(List<OfferResource<Personal>>))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OfferPersonalResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> Get([FromQuery] Manpower manpower, [FromQuery] Address address)
         {
             try
@@ -149,11 +158,13 @@ namespace Pirat.Controllers
         /// <response code="400">If token is invalid</response>
         /// <response code="404">If no offer for the token exists</response> 
         [HttpGet("offers/{token}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
         [ProducesResponseType(typeof(Offer), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Consumes("application/json")]
-        [Produces("application/json")]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> Get(string token)
         {
             try
@@ -176,32 +187,18 @@ namespace Pirat.Controllers
         /// <summary>
         /// Creates an offer.
         /// </summary>
-        /// <remarks>
-        /// Sample request:
-        /// 
-        ///     POST /resources
-        ///     {
-        ///         "provider": {
-        ///             "address": {
-        ///                 "street": "Hauptstrasse",
-        ///                 "streetnumber": "1",
-        ///                 "postalcode": "80333",
-        ///                 "city": "München",
-        ///                 "country": "Deutschland",
-        ///                 "latitude": 0,
-        ///                 "longitude": 0
-        ///     }
-        /// </remarks>
         /// <param name="offer"></param>
         /// <returns>A newly created offer</returns>
         /// <response code="200">Returns the newly created offer</response>
         /// <response code="400">If data in the offer is invalid or not sufficient</response>
         [HttpPost]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        [SwaggerRequestExample(typeof(Offer), typeof(OfferModelExample))]
+        [SwaggerRequestExample(typeof(Offer), typeof(OfferRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(Offer))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OfferResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> Post([FromBody] Offer offer)
         {
             try
@@ -224,13 +221,26 @@ namespace Pirat.Controllers
             }
         }
 
+        /// <summary>
+        /// Sending a demand request for the consumable with the given id to the non-public provider.
+        /// </summary>
+        /// <param name="contactInformationDemand"></param>
+        /// <param name="id">The id of the consumable</param>
+        /// <returns>Empty string</returns>
+        /// <response code="200">Empty string - consumable with provider found and mail has been sent</response>
+        /// <response code="404">Resource does not exist</response>
+        /// <response code="400">Invalid contact data</response>
         [HttpPost("consumables/{id:int}/contact")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> ConsumableAnonymContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
+        [SwaggerRequestExample(typeof(ContactInformationDemand), typeof(ContactInformationDemandExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> ConsumableAnonymousContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
             if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
             {
@@ -254,12 +264,25 @@ namespace Pirat.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Sending a demand request for the device with the given id to the non-public provider.
+        /// </summary>
+        /// <param name="contactInformationDemand"></param>
+        /// <param name="id">The id of the device</param>
+        /// <returns>Empty string</returns>
+        /// <response code="200">Empty string - consumable with provider found and mail has been sent</response>
+        /// <response code="404">Resource does not exist</response>
+        /// <response code="400">Invalid contact data</response>
         [HttpPost("devices/{id:int}/contact")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
+        [SwaggerRequestExample(typeof(ContactInformationDemand), typeof(ContactInformationDemandExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> DeviceAnonymContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
             if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
@@ -284,12 +307,25 @@ namespace Pirat.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Sending a demand request for personal with the given id to the non-public provider.
+        /// </summary>
+        /// <param name="contactInformationDemand"></param>
+        /// <param name="id">The id of the personal</param>
+        /// <returns>Empty string</returns>
+        /// <response code="200">Empty string - personal with provider found and mail has been sent</response>
+        /// <response code="404">Resource does not exist</response>
+        /// <response code="400">Invalid contact data</response>
         [HttpPost("manpower/{id:int}/contact")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
+        [SwaggerRequestExample(typeof(ContactInformationDemand), typeof(ContactInformationDemandExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> PersonalAnonymContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
             if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
@@ -316,18 +352,32 @@ namespace Pirat.Controllers
 
 
         //***********DELETE REQUESTS
+        /// <summary>
+        /// Deletes the Offer that is assigned to the token.
+        /// </summary>
+        /// <param name="token">The token</param>
+        /// <returns>String</returns>
+        /// <response code="200">String - offer deleted</response>
+        /// <response code="404">Offer to token does not exist</response>
+        /// <response code="400">Invalid token</response>
+        /// <response code="500">Invalid data state</response>
         [HttpDelete("offers/{token}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         [Consumes("application/json")]
         [Produces("application/json")]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> Delete(string token)
         {
             try
             {
-                return Ok(await _demandService.delete(token));
+                await _demandService.delete(token);
+                return Ok();
             }
             catch (ArgumentException e)
             {
