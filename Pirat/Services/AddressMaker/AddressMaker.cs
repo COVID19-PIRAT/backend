@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Pirat.Codes;
 using Pirat.Exceptions;
 using Pirat.Model;
 
@@ -32,7 +33,7 @@ namespace Pirat.Services
 			JArray result = (JArray) json.GetValue("results");
 			if (result.Count == 0)
 			{
-				throw new UnknownAdressException("Address not found");
+				throw new UnknownAdressException(Error.ErrorCodes.INVALID_ADDRESS);
 			}
 			JObject location = (JObject)((JObject)((JObject)result[0]).GetValue("geometry")).GetValue("location");
 			decimal lat = location.GetValue("lat").ToObject<decimal>();

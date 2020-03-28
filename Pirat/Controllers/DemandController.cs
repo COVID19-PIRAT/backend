@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Formatters.Xml;
+using Pirat.Codes;
 using Pirat.Model.Entity;
 
 namespace Pirat.Controllers
@@ -151,9 +153,8 @@ namespace Pirat.Controllers
             {
                 if (!_mailService.verifyMail(offer.provider.mail))
                 {
-                    return BadRequest("Mail address is invalid");
+                    return BadRequest(Error.ErrorCodes.INVALID_MAIL);
                 }
-
                 var token = await _demandService.insert(offer);
                 _mailService.sendConfirmationMail(token, offer.provider.mail, offer.provider.name);
                 return Ok(token);
@@ -178,17 +179,17 @@ namespace Pirat.Controllers
         {
             if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
             {
-                return BadRequest("Mail address invalid");
+                return BadRequest(Error.ErrorCodes.INVALID_MAIL);
             }
             var consumable = (ConsumableEntity)await _demandService.Find(new ConsumableEntity(), id);
             if (consumable is null)
             {
-                return NotFound($"Consumable {id} not found");
+                return NotFound(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
             }
             var offer = (OfferEntity)await _demandService.Find(new OfferEntity(), consumable.offer_id);
             if (offer is null)
             {
-                return NotFound($"Offer from consumable {id} not found");
+                return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
             }
             var mailAddressReceiver = offer.mail;
             var mailUserNameReceiver = offer.name;
@@ -207,17 +208,17 @@ namespace Pirat.Controllers
         {
             if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
             {
-                return BadRequest("Mail address is invalid");
+                return BadRequest(Error.ErrorCodes.INVALID_MAIL);
             }
             var device = (DeviceEntity)await _demandService.Find(new DeviceEntity(), id);
             if (device is null)
             {
-                return NotFound($"Device {id} not found");
+                return NotFound(Error.ErrorCodes.NOTFOUND_DEVICE);
             }
             var offer = (OfferEntity)await _demandService.Find(new OfferEntity(), device.offer_id);
             if (offer is null)
             {
-                return NotFound($"Offer from device {id} not found");
+                return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
             }
             var mailAddressReceiver = offer.mail;
             var mailUserNameReceiver = offer.name;
@@ -236,17 +237,17 @@ namespace Pirat.Controllers
         {
             if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
             {
-                return BadRequest("Mail address is invalid");
+                return BadRequest(Error.ErrorCodes.INVALID_MAIL);
             }
             var personal = (PersonalEntity)await _demandService.Find(new PersonalEntity(), id);
             if (personal is null)
             {
-                return NotFound($"Personal {id} not found");
+                return NotFound(Error.ErrorCodes.NOTFOUND_PERSONAL);
             }
             var offer = (OfferEntity)await _demandService.Find(new OfferEntity(), personal.offer_id);
             if (offer is null)
             {
-                return NotFound($"Offer from personal {id} not found");
+                return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
             }
             var mailAddressReceiver = offer.mail;
             var mailUserNameReceiver = offer.name;

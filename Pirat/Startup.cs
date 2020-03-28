@@ -99,7 +99,7 @@ namespace Pirat
             app.UseHealthChecks("/health");
 
 
-            app.UseReCapture();
+            //app.UseReCapture();
             app.UseAuthentication();
             app.UseAuthorization();
 

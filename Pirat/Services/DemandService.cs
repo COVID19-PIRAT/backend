@@ -11,6 +11,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Server.IIS.Core;
+using Pirat.Codes;
 using Pirat.Model.Entity;
 
 namespace Pirat.Services
@@ -29,9 +30,17 @@ namespace Pirat.Services
 
         public Task<List<OfferResource<Consumable>>> QueryOffers(Consumable con)
         {
-            if (string.IsNullOrEmpty(con.category) || !con.isAddressSufficient())
+            if (string.IsNullOrEmpty(con.category))
             {
-                throw new ArgumentException("Missing required attributes");
+                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_CONSUMABLE);
+            } 
+            if(!con.isAddressSufficient())
+            {
+                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_ADDRESS);
+            }
+            if (con.amount < 1)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_CONSUMABLE);
             }
 
             var consumable = new ConsumableEntity().build(con);
@@ -102,10 +111,17 @@ namespace Pirat.Services
 
         public Task<List<OfferResource<Device>>> QueryOffers(Device dev)
         {
-
-            if (string.IsNullOrEmpty(dev.category) || !dev.isAddressSufficient())
+            if (string.IsNullOrEmpty(dev.category))
             {
-                throw new ArgumentException("Missing in required attributes");
+                throw new ArgumentException(Codes.Error.ErrorCodes.INCOMPLETE_DEVICE);
+            }
+            if(!dev.isAddressSufficient())
+            {
+                throw new ArgumentException(Codes.Error.ErrorCodes.INCOMPLETE_ADDRESS);
+            }
+            if (dev.amount < 1)
+            {
+                throw new ArgumentException(Codes.Error.ErrorCodes.INVALID_AMOUNT_DEVICE);
             }
 
             var device = new DeviceEntity().build(dev);
@@ -176,7 +192,7 @@ namespace Pirat.Services
         {
             if (!manpower.isAddressSufficient())
             {
-                throw new ArgumentException("Missing in required attributes");
+                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_PERSONAL);
             }
 
             var maxDistance = manpower.kilometer;
@@ -408,7 +424,23 @@ namespace Pirat.Services
                 (offer.devices == null || !offer.devices.Any()) && 
                 (offer.personals == null || !offer.personals.Any()))
             {
-                throw new ArgumentException("The offer contains no resources!");
+                throw new ArgumentException(""+Error.ErrorCodes.INCOMPLETE_OFFER);
+            }
+
+            if (offer.consumables != null)
+            {
+                if (offer.consumables.Any(e => e.amount < 1))
+                {
+                    throw new ArgumentException(""+Error.ErrorCodes.INVALID_AMOUNT_CONSUMABLE);
+                }
+            }
+
+            if (offer.devices != null)
+            {
+                if (offer.devices.Any(e => e.amount < 1))
+                {
+                    throw new ArgumentException(""+Error.ErrorCodes.INVALID_AMOUNT_DEVICE);
+                }
             }
 
             //check the addresses
@@ -501,9 +533,9 @@ namespace Pirat.Services
 
         public Task<Offer> queryLink(string token)
         {
-            if (token is null)
+            if (string.IsNullOrEmpty(token))
             {
-                throw new ArgumentException("No token received");
+                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_TOKEN);
             }
 
             var offerEntity = retrieveOfferFromToken(token);
@@ -535,9 +567,9 @@ namespace Pirat.Services
 
         public Task<string> delete(string token)
         {
-            if (token is null)
+            if (string.IsNullOrEmpty(token))
             {
-                throw new ArgumentException("No token received");
+                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_TOKEN);
             }
 
             OfferEntity o = retrieveOfferFromToken(token);
@@ -572,11 +604,11 @@ namespace Pirat.Services
 
             if (!offers.Any())
             {
-                throw new DataNotFoundException($"No offer for {token} exists");
+                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_OFFER);
             }
             if (1 < offers.Count())
             {
-                throw new InvalidDataStateException("More than one entry for the token");
+                throw new InvalidDataStateException(Error.FatalCodes.MORE_THAN_ONE_OFFER_FROM_TOKEN);
             }
             return offers.First();
         }
