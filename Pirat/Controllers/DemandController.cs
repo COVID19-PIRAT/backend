@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Pirat.Codes;
 using Pirat.Model.Entity;
+using Pirat.SwaggerConfiguration;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Pirat.Controllers
 {
@@ -46,7 +48,14 @@ namespace Pirat.Controllers
 
         //***********GET REQUESTS
 
-
+        /// <summary>
+        /// Searches list of Consumables and the associated Provider. Provider only included if public.
+        /// </summary>
+        /// <param name="consumable"></param>
+        /// <param name="address"></param>
+        /// <returns>List of consumables</returns>
+        /// <response code="200">Returns the list of consumables. Empty if no consumable found.</response>
+        /// <response code="400">If arguments in the query are invalid.</response> 
         [HttpGet("consumables")]
         [ProducesResponseType(typeof(List<OfferResource<Consumable>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
@@ -70,7 +79,14 @@ namespace Pirat.Controllers
         }
 
 
-
+        /// <summary>
+        /// Searches list of Devices and the associated Provider. Provider only included if public
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="address"></param>
+        /// <returns>List of devices</returns>
+        /// <response code="200">Returns the list of devices. Empty if no device found.</response>
+        /// <response code="400">If arguments in the query are invalid.</response> 
         [HttpGet("devices")]
         [ProducesResponseType(typeof(List<OfferResource<Device>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
@@ -93,6 +109,14 @@ namespace Pirat.Controllers
             }
         }
 
+        /// <summary>
+        /// Searches lift of Personals and the associated Provider. Provider only included if public.
+        /// </summary>
+        /// <param name="manpower"></param>
+        /// <param name="address"></param>
+        /// <returns>List of personals</returns>
+        /// <response code="200">Returns the list of personals. Empty if no personal found.</response>
+        /// <response code="400">If arguments in the query are invalid.</response> 
         [HttpGet("manpower")]
         [ProducesResponseType(typeof(List<OfferResource<Personal>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
@@ -116,6 +140,14 @@ namespace Pirat.Controllers
            
         }
 
+        /// <summary>
+        /// Searches the Offer for the given token.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns>The offer of the token</returns>
+        /// <response code="200">Returns the offer.</response>
+        /// <response code="400">If token is invalid</response>
+        /// <response code="404">If no offer for the token exists</response> 
         [HttpGet("offers/{token}")]
         [ProducesResponseType(typeof(Offer), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -141,12 +173,35 @@ namespace Pirat.Controllers
 
         //*********POST REQUESTS
 
-
+        /// <summary>
+        /// Creates an offer.
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        /// 
+        ///     POST /resources
+        ///     {
+        ///         "provider": {
+        ///             "address": {
+        ///                 "street": "Hauptstrasse",
+        ///                 "streetnumber": "1",
+        ///                 "postalcode": "80333",
+        ///                 "city": "München",
+        ///                 "country": "Deutschland",
+        ///                 "latitude": 0,
+        ///                 "longitude": 0
+        ///     }
+        /// </remarks>
+        /// <param name="offer"></param>
+        /// <returns>A newly created offer</returns>
+        /// <response code="200">Returns the newly created offer</response>
+        /// <response code="400">If data in the offer is invalid or not sufficient</response>
         [HttpPost]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
+        [SwaggerRequestExample(typeof(Offer), typeof(OfferModelExample))]
         public async Task<IActionResult> Post([FromBody] Offer offer)
         {
             try

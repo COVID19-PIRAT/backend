@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,8 +18,11 @@ using Microsoft.OpenApi.Models;
 using Npgsql;
 using Pirat.DatabaseContext;
 using Pirat.Extensions;
+using Pirat.Extensions.Swagger;
 using Pirat.Helper;
 using Pirat.Services;
+using Pirat.SwaggerConfiguration;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Pirat
 {
@@ -65,12 +70,8 @@ namespace Pirat
             //DB context
             services.AddDbContext<DemandContext>(options => options.UseNpgsql(connectionString));
 
-            //Swagger
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-                c.OperationFilter<SwaggerJsonIgnore>();
-            });
+            //Swagger (see extensions)
+            services.AddSwagger(); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -103,8 +104,10 @@ namespace Pirat
 
             app.UseHealthChecks("/health");
 
-
-            app.UseReCapture();
+            if (env.IsProduction())
+            {
+                app.UseReCapture();
+            }
             app.UseAuthentication();
             app.UseAuthorization();
 
