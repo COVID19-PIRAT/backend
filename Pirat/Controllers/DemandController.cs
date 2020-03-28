@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Formatters.Xml;
+using Pirat.Codes;
 using Pirat.Model.Entity;
 
 namespace Pirat.Controllers
@@ -47,8 +49,7 @@ namespace Pirat.Controllers
 
         [HttpGet("consumables")]
         [ProducesResponseType(typeof(List<OfferResource<Consumable>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> Get([FromQuery] Consumable consumable, [FromQuery] Address address)
@@ -57,7 +58,12 @@ namespace Pirat.Controllers
             {
                 consumable.address = address;
                 return Ok(await _demandService.QueryOffers(consumable));
-            } catch (ArgumentException e)
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (UnknownAdressException e)
             {
                 return BadRequest(e.Message);
             }
@@ -67,8 +73,7 @@ namespace Pirat.Controllers
 
         [HttpGet("devices")]
         [ProducesResponseType(typeof(List<OfferResource<Device>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> Get([FromQuery] Device device, [FromQuery] Address address)
@@ -77,7 +82,12 @@ namespace Pirat.Controllers
             {
                 device.address = address;
                 return Ok(await _demandService.QueryOffers(device));
-            } catch (ArgumentException e)
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (UnknownAdressException e)
             {
                 return BadRequest(e.Message);
             }
@@ -85,8 +95,7 @@ namespace Pirat.Controllers
 
         [HttpGet("manpower")]
         [ProducesResponseType(typeof(List<OfferResource<Personal>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> Get([FromQuery] Manpower manpower, [FromQuery] Address address)
@@ -95,7 +104,12 @@ namespace Pirat.Controllers
             {
                 manpower.address = address;
                 return Ok(await _demandService.QueryOffers(manpower));
-            } catch (ArgumentException e)
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (UnknownAdressException e)
             {
                 return BadRequest(e.Message);
             }
@@ -104,7 +118,7 @@ namespace Pirat.Controllers
 
         [HttpGet("offers/{token}")]
         [ProducesResponseType(typeof(Offer), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -113,11 +127,15 @@ namespace Pirat.Controllers
             try
             {
                 return Ok(await _demandService.queryLink(token));
-            } catch (ArgumentException e)
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
             {
                 return NotFound(e.Message);
             }
-
         }
 
 
@@ -126,48 +144,52 @@ namespace Pirat.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> Post([FromBody] Offer offer)
         {
             try
             {
-                if (!_mailService.verifyMail(offer.provider.mail)){
-                    return NotFound("Mail address is invalid");
+                if (!_mailService.verifyMail(offer.provider.mail))
+                {
+                    return BadRequest(Error.ErrorCodes.INVALID_MAIL);
                 }
                 var token = await _demandService.insert(offer);
                 _mailService.sendNewOfferConfirmationMail(token, offer.provider.mail, offer.provider.name);
                 return Ok(token);
-            } catch (UnknownAdressException e)
+            }
+            catch (UnknownAdressException e)
             {
-                return NotFound(e.Message);
+                return BadRequest(e.Message);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
             }
         }
 
         [HttpPost("consumables/{id:int}/contact")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> ConsumableAnonymContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
             if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
             {
-                return NotFound("Mail address is invalid");
+                return BadRequest(Error.ErrorCodes.INVALID_MAIL);
             }
             var consumable = (ConsumableEntity)await _demandService.Find(new ConsumableEntity(), id);
             if (consumable is null)
             {
-                return NotFound("Consumable not found");
+                return NotFound(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
             }
             var offer = (OfferEntity)await _demandService.Find(new OfferEntity(), consumable.offer_id);
             if (offer is null)
             {
-                return NotFound("Offer from consumable not found");
+                return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
             }
             var mailAddressReceiver = offer.mail;
             var mailUserNameReceiver = offer.name;
@@ -179,25 +201,25 @@ namespace Pirat.Controllers
 
         [HttpPost("devices/{id:int}/contact")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> DeviceAnonymContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
             if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
             {
-                return NotFound("Mail address is invalid");
+                return BadRequest(Error.ErrorCodes.INVALID_MAIL);
             }
             var device = (DeviceEntity)await _demandService.Find(new DeviceEntity(), id);
             if (device is null)
             {
-                return NotFound("Device not found");
+                return NotFound(Error.ErrorCodes.NOTFOUND_DEVICE);
             }
             var offer = (OfferEntity)await _demandService.Find(new OfferEntity(), device.offer_id);
             if (offer is null)
             {
-                return NotFound("Offer from device not found");
+                return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
             }
             var mailAddressReceiver = offer.mail;
             var mailUserNameReceiver = offer.name;
@@ -209,25 +231,25 @@ namespace Pirat.Controllers
 
         [HttpPost("manpower/{id:int}/contact")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> PersonalAnonymContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
             if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
             {
-                return NotFound("Mail address is invalid");
+                return BadRequest(Error.ErrorCodes.INVALID_MAIL);
             }
             var personal = (PersonalEntity)await _demandService.Find(new PersonalEntity(), id);
             if (personal is null)
             {
-                return NotFound("Personal not found");
+                return NotFound(Error.ErrorCodes.NOTFOUND_PERSONAL);
             }
             var offer = (OfferEntity)await _demandService.Find(new OfferEntity(), personal.offer_id);
             if (offer is null)
             {
-                return NotFound("Offer from personal not found");
+                return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
             }
             var mailAddressReceiver = offer.mail;
             var mailUserNameReceiver = offer.name;
@@ -241,8 +263,9 @@ namespace Pirat.Controllers
         //***********DELETE REQUESTS
         [HttpDelete("offers/{token}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> Delete(string token)
@@ -250,9 +273,18 @@ namespace Pirat.Controllers
             try
             {
                 return Ok(await _demandService.delete(token));
-            } catch(ArgumentException e)
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
             {
                 return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
             }
         }
 

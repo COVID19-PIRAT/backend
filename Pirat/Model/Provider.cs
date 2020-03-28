@@ -78,6 +78,11 @@ namespace Pirat.Model
             return (name.Equals(p.name) && organisation.Equals(p.organisation) && address.Equals(p.address) && mail.Equals(p.mail) && phone.Equals(p.phone));
         }
 
+        public bool isAddressSufficient()
+        {
+            return !string.IsNullOrEmpty(address.postalcode) && !string.IsNullOrEmpty(address.country);
+        }
+
     }
 
     
