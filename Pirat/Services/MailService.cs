@@ -197,9 +197,18 @@ mail@pirat-tool.com
             client.Connect(sender.mailSenderSmtpHost, sender.mailSenderSmtpPort, sender.mailSenderSmtpUseSsl);
             client.Authenticate(sender.mailSenderUserName, sender.mailSenderPassword);
 
-            client.Send(message);
-            client.Disconnect(true);
-            client.Dispose();
+            try
+            {
+                client.Send(message);
+                client.Disconnect(true);
+                client.Dispose();
+            }
+            catch (SmtpCommandException exception)
+            {
+                // TODO Analyze which different reasons there could be for an exception
+                // TODO Do something...
+            }
+            // TODO put disconnect into finally?
         }
     }
 

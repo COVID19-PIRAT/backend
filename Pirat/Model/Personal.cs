@@ -15,7 +15,7 @@ namespace Pirat.Model
 
         [JsonProperty]
         [FromQuery(Name = "institution")]
-        [Required]
+        // [Required]
         public string institution { get; set; }
 
         [JsonProperty]

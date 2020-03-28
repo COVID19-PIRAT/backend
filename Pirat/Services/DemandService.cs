@@ -38,10 +38,10 @@ namespace Pirat.Services
             {
                 throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_ADDRESS);
             }
-            if (con.amount < 1)
-            {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_CONSUMABLE);
-            }
+            // if (con.amount < 1)
+            // {
+            //     throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_CONSUMABLE);
+            // }
 
             var consumable = new ConsumableEntity().build(con);
             var maxDistance = con.kilometer;
@@ -119,10 +119,10 @@ namespace Pirat.Services
             {
                 throw new ArgumentException(Codes.Error.ErrorCodes.INCOMPLETE_ADDRESS);
             }
-            if (dev.amount < 1)
-            {
-                throw new ArgumentException(Codes.Error.ErrorCodes.INVALID_AMOUNT_DEVICE);
-            }
+            // if (dev.amount < 1)
+            // {
+            //     throw new ArgumentException(Codes.Error.ErrorCodes.INVALID_AMOUNT_DEVICE);
+            // }
 
             var device = new DeviceEntity().build(dev);
             var maxDistance = dev.kilometer;
