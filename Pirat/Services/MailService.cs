@@ -165,7 +165,7 @@ mail@pirat-tool.com
                                  $"Kommentar: {telephoneCallbackRequest.notes}\n\n\n" +
                                  $"Liebe Grüße\nDein Backend-Server";
 
-                sendMail(mailInternalReceiverMail, subject, content);
+                sendMail(this._defaultMailSender.mailSenderAddress, subject, content);
             });
         }
 
