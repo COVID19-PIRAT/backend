@@ -140,7 +140,7 @@ create unique index manpower_id_uindex
 
 //Create the tables
 
-var tables = [addressTable, consumableTable, deviceTable, offerTable, personalTable]
+var tables = [addressTable, offerTable, consumableTable, deviceTable, personalTable]
 
 for(i = 0; i < tables.length; i++){
     pgclient.query(tables[i], (err, res) => {
