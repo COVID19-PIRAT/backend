@@ -155,7 +155,7 @@ VALUES (1, '77', '27498', 'Helgoland', 'Deutschland', true, 54.1830721, 7.886388
 
 const offer = `INSERT INTO offer 
 (id, name, mail, phone, organisation, ispublic, address_id, consumable_ids, device_ids, personal_ids, token, timestamp) 
-VALUES (37, 'Störtebeker', 'pirat.hilfsmittel@gmail.com', '987654', 'Instiut für Piraterie', true, 1, '{1}', '{1}', '{1}', 'FAUWc7MO4MM5M1upNhxUkZ9aArdlVo', 
+VALUES (1, 'Störtebeker', 'pirat.hilfsmittel@gmail.com', '987654', 'Instiut für Piraterie', true, 1, '{1}', '{1}', '{1}', 'FAUWc7MO4MM5M1upNhxUkZ9aArdlVo', 
 '2020-03-29 17:58:12.041110');
 `
 
