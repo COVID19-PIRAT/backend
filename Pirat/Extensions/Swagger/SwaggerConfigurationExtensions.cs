@@ -20,8 +20,8 @@ namespace Pirat.Extensions.Swagger
 
             services.AddSwaggerExamplesFromAssemblyOf<OfferResponseExample>();
             services.AddSwaggerExamplesFromAssemblyOf<OfferRequestExample>();
-            
             services.AddSwaggerExamplesFromAssemblyOf<ErrorCodeResponseExample>();
+            services.AddSwaggerExamplesFromAssemblyOf<OfferConsumableResponseExample>();
             //Add more examples here for swagger response and swagger request
 
 

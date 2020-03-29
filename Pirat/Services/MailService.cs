@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Pirat.Model;
@@ -39,7 +40,18 @@ namespace Pirat.Services
 
         public bool verifyMail(string mailAddress)
         {
+            if (!verifyMailWithRegex(mailAddress))
+            {
+                return false;
+            }
             return MailboxAddress.TryParse(mailAddress, out _);
+        }
+
+        private bool verifyMailWithRegex(string mailAddress)
+        {
+            string pattern = @"^(?!\.)(""([^""\r\\]|\\[""\r\\])*""|" + @"([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)" + @"@[a-z0-9][\w\.-]*[a-z0-9]\.[a-z][a-z\.]*[a-z]$";
+            var regex = new Regex(pattern, RegexOptions.IgnoreCase);
+            return regex.IsMatch(mailAddress);
         }
 
         public async void sendDemandMailToProvider(ContactInformationDemand demandInformation, string mailAddressReceiver, string receiverMailUserName)

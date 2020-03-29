@@ -117,7 +117,7 @@ namespace Pirat.Controllers
         }
 
         /// <summary>
-        /// Searches lift of Personals and the associated Provider. Provider only included if public.
+        /// Searches list of Personals and the associated Provider. Provider only included if public.
         /// </summary>
         /// <param name="manpower"></param>
         /// <param name="address"></param>
@@ -160,11 +160,12 @@ namespace Pirat.Controllers
         [HttpGet("offers/{token}")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(Offer), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(Offer))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OfferResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> Get(string token)
         {
             try
@@ -235,7 +236,7 @@ namespace Pirat.Controllers
         [Produces("application/json")]
         [SwaggerRequestExample(typeof(ContactInformationDemand), typeof(ContactInformationDemandExample))]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
-        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(EmptyResponseExample))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
@@ -278,7 +279,7 @@ namespace Pirat.Controllers
         [Produces("application/json")]
         [SwaggerRequestExample(typeof(ContactInformationDemand), typeof(ContactInformationDemandExample))]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
-        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(EmptyResponseExample))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
@@ -321,7 +322,7 @@ namespace Pirat.Controllers
         [Produces("application/json")]
         [SwaggerRequestExample(typeof(ContactInformationDemand), typeof(ContactInformationDemandExample))]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
-        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(EmptyResponseExample))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
@@ -357,7 +358,7 @@ namespace Pirat.Controllers
         /// </summary>
         /// <param name="token">The token</param>
         /// <returns>String</returns>
-        /// <response code="200">String - offer deleted</response>
+        /// <response code="200">Empty - Offer deleted</response>
         /// <response code="404">Offer to token does not exist</response>
         /// <response code="400">Invalid token</response>
         /// <response code="500">Invalid data state</response>
@@ -365,7 +366,7 @@ namespace Pirat.Controllers
         [Consumes("application/json")]
         [Produces("application/json")]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
-        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(EmptyResponseExample))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]

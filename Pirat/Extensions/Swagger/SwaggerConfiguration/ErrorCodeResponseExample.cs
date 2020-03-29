@@ -6,9 +6,9 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace Pirat.Extensions.Swagger.SwaggerConfiguration
 {
-    public class ErrorCodeResponseExample : IExamplesProvider<object>
+    public class ErrorCodeResponseExample : IExamplesProvider<string>
     {
-        public object GetExamples()
+        public string GetExamples()
         {
             return "XXXX:Description";
         }
