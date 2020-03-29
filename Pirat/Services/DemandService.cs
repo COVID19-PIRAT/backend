@@ -22,6 +22,12 @@ namespace Pirat.Services
 
         private readonly DemandContext _context;
 
+        private const int TokenLength = 30;
+        //TODO Should we use default values if km is 0 in queries?
+        private const int KmDistanceDefaultPersonal = 50;
+        private const int KmDistanceDefaultDevice = 50;
+        private const int KmDistanceDefaultConsumable = 50;
+
         public DemandService(ILogger<DemandService> logger, DemandContext context)
         {
             _logger = logger;
@@ -76,17 +82,14 @@ namespace Pirat.Services
 
                 var resource = new Consumable().build(x.c);
 
-                if (maxDistance > 0)
+                var yLatitude = x.ac.latitude;
+                var yLongitude = x.ac.longitude;
+                var distance = computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
+                if (distance > maxDistance && maxDistance != 0)
                 {
-                    var yLatitude = x.ac.latitude;
-                    var yLongitude = x.ac.longitude;
-                    var distance = computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
-                    if (distance > maxDistance)
-                    {
-                        continue;
-                    }
-                    resource.kilometer = (int) Math.Round(distance);
+                    continue;
                 }
+                resource.kilometer = (int) Math.Round(distance);
 
                 var provider = new Provider().build(x.o);
                 var providerAddress = new Address().build(x.ap);
@@ -156,17 +159,15 @@ namespace Pirat.Services
             {
                 var resource = new Device().build(x.d);
 
-                if (maxDistance > 0)
+                var yLatitude = x.ac.latitude;
+                var yLongitude = x.ac.longitude;
+                var distance = computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
+
+                if (distance > maxDistance && maxDistance != 0)
                 {
-                    var yLatitude = x.ac.latitude;
-                    var yLongitude = x.ac.longitude;
-                    var distance = computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
-                    if (distance > maxDistance)
-                    {
-                        continue;
-                    }
-                    resource.kilometer = (int)Math.Round(distance);
+                    continue;
                 }
+                resource.kilometer = (int)Math.Round(distance);
 
                 var provider = new Provider().build(x.o);
                 var providerAddress = new Address().build(x.ap);
@@ -235,17 +236,14 @@ namespace Pirat.Services
             {
                 var resource = new Personal().build(x.personal);
 
-                if (maxDistance > 0)
+                var yLatitude = x.ac.latitude;
+                var yLongitude = x.ac.longitude;
+                var distance = computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
+                if (distance > maxDistance && maxDistance != 0)
                 {
-                    var yLatitude = x.ac.latitude;
-                    var yLongitude = x.ac.longitude;
-                    var distance = computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
-                    if (distance > maxDistance)
-                    {
-                        continue;
-                    }
-                    resource.kilometer = (int)Math.Round(distance);
+                    continue;
                 }
+                resource.kilometer = (int)Math.Round(distance);
 
                 var provider = new Provider().build(x.o);
                 var providerAddress = new Address().build(x.ap);
@@ -536,9 +534,9 @@ namespace Pirat.Services
 
         public Task<Offer> queryLink(string token)
         {
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token) || token.Length != TokenLength)
             {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_TOKEN);
+                throw new ArgumentException(Error.ErrorCodes.INVALID_TOKEN);
             }
 
             var offerEntity = retrieveOfferFromToken(token);
@@ -570,9 +568,9 @@ namespace Pirat.Services
 
         public Task<string> delete(string token)
         {
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token) || token.Length != TokenLength)
             {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_TOKEN);
+                throw new ArgumentException(Error.ErrorCodes.INVALID_TOKEN);
             }
 
             OfferEntity o = retrieveOfferFromToken(token);
@@ -621,7 +619,7 @@ namespace Pirat.Services
         {
             Random random = new Random();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
-            return new string(Enumerable.Repeat(chars, 30)
+            return new string(Enumerable.Repeat(chars, TokenLength)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 

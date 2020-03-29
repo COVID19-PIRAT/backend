@@ -4,8 +4,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Pirat.Codes;
+using Pirat.Extensions.Swagger.SwaggerConfiguration;
 using Pirat.Model;
 using Pirat.Services;
+using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Pirat.Controllers
 {
@@ -23,14 +27,17 @@ namespace Pirat.Controllers
 
 
         [HttpPost]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [Consumes("application/json")]
-        [Produces("application/json")]
+        [SwaggerRequestExample(typeof(TelephoneCallbackRequest), typeof(TelephoneCallbackRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public IActionResult Post([FromBody] TelephoneCallbackRequest telephoneCallbackRequest)
         {
+            if (!_mailService.verifyMail(telephoneCallbackRequest.email))
+            {
+                return BadRequest(Error.ErrorCodes.INVALID_MAIL);
+            }
             this._mailService.sendTelephoneCallbackMail(telephoneCallbackRequest);
             return Ok();
         }

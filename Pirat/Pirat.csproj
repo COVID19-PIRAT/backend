@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Helper\**" />
+    <Content Remove="Helper\**" />
+    <EmbeddedResource Remove="Helper\**" />
+    <None Remove="Helper\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Configurations\" />
   </ItemGroup>
 
@@ -12,6 +19,7 @@
     <PackageReference Include="MailKit" Version="2.5.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="5.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.2.0" />
@@ -20,5 +28,10 @@
   <ItemGroup>
     <None Include="appsettings.prod.json" CopyToPublishDirectory="Always" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
 
 </Project>

@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Pirat.Helper
 {
-    public class SwaggerJsonIgnore : IOperationFilter
+    public class SwaggerExcludeFilter : IOperationFilter
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             var ignoredProperties = context.MethodInfo.GetParameters()
                 .SelectMany(p => p.ParameterType.GetProperties()
-                                 .Where(prop => prop.GetCustomAttribute<JsonIgnoreAttribute>() != null)
+                                 .Where(prop => prop.GetCustomAttribute<SwaggerExclude>() != null)
                                  );
             if (ignoredProperties.Any())
             {
@@ -28,5 +28,8 @@ namespace Pirat.Helper
 
             }
         }
+
+        [AttributeUsage(AttributeTargets.Property)]
+        public class SwaggerExclude : Attribute { }
     }
 }
