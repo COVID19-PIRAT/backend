@@ -169,7 +169,7 @@ const consumable = `INSERT INTO consumable
 VALUES (1, 'Rum', 'Nordrum', 'Störtebeker & Co', '999', 100, 1, 2, 'Liter', 'Arrr');
 `
 
-const addressPersonal = `INSERT INTO public 
+const addressPersonal = `INSERT INTO address 
 (id, streetnumber, postalcode, city, country, hascoordinates, latitude, longitude, street) 
 VALUES (3, '77', '27498', 'Helgoland', 'Deutschland', true, 54.1830721, 7.8863887, 'Hauptstraße');
 `
@@ -179,7 +179,7 @@ const personal = `INSERT INTO personal
 VALUES (1, 'Kapitän', 'Institut für Piraterie', 'Piraten Ahoi', 'Schiffsfahrt, Piraterie', false, 'Ahoi!', 1, 3);
 `
 
-const addressDevice = `INSERT INTO public.address 
+const addressDevice = `INSERT INTO address 
 (id, streetnumber, postalcode, city, country, hascoordinates, latitude, longitude, street) 
 VALUES (4, '77', '27498', 'Helgoland', 'Deutschland', true, 54.1830721, 7.8863887, 'Hauptstraße');
 `
