@@ -1,10 +1,10 @@
-name: .NET Core
+name: .NET Core Basic 
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: push
+  # push:
+  #   branches: [ master ]
+  # pull_request:
+  #   branches: [ master ]
 
 jobs:
   build:
@@ -14,12 +14,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 3.1.101
     - name: Install dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+    - name: Unit Tests
+      run: dotnet test Pirat.Tests/Pirat.Tests.csproj --no-restore --verbosity normal
+    - name: Integration Tests
+      env:
+        PIRAT_CONNECTION: Server=localhost;Port=5432;Database=postgres;User ID=postgres;Password=postgres
+        PIRAT_HOST: localhost:5000
+        ASPNETCORE_ENVIRONMENT: Development
+      run: dotnet test Pirat.IntegrationTests/Pirat.IntegrationTests.csproj --no-restore --verbosity normal
