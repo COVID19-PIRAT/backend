@@ -2,12 +2,8 @@
 using Microsoft.Extensions.Logging;
 using MimeKit;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
 using Pirat.Model;
 
 namespace Pirat.Services
@@ -58,10 +54,13 @@ namespace Pirat.Services
         {
             await Task.Run(() =>
             {
-                var subject = "PIRAT: Ihre Ressource wurde angefragt";
+                var subject = "PIRAT: Ihre Ressource wurde angefragt / Your resource was requested";
 
                 // TODO Add details to the resource that was demanded.
                 var content = $@"
+--- Please scroll down for the English version ---
+
+
 Liebe/r {receiverMailUserName},
 
 es gibt eine Anfrage für eine von Ihnen angebotene Ressource.
@@ -85,6 +84,33 @@ Vielen Dank, dass Sie unser Angebot genutzt haben. Falls Sie noch Fragen zu PIRA
 Beste Grüße,
 Ihr PIRAT-Team
 
+
+---
+
+Dear {receiverMailUserName},
+
+A request was registered for a resource you offered via PIRAT.
+
+In the following you can see the contact details of the person interested in an exchange:
+
+Name: {demandInformation.senderName}
+Email: {demandInformation.senderEmail}
+{(!string.IsNullOrEmpty(demandInformation.senderPhone) ? ("Phone: " + demandInformation.senderPhone) : "")}
+Institution: {demandInformation.senderInstitution}
+
+The following message was sent:
+
+{demandInformation.message}
+
+Please contact the requesting person and arrange the terms of the resource interchange in direct agreement.
+
+Thank you for using our service. If you have any questions regarding PIRAT, please contact us at mail@pirat-tool.com.
+
+
+Best regards,
+your PIRAT-Team
+
+
 ---
 
 pirat-tool.com
@@ -100,9 +126,12 @@ mail@pirat-tool.com
         {
             await Task.Run(() =>
             {
-                var subject = "PIRAT: Danke für Ihre Anfrage";
+                var subject = "PIRAT: Danke für Ihre Anfrage / Thank you for your request";
 
                 var content = $@"
+--- Please scroll down for the English version ---
+
+
 Liebe/r {demandInformation.senderName},
 
 vielen Dank für Ihre Anfrage! Diese wurde an den Anbieter weitergeleitet, der sich in Kürze bei Ihnen melden wird.
@@ -113,6 +142,21 @@ Vielen Dank, dass Sie unser Angebot genutzt haben. Falls Sie noch Fragen zu PIRA
 
 Beste Grüße,
 Ihr PIRAT-Team
+
+---
+
+Dear {demandInformation.senderName},
+
+Thank you very much for your request! It was forwarded to the provider, who will contact you soon.
+
+PIRAT only offers to bring providers and seekers in contact, please arrange the terms of the exchange directly with the provider.
+
+Thank you for using our service. If you have any questions regarding PIRAT, please contact us at mail@pirat-tool.com.
+
+
+Best regards,
+your PIRAT-Team
+
 
 ---
 
@@ -134,8 +178,11 @@ mail@pirat-tool.com
 
                 var fullLink = $"{piratHostServer}/change/{token}";
 
-                var subject = "PIRAT: Ihr Bearbeitungslink";
+                var subject = "PIRAT: Ihr Bearbeitungslink / Your link for editing";
                 var content = $@"
+--- Please scroll down for the English version ---
+
+
 Liebe/r {receiverMailUserName},
 
 vielen Dank, dass Sie sich entschieden haben, Laborressourcen und/oder personelle Unterstützung für den Kampf gegen Corona zur Verfügung zu stellen.
@@ -147,6 +194,22 @@ Sobald es Interessenten für einen Austausch gibt, werden diese sich direkt bei 
 
 Beste Grüße,
 Ihr PIRAT-Team
+
+
+---
+
+Dear {receiverMailUserName},
+
+Thank you very much for providing lab resources and/or staff to support the fight against Corona.
+
+You can use the following link to see the details of your offer: {fullLink}. If you want to edit or delete it, please contact us directly at mail@pirat-tool.com.
+
+As soon as someone is interested in your offer, you will be contacted directly.
+
+
+Best regards,
+your PIRAT-Team
+
 
 ---
 
