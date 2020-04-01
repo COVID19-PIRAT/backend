@@ -1,4 +1,4 @@
-name: Integration Tests
+name: .NET Core Build and Testing 
 
 on: push
   # push:
@@ -21,8 +21,10 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
+    - name: Unit Tests
+      run: dotnet test Pirat.Tests/Pirat.Tests.csproj --no-restore --verbosity normal
     - name: Build containers
-      run: docker-compose -f docker-compose.yml up
+      run: docker-compose -f docker-compose.yml up -d
     - name: Check running containers
       run: docker ps -a
     - name: Check logs
