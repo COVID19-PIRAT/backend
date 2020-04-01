@@ -23,9 +23,11 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     - name: Unit Tests
       run: dotnet test Pirat.Tests/Pirat.Tests.csproj --no-restore --verbosity normal
+    - name: Build the docker-compose stack
+      run: docker-compose -f docker-compose.yml up -d
+    - name: Check running containers
+      run: docker ps -a
+    - name: Check logs
+      run: docker logs backend
     - name: Integration Tests
-      env:
-        PIRAT_CONNECTION: Server=localhost;Port=5432;Database=postgres;User ID=postgres;Password=postgres
-        PIRAT_HOST: localhost:5000
-        ASPNETCORE_ENVIRONMENT: Development
-      run: dotnet test Pirat.IntegrationTests/Pirat.IntegrationTests.csproj --no-restore --verbosity normal
+      run: docker exec backend test Pirat.IntegrationTests/Pirat.IntegrationTests.csproj --no-restore --verbosity normal

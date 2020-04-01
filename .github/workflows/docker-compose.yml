@@ -1,0 +1,35 @@
+# docker-compose.yml
+version: '3'
+
+networks:
+  integration-tests:
+    driver: bridge
+
+services:
+  pirat:
+    container_name: backend
+    build: ./Pirat.dockerfile
+    ports:
+      - 5000:5000
+    depends_on:
+      - postgres
+    environment:
+      - PIRAT_CONNECTION=Server=localhost;Port=5432;Database=postgres;User ID=postgres;Password=postgres
+      - PIRAT_HOST=localhost:5000
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - integration-tests
+
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - integration-tests

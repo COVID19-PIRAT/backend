@@ -1,0 +1,16 @@
+name: Integration Tests
+
+on: push
+  # push:
+  #   branches: [ master ]
+  # pull_request:
+  #   branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Integration Tests
+      run: dotnet test Pirat.IntegrationTests/Pirat.IntegrationTests.csproj --no-restore --verbosity normal
