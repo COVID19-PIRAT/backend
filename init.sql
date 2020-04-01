@@ -19,7 +19,7 @@ create unique index address_id_uindex
 	on address (id);
 
 
-const offerTable = create table offer
+create table offer
 (
 	id serial not null
 		constraint offer_pkey

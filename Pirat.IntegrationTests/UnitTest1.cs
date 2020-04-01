@@ -12,6 +12,7 @@ namespace Pirat.IntegrationTests
     public class Tests
     {
         private DemandContext _demandContext;
+        private List<Deletable> _deletables;
 
         [SetUp]
         public void Setup()
@@ -20,6 +21,7 @@ namespace Pirat.IntegrationTests
             var options = new DbContextOptionsBuilder<DemandContext>().UseNpgsql(connectionString).Options;
             _demandContext = new DemandContext(options);
             _demandContext.Database.EnsureCreated();
+            _deletables = new List<Deletable>();
         }
 
         [Test]
@@ -28,15 +30,17 @@ namespace Pirat.IntegrationTests
             var address = new AddressEntity();
             address.postalcode = "85521";
             address.country = "Deutschland";
-            AddressMaker.SetCoordinates(address);
+            address.latitude = new Decimal(0.0);
+            address.longitude = new Decimal(0.0);
             address.Update(_demandContext);
             Assert.IsTrue(address.id > 0);
+            _deletables.Add(address);
         }
 
         [TearDown]
-        public void delete(List<Deletable> deletables)
+        public void delete()
         {
-            deletables.ForEach(x => x.Delete(_demandContext));
+            _deletables.ForEach(x => x.Delete(_demandContext));
         }
     }
 }
