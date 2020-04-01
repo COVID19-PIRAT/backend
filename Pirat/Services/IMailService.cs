@@ -17,5 +17,7 @@ namespace Pirat.Services
         public void sendDemandMailToProvider(ContactInformationDemand demandInformation, string mailAddressReceiver, string receiverMailUserName);
 
         public void sendDemandConformationMailToDemander(ContactInformationDemand demandInformation);
+
+        public void sendRegionSubscriptionConformationMail(RegionSubscription regionsubscription);
     }
 }

@@ -245,6 +245,50 @@ mail@pirat-tool.com
         }
 
 
+        public async void sendRegionSubscriptionConformationMail(RegionSubscription regionsubscription)
+        {
+            await Task.Run(() =>
+            {
+                var subject = "PIRAT: Danke für Ihr Interesse / Thank you for your interest";
+
+                var content = $@"
+--- Please scroll down for the English version ---
+
+
+Liebe/r {regionsubscription.name},
+
+vielen Dank für Ihr Interesse an PIRAT. Sie werden von nun an täglich über neue Angebote in der Nähe von {regionsubscription.postalcode} benachrichtigt.
+
+Falls Sie die Benachrichtigung beenden wollen oder noch Fragen zu PIRAT haben, melden Sie sich gerne jederzeit unter mail@pirat-tool.com.
+
+
+Beste Grüße,
+Ihr PIRAT-Team
+
+---
+
+Dear {regionsubscription.name},
+
+Thank you very much for your interest in PIRAT. You will now get daily notifications about new offers in the region {regionsubscription.postalcode}.
+
+If you wish to cancel the subscription or have any questions regarding PIRAT, please contact us at mail@pirat-tool.com.
+
+
+Best regards,
+your PIRAT-Team
+
+
+---
+
+pirat-tool.com
+mail@pirat-tool.com
+";
+                content = content.Trim();
+                sendMail(regionsubscription.email, subject, content);
+            });
+        }
+
+
         private void sendMail(string mailReceiverAddress, string subject, string content)
         {
             this.sendMail(this._defaultMailSender, mailReceiverAddress, subject, content);
