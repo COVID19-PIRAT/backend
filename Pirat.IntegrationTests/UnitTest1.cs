@@ -32,8 +32,11 @@ namespace Pirat.IntegrationTests
             address.country = "Deutschland";
             address.latitude = new Decimal(0.0);
             address.longitude = new Decimal(0.0);
+            Console.Out.WriteLine(address.id);
+            Assert.IsTrue(address.id == 0);
             address.Insert(_demandContext);
             Assert.IsTrue(address.id > 0);
+            Console.Out.WriteLine(address.id);
             _deletables.Add(address);
         }
 

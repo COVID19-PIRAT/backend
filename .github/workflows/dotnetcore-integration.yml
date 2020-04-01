@@ -22,7 +22,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Build containers
-      run: docker-compose -f docker-compose.yml up -d
+      run: docker-compose -f docker-compose.yml up
     - name: Check running containers
       run: docker ps -a
     - name: Check logs
