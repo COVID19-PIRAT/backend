@@ -6,20 +6,6 @@ networks:
     driver: bridge
 
 services:
-  pirat:
-    container_name: backend
-    build: ./Pirat.dockerfile
-    ports:
-      - 5000:5000
-    depends_on:
-      - postgres
-    environment:
-      - PIRAT_CONNECTION=Server=localhost;Port=5432;Database=postgres;User ID=postgres;Password=postgres
-      - PIRAT_HOST=localhost:5000
-      - ASPNETCORE_ENVIRONMENT=Development
-    networks:
-      - integration-tests
-
   postgres:
     container_name: postgres
     image: postgres:latest

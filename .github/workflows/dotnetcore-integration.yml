@@ -12,5 +12,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Build containers
+      run: docker-compose -f docker-compose.yml up -d
+    - name: Check running containers
+      run: docker ps -a
+    - name: Check logs
+      run: docker logs backend
     - name: Integration Tests
       run: dotnet test Pirat.IntegrationTests/Pirat.IntegrationTests.csproj --no-restore --verbosity normal
