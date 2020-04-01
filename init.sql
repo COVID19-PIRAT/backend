@@ -121,43 +121,43 @@ alter table personal owner to postgres;
 create unique index manpower_id_uindex
 	on personal (id);
 
-
-INSERT INTO address 
-(id, streetnumber, postalcode, city, country, hascoordinates, latitude, longitude, street) 
-VALUES (1, '77', '27498', 'Helgoland', 'Deutschland', true, 54.1830721, 7.8863887, 'Hauptstraße');
-
-
-INSERT INTO offer 
-(id, name, mail, phone, organisation, ispublic, address_id, consumable_ids, device_ids, personal_ids, token, timestamp) 
-VALUES (1, 'Störtebeker', 'pirat.hilfsmittel@gmail.com', '987654', 'Instiut für Piraterie', true, 1, '{1}', '{1}', '{1}', 'FAUWc7MO4MM5M1upNhxUkZ9aArdlVo', 
-'2020-03-29 17:58:12.041110');
+	
+-- INSERT INTO address 
+-- (id, streetnumber, postalcode, city, country, hascoordinates, latitude, longitude, street) 
+-- VALUES (1, '77', '27498', 'Helgoland', 'Deutschland', true, 54.1830721, 7.8863887, 'Hauptstraße');
 
 
-INSERT INTO address 
-(id, streetnumber, postalcode, city, country, hascoordinates, latitude, longitude, street) 
-VALUES (2, '77', '27498', 'Helgoland', 'Deutschland', true, 54.1830721, 7.8863887, 'Hauptstraße');
+-- INSERT INTO offer 
+-- (id, name, mail, phone, organisation, ispublic, address_id, consumable_ids, device_ids, personal_ids, token, timestamp) 
+-- VALUES (1, 'Störtebeker', 'pirat.hilfsmittel@gmail.com', '987654', 'Instiut für Piraterie', true, 1, '{1}', '{1}', '{1}', 'FAUWc7MO4MM5M1upNhxUkZ9aArdlVo', 
+-- '2020-03-29 17:58:12.041110');
 
 
-INSERT INTO consumable 
-(id, category, name, manufacturer, ordernumber, amount, offer_id, address_id, unit, annotation) 
-VALUES (1, 'Rum', 'Nordrum', 'Störtebeker & Co', '999', 100, 1, 2, 'Liter', 'Arrr');
+-- INSERT INTO address 
+-- (id, streetnumber, postalcode, city, country, hascoordinates, latitude, longitude, street) 
+-- VALUES (2, '77', '27498', 'Helgoland', 'Deutschland', true, 54.1830721, 7.8863887, 'Hauptstraße');
 
 
-INSERT INTO address 
-(id, streetnumber, postalcode, city, country, hascoordinates, latitude, longitude, street) 
-VALUES (3, '77', '27498', 'Helgoland', 'Deutschland', true, 54.1830721, 7.8863887, 'Hauptstraße');
+-- INSERT INTO consumable 
+-- (id, category, name, manufacturer, ordernumber, amount, offer_id, address_id, unit, annotation) 
+-- VALUES (1, 'Rum', 'Nordrum', 'Störtebeker & Co', '999', 100, 1, 2, 'Liter', 'Arrr');
 
 
-INSERT INTO personal 
-(id, qualification, institution, researchgroup, area, experience_rt_pcr, annotation, offer_id, address_id) 
-VALUES (1, 'Kapitän', 'Institut für Piraterie', 'Piraten Ahoi', 'Schiffsfahrt, Piraterie', false, 'Ahoi!', 1, 3);
+-- INSERT INTO address 
+-- (id, streetnumber, postalcode, city, country, hascoordinates, latitude, longitude, street) 
+-- VALUES (3, '77', '27498', 'Helgoland', 'Deutschland', true, 54.1830721, 7.8863887, 'Hauptstraße');
 
 
-INSERT INTO address 
-(id, streetnumber, postalcode, city, country, hascoordinates, latitude, longitude, street) 
-VALUES (4, '77', '27498', 'Helgoland', 'Deutschland', true, 54.1830721, 7.8863887, 'Hauptstraße');
+-- INSERT INTO personal 
+-- (id, qualification, institution, researchgroup, area, experience_rt_pcr, annotation, offer_id, address_id) 
+-- VALUES (1, 'Kapitän', 'Institut für Piraterie', 'Piraten Ahoi', 'Schiffsfahrt, Piraterie', false, 'Ahoi!', 1, 3);
 
 
-INSERT INTO device 
-(category, name, id, manufacturer, ordernumber, amount, offer_id, address_id, annotation) 
-VALUES ('Schiffsmaterial', 'Steuerrad', 1, 'Störtebeker & Co', '12345', 10, 1, 4, 'Volle Fahrt voraus!');
+-- INSERT INTO address 
+-- (id, streetnumber, postalcode, city, country, hascoordinates, latitude, longitude, street) 
+-- VALUES (4, '77', '27498', 'Helgoland', 'Deutschland', true, 54.1830721, 7.8863887, 'Hauptstraße');
+
+
+-- INSERT INTO device 
+-- (category, name, id, manufacturer, ordernumber, amount, offer_id, address_id, annotation) 
+-- VALUES ('Schiffsmaterial', 'Steuerrad', 1, 'Störtebeker & Co', '12345', 10, 1, 4, 'Volle Fahrt voraus!');
