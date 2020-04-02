@@ -72,7 +72,10 @@ namespace Pirat
             services.AddDbContext<DemandContext>(options => options.UseNpgsql(connectionString));
 
             //Swagger (see extensions)
-            services.AddSwagger(); 
+            services.AddSwagger();
+
+            // The SubscriptionService that repeatedly sends out emails.
+            services.AddHostedService<ScheduledNotificationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

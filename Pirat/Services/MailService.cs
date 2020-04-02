@@ -245,7 +245,7 @@ mail@pirat-tool.com
         }
 
 
-        public async void sendRegionSubscriptionConformationMail(RegionSubscription regionsubscription)
+        public async void sendRegionSubscriptionConformationMail(RegionSubscription regionSubscription)
         {
             await Task.Run(() =>
             {
@@ -255,9 +255,9 @@ mail@pirat-tool.com
 --- Please scroll down for the English version ---
 
 
-Liebe/r {regionsubscription.name},
+Liebe/r {regionSubscription.name},
 
-vielen Dank für Ihr Interesse an PIRAT. Sie werden von nun an täglich über neue Angebote in der Nähe von {regionsubscription.postalcode} benachrichtigt.
+vielen Dank für Ihr Interesse an PIRAT. Sie werden von nun an über neue Angebote in der Nähe von {regionSubscription.postalcode} benachrichtigt.
 
 Falls Sie die Benachrichtigung beenden wollen oder noch Fragen zu PIRAT haben, melden Sie sich gerne jederzeit unter mail@pirat-tool.com.
 
@@ -267,9 +267,9 @@ Ihr PIRAT-Team
 
 ---
 
-Dear {regionsubscription.name},
+Dear {regionSubscription.name},
 
-Thank you very much for your interest in PIRAT. You will now get daily notifications about new offers in the region {regionsubscription.postalcode}.
+Thank you very much for your interest in PIRAT. You will now get notifications about new offers in the region {regionSubscription.postalcode}.
 
 If you wish to cancel the subscription or have any questions regarding PIRAT, please contact us at mail@pirat-tool.com.
 
@@ -284,7 +284,51 @@ pirat-tool.com
 mail@pirat-tool.com
 ";
                 content = content.Trim();
-                sendMail(regionsubscription.email, subject, content);
+                sendMail(regionSubscription.email, subject, content);
+            });
+        }
+
+        public async Task sendNotificationAboutNewOffers(RegionSubscription regionSubscription, SubscriptionService.ResourceList resourceList)
+        {
+            // TODO Add details about what was added. However, this is currently difficult because the backend does not know the readable names.
+            await Task.Run(() =>
+            {
+                var subject = "PIRAT: Neue Angebote / New Offers";
+
+                var content = $@"
+--- Please scroll down for the English version ---
+
+
+Liebe/r {regionSubscription.name},
+
+wir haben neue Angebote für Sie auf PIRAT in der Nähe von {regionSubscription.postalcode}. Sie können sie unter https://pirat-tool.com/suchanfrage finden.
+
+Falls Sie die Benachrichtigung beenden wollen oder noch Fragen zu PIRAT haben, melden Sie sich gerne jederzeit unter mail@pirat-tool.com.
+
+
+Beste Grüße,
+Ihr PIRAT-Team
+
+---
+
+Dear {regionSubscription.name},
+
+There are new offers on PIRAT for you in the region {regionSubscription.postalcode}. You can find them under https://en.pirat-tool.com/suchanfrage.
+
+If you wish to cancel the subscription or have any questions regarding PIRAT, please contact us at mail@pirat-tool.com.
+
+
+Best regards,
+your PIRAT-Team
+
+
+---
+
+pirat-tool.com
+mail@pirat-tool.com
+";
+                content = content.Trim();
+                sendMail(regionSubscription.email, subject, content);
             });
         }
 

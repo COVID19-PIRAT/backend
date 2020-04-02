@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 using Pirat.Model;
 
 namespace Pirat.Services
@@ -12,6 +14,6 @@ namespace Pirat.Services
         /**
          * This function sends out emails to all subscribers if there are new relevant offers.
          */
-        public void SendEmails();
+        public Task SendEmails();
     }
 }

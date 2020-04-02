@@ -32,6 +32,8 @@ namespace Pirat.Model
 
         public decimal longitude { get; set; }
 
+        public bool active { get; set; }
+
         public Insertable Insert(DemandContext context)
         {
             context.region_subscription.Add(this);

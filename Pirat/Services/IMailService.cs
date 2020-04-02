@@ -18,6 +18,8 @@ namespace Pirat.Services
 
         public void sendDemandConformationMailToDemander(ContactInformationDemand demandInformation);
 
-        public void sendRegionSubscriptionConformationMail(RegionSubscription regionsubscription);
+        public void sendRegionSubscriptionConformationMail(RegionSubscription regionSubscription);
+
+        public Task sendNotificationAboutNewOffers(RegionSubscription regionSubscription, SubscriptionService.ResourceList resourceList);
     }
 }
