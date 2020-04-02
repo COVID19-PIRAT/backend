@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pirat.Codes;
+using Pirat.Exceptions;
 using Pirat.Extensions.Swagger.SwaggerConfiguration;
 using Pirat.Model;
 using Pirat.Services;
@@ -27,6 +28,8 @@ namespace Pirat.Controllers
         }
 
         [HttpPost]
+        [Consumes("application/json")]
+        [Produces("application/json")]
         [SwaggerRequestExample(typeof(RegionSubscription), typeof(RegionSubscriptionExample))]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(EmptyResponseExample))]
@@ -38,8 +41,19 @@ namespace Pirat.Controllers
             {
                 return BadRequest(Error.ErrorCodes.INVALID_MAIL);
             }
-            this._mailService.sendRegionSubscriptionConformationMail(regionsubscription);
-            this._subscriptionService.SubscribeRegion(regionsubscription);
+            try
+            {
+                this._subscriptionService.SubscribeRegion(regionsubscription);
+                this._mailService.sendRegionSubscriptionConformationMail(regionsubscription);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (UnknownAdressException e)
+            {
+                return BadRequest(e.Message);
+            }
             return Ok();
         }
     }
