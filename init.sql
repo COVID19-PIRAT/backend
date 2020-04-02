@@ -77,8 +77,8 @@ create table device
 	id serial not null
 		constraint device_pk
 			primary key,
-	manufacturer text not null,
-	ordernumber text not null,
+	manufacturer text,
+	ordernumber text,
 	amount integer default 0 not null,
 	offer_id integer not null
 		constraint device_offer_id_fk
