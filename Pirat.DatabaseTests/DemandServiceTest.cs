@@ -23,20 +23,17 @@ namespace Pirat.DatabaseTests
         private static DbContextOptions<DemandContext> options =
             new DbContextOptionsBuilder<DemandContext>().UseNpgsql(connectionString).Options;
 
-        private static DemandContext DemandContext = new DemandContext(options);
+        private static readonly DemandContext DemandContext = new DemandContext(options);
 
-        private readonly List<Deletable> _deletables;
+        private readonly DemandService _demandService;
 
-        private DemandService _demandService;
-
-        private CaptainHookGenerator _captainHookGenerator;
+        private readonly CaptainHookGenerator _captainHookGenerator;
 
         /// <summary>
         /// Called before each test
         /// </summary>
         public DemandServiceTest()
         {
-            _deletables = new List<Deletable>();
             var logger = new Mock<ILogger<DemandService>>();
             var addressMaker = new Mock<IAddressMaker>();
             addressMaker.Setup(m => m.SetCoordinates(It.IsAny<AddressEntity>())).Callback((AddressEntity a) =>
