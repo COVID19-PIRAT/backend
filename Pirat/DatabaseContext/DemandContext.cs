@@ -20,6 +20,8 @@ namespace Pirat.DatabaseContext
 
         public DbSet<AddressEntity> address { get; set; }
 
+        public DbSet<RegionSubscription> region_subscription { get; set; }
+
         public DemandContext(DbContextOptions<DemandContext> options) : base(options)
         {
         }

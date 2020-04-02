@@ -36,7 +36,7 @@ namespace Pirat.Extensions
 
         private readonly List<string> resourceEndings = new List<string>(){"consumables", "devices", "manpower"};
 
-        private readonly List<string> blackList = new List<string>(){ "/resources", "/telephone-callback" };
+        private readonly List<string> blackList = new List<string>(){ "/resources", "/telephone-callback", "/subscription" };
 
         public ReCaptchaMiddleware(RequestDelegate next, IReCaptchaService service)
         {
