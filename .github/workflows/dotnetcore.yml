@@ -29,5 +29,7 @@ jobs:
       run: docker ps -a
     - name: Check logs
       run: docker logs postgres
+    - name: Database Tests
+      run: dotnet test Pirat.DatabaseTests/Pirat.DatabaseTests.csproj --no-restore --verbosity normal
     - name: Integration Tests
       run: dotnet test Pirat.IntegrationTests/Pirat.IntegrationTests.csproj --no-restore --verbosity normal
