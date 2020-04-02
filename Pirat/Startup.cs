@@ -47,6 +47,7 @@ namespace Pirat
             services.AddTransient<IMailService, MailService>();
             services.AddTransient<IReCaptchaService, ReCaptchaService>(s => 
                 new ReCaptchaService(Environment.GetEnvironmentVariable("PIRAT_GOOGLE_RECAPTCHA_SECRET")));
+            services.AddTransient<ISubscriptionService, SubscriptionService>();
 
             //Cors
             services.AddCors(options =>
@@ -71,7 +72,10 @@ namespace Pirat
             services.AddDbContext<DemandContext>(options => options.UseNpgsql(connectionString));
 
             //Swagger (see extensions)
-            services.AddSwagger(); 
+            services.AddSwagger();
+
+            // The SubscriptionService that repeatedly sends out emails.
+            services.AddHostedService<ScheduledNotificationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
