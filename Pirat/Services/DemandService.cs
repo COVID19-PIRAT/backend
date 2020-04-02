@@ -22,16 +22,19 @@ namespace Pirat.Services
 
         private readonly DemandContext _context;
 
+        private readonly IAddressMaker _addressMaker;
+
         private const int TokenLength = 30;
         //TODO Should we use default values if km is 0 in queries?
         private const int KmDistanceDefaultPersonal = 50;
         private const int KmDistanceDefaultDevice = 50;
         private const int KmDistanceDefaultConsumable = 50;
 
-        public DemandService(ILogger<DemandService> logger, DemandContext context)
+        public DemandService(ILogger<DemandService> logger, DemandContext context, IAddressMaker addressMaker)
         {
             _logger = logger;
             _context = context;
+            _addressMaker = addressMaker;
         }
 
         public Task<List<OfferResource<Consumable>>> QueryOffers(Consumable con)
@@ -53,7 +56,7 @@ namespace Pirat.Services
             var maxDistance = con.kilometer;
             var consumableAddress = con.address;
             var location = new AddressEntity().build(consumableAddress);
-            AddressMaker.SetCoordinates(location);
+            _addressMaker.SetCoordinates(location);
 
             var query = from o in _context.offer
                 join c in _context.consumable on o.id equals c.offer_id
@@ -131,7 +134,7 @@ namespace Pirat.Services
             var maxDistance = dev.kilometer;
             var deviceAddress = dev.address;
             var location = new AddressEntity().build(deviceAddress);
-            AddressMaker.SetCoordinates(location);
+            _addressMaker.SetCoordinates(location);
 
             var query = from o in _context.offer
                 join d in _context.device on o.id equals d.offer_id
@@ -199,7 +202,7 @@ namespace Pirat.Services
             var maxDistance = manpower.kilometer;
             var manpowerAddress = manpower.address;
             var location = new AddressEntity().build(manpowerAddress);
-            AddressMaker.SetCoordinates(location);
+            _addressMaker.SetCoordinates(location);
 
             var query = from o in _context.offer
                 join personal in _context.personal on o.id equals personal.offer_id
@@ -452,7 +455,7 @@ namespace Pirat.Services
             
             //Create the coordinates and store the address of the offer
 
-            AddressMaker.SetCoordinates(offerAddressEntity);
+            _addressMaker.SetCoordinates(offerAddressEntity);
             offerAddressEntity.Insert(_context);
 
             //Store the offer including the address id as foreign key and the token
@@ -477,7 +480,7 @@ namespace Pirat.Services
                     var consumableEntity = new ConsumableEntity().build(c);
                     var addressEntity = new AddressEntity().build(c.address);
 
-                    AddressMaker.SetCoordinates(addressEntity);
+                    _addressMaker.SetCoordinates(addressEntity);
                     addressEntity.Insert(_context);
 
                     consumableEntity.offer_id = offer_id;
@@ -493,7 +496,7 @@ namespace Pirat.Services
                     var personalEntity = new PersonalEntity().build(p);
                     var addressEntity = new AddressEntity().build(p.address);
 
-                    AddressMaker.SetCoordinates(addressEntity);
+                    _addressMaker.SetCoordinates(addressEntity);
                     addressEntity.Insert(_context);
 
                     personalEntity.offer_id = offer_id;
@@ -509,7 +512,7 @@ namespace Pirat.Services
                     var deviceEntity = new DeviceEntity().build(d);
                     var addressEntity = new AddressEntity().build(d.address);
 
-                    AddressMaker.SetCoordinates(addressEntity);
+                    _addressMaker.SetCoordinates(addressEntity);
                     addressEntity.Insert(_context);
 
                     deviceEntity.offer_id = offer_id;

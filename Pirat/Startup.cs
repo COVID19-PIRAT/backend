@@ -47,7 +47,7 @@ namespace Pirat
             services.AddTransient<IMailService, MailService>();
             services.AddTransient<IReCaptchaService, ReCaptchaService>(s => 
                 new ReCaptchaService(Environment.GetEnvironmentVariable("PIRAT_GOOGLE_RECAPTCHA_SECRET")));
-
+            services.AddTransient<IAddressMaker, AddressMaker>();
             //Cors
             services.AddCors(options =>
             {
