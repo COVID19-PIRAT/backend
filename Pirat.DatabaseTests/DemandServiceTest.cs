@@ -93,7 +93,7 @@ namespace Pirat.DatabaseTests
         }
 
         [Fact(Skip = "Not implemented")]
-        public void InsertOffer_BadInputs() //TODO fix this after merging
+        public void InsertOffer_BadInputs() //TODO fix  this after merging
         {
             var offer = _captainHookGenerator.generateOffer();
             offer.provider.name = "";
