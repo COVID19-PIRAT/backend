@@ -20,11 +20,14 @@ namespace Pirat.Services
 
         private readonly IMailService _mailService;
 
+        private readonly IAddressMaker _addressMaker;
 
-        public SubscriptionService(DemandContext context, IMailService mailService)
+
+        public SubscriptionService(DemandContext context, IMailService mailService, IAddressMaker addressMaker)
         {
             _context = context;
             _mailService = mailService;
+            _addressMaker = addressMaker;
         }
 
         public void SubscribeRegion(RegionSubscription subscription)
@@ -34,7 +37,7 @@ namespace Pirat.Services
                 postalcode = subscription.postalcode,
                 country = "Deutschland"
             };
-            AddressMaker.SetCoordinates(addressEntity);
+            _addressMaker.SetCoordinates(addressEntity);
             subscription.latitude = addressEntity.latitude;
             subscription.longitude = addressEntity.longitude;
             subscription.active = true;
