@@ -29,7 +29,7 @@ namespace Pirat.DatabaseTests
 
         private DemandService _demandService;
 
-        private ExampleGenerator exampleGenerator;
+        private CaptainHookGenerator _captainHookGenerator;
 
         /// <summary>
         /// Called before each test
@@ -46,7 +46,7 @@ namespace Pirat.DatabaseTests
                 a.hascoordinates = true;
             });
             _demandService = new DemandService(logger.Object, DemandContext, addressMaker.Object);
-            exampleGenerator = new ExampleGenerator();
+            _captainHookGenerator = new CaptainHookGenerator();
         }
 
         /// <summary>
@@ -59,17 +59,37 @@ namespace Pirat.DatabaseTests
 
 
         [Fact]
-        public void InsertOfferAndDelete()
+        public void InsertOffer_QueryOfferElements_DeleteOffer()
         {
             //Insert the offer
-            var offer = exampleGenerator.generateOfferCaptainHook();
+            var offer = _captainHookGenerator.generateOffer();
             var token = _demandService.insert(offer).Result;
             Assert.True(token.Length == 30);
 
             //Query the link
             var entity = _demandService.queryLink(token).Result;
             Assert.Equal(offer.provider.name, entity.provider.name);
-            
+
+            //Now query the elements. If it is not empty we received the element back
+
+            //Get device
+            var queryDevice = _captainHookGenerator.GenerateDevice();
+            var resultDevices = _demandService.QueryOffers(queryDevice).Result;
+            Assert.NotNull(resultDevices);
+            Assert.NotEmpty(resultDevices);
+
+            //Get consumable
+            var consumable = _captainHookGenerator.GenerateConsumable();
+            var resultConsumables = _demandService.QueryOffers(consumable).Result;
+            Assert.NotNull(resultConsumables);
+            Assert.NotEmpty(resultDevices);
+
+            //Get personal
+            var manpower = _captainHookGenerator.GenerateManpower();
+            var resultPersonal = _demandService.QueryOffers(manpower).Result;
+            Assert.NotNull(resultPersonal);
+            Assert.NotEmpty(resultPersonal);
+
             //Delete the offer and check if it worked
             var exception = Record.Exception(() => _demandService.delete(token).Result);
             Assert.Null(exception);
@@ -78,20 +98,24 @@ namespace Pirat.DatabaseTests
         [Fact]
         public void InsertOffer_BadInputs()
         {
-            var offer = exampleGenerator.generateOfferCaptainHook();
+            var offer = _captainHookGenerator.generateOffer();
             offer.provider.name = "";
             Assert.Throws<ArgumentException>(() => _demandService.insert(offer).Result);
 
-            offer = exampleGenerator.generateOfferCaptainHook();
+            offer = _captainHookGenerator.generateOffer();
             offer.consumables.First().unit = "";
             Assert.Throws<ArgumentException>(() => _demandService.insert(offer).Result);
 
-            offer = exampleGenerator.generateOfferCaptainHook();
+            offer = _captainHookGenerator.generateOffer();
             offer.devices.First().category = "";
             Assert.Throws<ArgumentException>(() => _demandService.insert(offer).Result);
 
-            offer = exampleGenerator.generateOfferCaptainHook();
+            offer = _captainHookGenerator.generateOffer();
             offer.personals.First().qualification = "";
+            Assert.Throws<ArgumentException>(() => _demandService.insert(offer).Result);
+
+            offer = _captainHookGenerator.generateOffer();
+            offer.personals.First().area = "";
             Assert.Throws<ArgumentException>(() => _demandService.insert(offer).Result);
         }
 
