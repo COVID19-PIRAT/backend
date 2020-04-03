@@ -15,19 +15,19 @@ namespace Pirat.Model
         [JsonProperty]
         [Required]
         [FromQuery(Name = "category")]
-        public string category { get; set; }
+        public string category { get; set; } = string.Empty;
 
         [JsonProperty]
         [FromQuery(Name = "name")]
-        public string name { get; set; }
+        public string name { get; set; } = string.Empty;
 
         [JsonProperty]
         [FromQuery(Name = "manufacturer")]
-        public string manufacturer { get; set; }
+        public string manufacturer { get; set; } = string.Empty;
 
         [JsonProperty]
         [FromQuery(Name = "ordernumber")]
-        public string ordernumber { get; set; }
+        public string ordernumber { get; set; } = string.Empty;
 
         [JsonProperty]
         [FromQuery(Name = "amount")]
@@ -35,7 +35,7 @@ namespace Pirat.Model
 
         [JsonProperty]
         [FromQuery(Name = "annotation")]
-        public string annotation { get; set; }
+        public string annotation { get; set; } = string.Empty;
 
         public override bool Equals(object obj)
         {

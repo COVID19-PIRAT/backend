@@ -13,18 +13,18 @@ namespace Pirat.Model
     {
         [JsonProperty]
         [Required]
-        public string name { get; set; }
+        public string name { get; set; } = string.Empty;
 
         [JsonProperty]
         [Required]
-        public string organisation { get; set; }
+        public string organisation { get; set; } = string.Empty;
 
         [JsonProperty]
-        public string phone { get; set; }
+        public string phone { get; set; } = string.Empty;
 
         [JsonProperty]
         [Required]
-        public string mail { get; set; }
+        public string mail { get; set; } = string.Empty;
 
         [JsonProperty]
         [Required]

@@ -12,7 +12,7 @@ namespace Pirat.Model
     {
         [JsonProperty]
         [FromQuery(Name = "unit")]
-        public string unit { get; set; }
+        public string unit { get; set; } = string.Empty;
 
         public Consumable build(ConsumableEntity c)
         {

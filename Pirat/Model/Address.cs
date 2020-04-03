@@ -13,25 +13,25 @@ namespace Pirat.Model
 
         [JsonProperty]
         [FromQuery(Name = "street")]
-        public string street { get; set; }
+        public string street { get; set; } = string.Empty;
 
         [JsonProperty]
         [FromQuery(Name = "streetnumber")]
-        public string streetnumber { get; set; }
+        public string streetnumber { get; set; } = string.Empty; 
 
         [JsonProperty]
         [Required]
         [FromQuery(Name = "postalcode")]
-        public string postalcode { get; set; }
+        public string postalcode { get; set; } = string.Empty;
 
         [JsonProperty]
         [FromQuery(Name = "city")]
-        public string city { get; set; }
+        public string city { get; set; } = string.Empty;
 
         [JsonProperty]
         [Required]
         [FromQuery(Name = "country")]
-        public string country { get; set; }
+        public string country { get; set; } = string.Empty;
 
         [JsonProperty]
         [FromQuery(Name = "latitude")]
