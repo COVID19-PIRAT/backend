@@ -37,14 +37,6 @@ namespace Pirat.Model
         [FromQuery(Name = "annotation")]
         public string annotation { get; set; }
 
-
-        public override string ToString()
-        {
-            var s = "{category=" + category + ", name=" + name + ", manufacturer=" + manufacturer
-                + ", ordernumber=" + ordernumber + ", amount=" + amount + ", annotation=" + annotation + "}";
-            return s;
-        }
-        
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -69,6 +61,13 @@ namespace Pirat.Model
         {
             return HashCode.Combine(category, name, manufacturer, ordernumber, amount, annotation);
         }
+
+        public override string ToString()
+        {
+            return "{" + $"{base.ToString()} category={category} name={name} " +
+                   $"manufacturer={manufacturer} ordernumber={ordernumber} " +
+                   $"amount={amount} annotation={annotation}" + "}";
+        }
     }
 
     public class Item : ItemBase
@@ -79,13 +78,6 @@ namespace Pirat.Model
         [FromQuery(Name = "kilometer")]
         public int kilometer { get; set; }
 
-
-        public override string ToString()
-        {
-            string baseString = base.ToString();
-            string s = "{base=" + baseString + ", address=" + address + ", kilometer=" + kilometer + "}";
-            return s;
-        }
 
         public override bool Equals(object obj)
         {
@@ -103,6 +95,10 @@ namespace Pirat.Model
         public override int GetHashCode()
         {
             return HashCode.Combine(base.GetHashCode(), address, kilometer);
+        }
+        public override string ToString()
+        {
+            return "Item={ " + $"{base.ToString()} address={address.ToString()} kilometer={kilometer}" + " }";
         }
 
     }

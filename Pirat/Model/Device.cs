@@ -45,5 +45,10 @@ namespace Pirat.Model
             return base.GetHashCode();
         }
 
+        public override string ToString()
+        {
+            return "Device={ " + $"{base.ToString()}" + " }";
+        }
+
     }
 }

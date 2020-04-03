@@ -51,5 +51,10 @@ namespace Pirat.Model
             return HashCode.Combine(base.GetHashCode(), unit);
         }
 
+        public override string ToString()
+        {
+            return "Consumable={ " + $"{base.ToString()} + unit={unit}" + " }";
+        }
+
     }
 }

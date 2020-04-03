@@ -90,7 +90,7 @@ namespace Pirat.Services.Helper.InputValidator
 
             offer.devices?.ForEach(validateForDatabaseInsertion);
 
-            offer.consumables?.ForEach(validateForDatabaseInsertion);
+            offer.personals?.ForEach(validateForDatabaseInsertion);
         }
 
         public void validateForQuery(Device device)

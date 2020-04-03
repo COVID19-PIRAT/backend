@@ -52,6 +52,12 @@ namespace Pirat.Model
         {
             return HashCode.Combine(base.GetHashCode(), institution, researchgroup, experience_rt_pcr, annotation);
         }
+
+        public override string ToString()
+        {
+            return "PersonalBase={ " + $"{base.ToString()} institution={institution} researchgroup={researchgroup} " +
+                   $"experience_rt_pcr={experience_rt_pcr} annotation={annotation}" + " }";
+        }
     }
 
     public class Personal : PersonalBase
@@ -109,6 +115,11 @@ namespace Pirat.Model
         public override int GetHashCode()
         {
             return HashCode.Combine(base.GetHashCode(), qualification, area, address, kilometer);
+        }
+
+        public override string ToString()
+        {
+            return "Personal={ " + $"{base.ToString()} qualification={qualification} area={area} address={address} kilometer={kilometer}" + " }";
         }
     }
 

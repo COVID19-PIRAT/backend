@@ -53,6 +53,10 @@ namespace Pirat.Model
             return HashCode.Combine(name, organisation, phone, mail, ispublic);
         }
 
+        public override string ToString()
+        {
+            return "Provider={ " + $"{base.ToString()} name:{name} organisation:{organisation} phone:{phone} mail:{mail} ispublic:{ispublic}" + " }";
+        }
     }
 
 
@@ -99,6 +103,11 @@ namespace Pirat.Model
         public bool Equals(Provider other)
         {
             return other != null && base.Equals(other) && address.Equals(other.address) && kilometer == other.kilometer;
+        }
+
+        public override string ToString()
+        {
+            return "{" + $"{base.ToString()} address:{address} kilometer:{kilometer}" + "}";
         }
 
     }

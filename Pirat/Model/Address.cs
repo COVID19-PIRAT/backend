@@ -77,5 +77,11 @@ namespace Pirat.Model
         {
             return HashCode.Combine(street, streetnumber, postalcode, city, country, latitude, longitude);
         }
+
+        public override string ToString()
+        {
+            return "Address={ " + $"street={street} postalcode:{postalcode} city:{city} streetnumber:{streetnumber} " +
+                   $"country={country} latitude={latitude} longitude={longitude}" + " }";
+        }
     }
 }

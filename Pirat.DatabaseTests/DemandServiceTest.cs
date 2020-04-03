@@ -39,9 +39,9 @@ namespace Pirat.DatabaseTests
             var addressMaker = new Mock<IAddressMaker>();
             addressMaker.Setup(m => m.SetCoordinates(It.IsAny<AddressEntity>())).Callback((AddressEntity a) =>
             {
-                a.latitude = new decimal(0.0);
-                a.longitude = new decimal(0.0);
-                a.hascoordinates = true;
+                a.latitude = 0;
+                a.longitude = 0;
+                a.hascoordinates = false;
             });
             var inputValidator = new InputValidator();
             _demandService = new DemandService(logger.Object, DemandContext, addressMaker.Object, inputValidator);
@@ -78,6 +78,8 @@ namespace Pirat.DatabaseTests
             Assert.NotEmpty(resultDevices);
             var deviceFromQuery = resultDevices.First();
             var deviceOriginal = offer.devices.First();
+            Console.Out.WriteLine(deviceFromQuery);
+            Console.Out.WriteLine(deviceOriginal);
             Assert.True(deviceOriginal.Equals(deviceFromQuery.resource));
 
             //Get consumable
@@ -128,6 +130,38 @@ namespace Pirat.DatabaseTests
             offer = _captainHookGenerator.generateOffer();
             offer.personals.First().area = "";
             Assert.Throws<ArgumentException>(() => _demandService.insert(offer).Result);
+        }
+
+        [Fact]
+        public void QueryDevice_BadInputs()
+        {
+            var device = _captainHookGenerator.GenerateDevice();
+            device.category = "";
+            Assert.Throws<ArgumentException>(() => _demandService.QueryOffers(device).Result);
+
+            device = _captainHookGenerator.GenerateDevice();
+            device.address.postalcode = "";
+            Assert.Throws<ArgumentException>(() => _demandService.QueryOffers(device).Result);
+        }
+
+        [Fact]
+        public void QueryConsumable_BadInputs()
+        {
+            var consumable = _captainHookGenerator.GenerateConsumable();
+            consumable.category = "";
+            Assert.Throws<ArgumentException>(() => _demandService.QueryOffers(consumable).Result);
+
+            consumable = _captainHookGenerator.GenerateConsumable();
+            consumable.address.country = "";
+            Assert.Throws<ArgumentException>(() => _demandService.QueryOffers(consumable).Result);
+        }
+
+        [Fact]
+        public void QueryManpower_BadInputs()
+        {
+            var manpower = _captainHookGenerator.GenerateManpower();
+            manpower.address.postalcode = "";
+            Assert.Throws<ArgumentException>(() => _demandService.QueryOffers(manpower).Result);
         }
 
         [Fact]
