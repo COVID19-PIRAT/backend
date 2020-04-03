@@ -33,9 +33,6 @@ create table offer
 		constraint provider_address_id_fk
 			references address
 				on update cascade on delete cascade,
-	consumable_ids integer[],
-	device_ids integer[],
-	personal_ids integer[],
 	token text not null,
 	timestamp timestamp not null
 );
@@ -55,7 +52,8 @@ create table consumable
 	amount integer default 0 not null,
 	offer_id integer not null
 		constraint consumable_offer_id_fk
-			references offer,
+			references offer
+				on update cascade on delete cascade,
 	address_id integer not null
 		constraint consumable_address_id_fk
 			references address
@@ -67,7 +65,7 @@ create table consumable
 alter table consumable owner to postgres;
 
 create unique index consumables_id_uindex
-    on consumable (id);
+	on consumable (id);
 
 
 create table device
@@ -82,7 +80,8 @@ create table device
 	amount integer default 0 not null,
 	offer_id integer not null
 		constraint device_offer_id_fk
-			references offer,
+			references offer
+				on update cascade on delete cascade,
 	address_id integer not null
 		constraint device_address_id_fk
 			references address
@@ -109,7 +108,8 @@ create table personal
 	annotation text,
 	offer_id integer
 		constraint personal_offer_id_fk
-			references offer,
+			references offer
+				on update cascade on delete cascade,
 	address_id integer
 		constraint personal_address_id_fk
 			references address

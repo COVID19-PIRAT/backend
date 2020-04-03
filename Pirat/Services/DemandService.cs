@@ -274,149 +274,6 @@ namespace Pirat.Services
             return Task.FromResult(findable.Find(_context, id));
         }
 
-        public Task<Compilation> queryProviders(ConsumableEntity consumable)
-        {
-
-            if (string.IsNullOrEmpty(consumable.category)) // || string.IsNullOrEmpty(consumable.address.postalcode)
-            {
-                throw new ArgumentException();
-            }
-
-            var query = from o in _context.offer join c in _context.consumable
-                             on o.id equals c.offer_id
-                        where consumable.category.Equals(c.category)
-                        //&& consumable.address.postalcode.Equals(c.address.postalcode) //TODO
-                        select new { o, c };
-
-
-            if (!string.IsNullOrEmpty(consumable.name))
-            {
-                query = query.Where(collection => consumable.name.Equals(collection.c.name));
-            }
-            if (!string.IsNullOrEmpty(consumable.manufacturer))
-            {
-                query = query.Where(collection => consumable.manufacturer.Equals(collection.c.manufacturer)); ;
-            }
-            if (consumable.amount > 0)
-            {
-                query = query.Where(collection => consumable.amount <= collection.c.amount);
-            }
-
-            var offers = query.Select(collection => new OfferEntity()
-            {
-                id = collection.o.id,
-                name = collection.o.name,
-                address_id = collection.o.address_id,
-                mail = collection.o.mail,
-                phone = collection.o.phone,
-                organisation = collection.o.organisation
-            }).ToHashSet();
-
-            return collectAllResources(offers);
-        }
-
-        public Task<Compilation> queryProviders(DeviceEntity device)
-        {
-            if (string.IsNullOrEmpty(device.category)) //|| string.IsNullOrEmpty(device.address.postalcode)
-            {
-                throw new ArgumentException();
-            }
-
-            var query = from o in _context.offer
-                        join d in _context.device 
-                        on o.id equals d.offer_id where
-                        device.category.Equals(d.category) //where device.address.postalcode.Equals(d.address.postalcode) //TODO
-                        select new { o, d };
-
-            if (!string.IsNullOrEmpty(device.name))
-            {
-                query = query.Where(collection => device.name.Equals(collection.d.name));
-            }
-            if (!string.IsNullOrEmpty(device.manufacturer))
-            {
-                query = query.Where(collection => device.manufacturer.Equals(collection.d.manufacturer)); ;
-            }
-            if (device.amount > 0)
-            {
-                query = query.Where(collection => device.amount <= collection.d.amount);
-            }
-
-            ISet<OfferEntity> offers = query.Select(collection => collection.o).ToHashSet();
-
-            return collectAllResources(offers);
-        }
-
-
-        public Task<Compilation> queryProviders(Personal manpower)
-        {
-            var query = from o in _context.offer
-                        join m in _context.personal
-                        on o.id equals m.offer_id
-                        select new { o, m };
-
-            if (manpower.qualification.Any())
-            {
-                query = query.Where(collection => manpower.qualification.Contains(collection.m.qualification));
-            }
-            if (manpower.area.Any())
-            {
-                query = query.Where(collection => manpower.area.Contains(collection.m.area));
-            }
-
-
-            if (!string.IsNullOrEmpty(manpower.institution))
-            {
-                query = query.Where(collection => manpower.institution.Equals(collection.m.institution)); ;
-            }
-            if (!string.IsNullOrEmpty(manpower.researchgroup))
-            {
-                query = query.Where(collection => manpower.researchgroup.Equals(collection.m.researchgroup)); ;
-            }
-            if (manpower.experience_rt_pcr)
-            {
-                query = query.Where(collection => collection.m.experience_rt_pcr); ;
-            }
-
-            ISet<OfferEntity> offers = query.Select(collection => collection.o).ToHashSet();
-
-            return collectAllResources(offers);
-        }
-
-        private Task<Compilation> collectAllResources(ISet<OfferEntity> offers)
-        {
-            Compilation comp = new Compilation() { offers = new List<Offer>() };
-
-            foreach (OfferEntity offer in offers)
-            {
-                var que = from c in _context.consumable where c.offer_id == offer.id select c;
-                List<ConsumableEntity> consumableEntities = que.Select(c => c).ToList();
-                List<Consumable> consumables = new List<Consumable>();
-                foreach (ConsumableEntity c in consumableEntities)
-                {
-                    consumables.Add(new Consumable().build(c).build(queryAddress(c.address_id)));
-                }
-
-                var que2 = from d in _context.device where d.offer_id == offer.id select d;
-                List<DeviceEntity> deviceEntities = que2.Select(d => d).ToList();
-                List<Device> devices = new List<Device>();
-                foreach (DeviceEntity d in deviceEntities)
-                {
-                    devices.Add(new Device().build(d).build(queryAddress(d.address_id)));
-                }
-
-                var que3 = from p in _context.personal where p.offer_id == offer.id select p;
-                List<PersonalEntity> personalEntities = que3.Select(p => p).ToList();
-                List<Personal> personals = new List<Personal>();
-                foreach (PersonalEntity p in personalEntities)
-                {
-                    personals.Add(new Personal().build(queryAddress(p.address_id)));
-                }
-
-                comp.offers.Add(new Offer() { personals = personals, devices = devices, consumables = consumables, provider = new Provider().build(offer) });
-            }
-
-            return Task.FromResult(comp);
-        }
 
         public Task<string> insert(Offer offer)
         {
@@ -458,20 +315,15 @@ namespace Pirat.Services
             _addressMaker.SetCoordinates(offerAddressEntity);
             offerAddressEntity.Insert(_context);
 
-            //Store the offer including the address id as foreign key and the token
+            //Store the offer including the address id as foreign key, the token and a timestamp
             offerEntity.address_id = offerAddressEntity.id;
             offerEntity.token = createToken();
+            offerEntity.timestamp = DateTime.Now;
             offerEntity.Insert(_context);
 
-            //create the entities for the resources, calculate their coordinates, give them the offer foreign key
+            //create the entities for the resources, calculate their coordinates, give them the offer foreign key and store them
 
             int offer_id = offerEntity.id;
-
-            List<int> consumable_ids = new List<int>();
-            List<int> device_ids = new List<int>();
-            List<int> personal_ids = new List<int>();
-
-            DateTime timestampOfRequest = DateTime.Now;
 
             if(!(offer.consumables is null))
             {
@@ -486,7 +338,6 @@ namespace Pirat.Services
                     consumableEntity.offer_id = offer_id;
                     consumableEntity.address_id = addressEntity.id;
                     consumableEntity.Insert(_context);
-                    consumable_ids.Add(consumableEntity.id);
                 }
             }
             if(!(offer.personals is null))
@@ -502,7 +353,6 @@ namespace Pirat.Services
                     personalEntity.offer_id = offer_id;
                     personalEntity.address_id = addressEntity.id;
                     personalEntity.Insert(_context);
-                    personal_ids.Add(personalEntity.id);
                 }
             }
             if(!(offer.devices is null))
@@ -518,17 +368,8 @@ namespace Pirat.Services
                     deviceEntity.offer_id = offer_id;
                     deviceEntity.address_id = addressEntity.id;
                     deviceEntity.Insert(_context);
-                    device_ids.Add(deviceEntity.id);
                 }
             }
-
-            //Update the provider we have just created with the ids of the resources
-
-            offerEntity.consumable_ids = consumable_ids.ToArray();
-            offerEntity.device_ids = device_ids.ToArray();
-            offerEntity.personal_ids = personal_ids.ToArray();
-            offerEntity.timestamp = timestampOfRequest;
-            offerEntity.Update(_context);
 
             //Give back only the token
 
@@ -543,6 +384,7 @@ namespace Pirat.Services
             }
 
             var offerEntity = retrieveOfferFromToken(token);
+            var offerKey = offerEntity.id;
 
             //Build the provider from the offerEntity and the address we retrieve from the address id
 
@@ -551,21 +393,28 @@ namespace Pirat.Services
             //Create the offer we will send back and retrieve all associated resources
 
             var offer = new Offer() { provider = provider, consumables = new List<Consumable>(), devices = new List<Device>(), personals = new List<Personal>()};
-            foreach(int k in offerEntity.consumable_ids)
+
+            var queC = from c in _context.consumable where c.offer_id == offerKey select c;
+            List<ConsumableEntity> consumableEntities = queC.Select(c => c).ToList();
+            foreach (ConsumableEntity c in consumableEntities)
             {
-                ConsumableEntity e = (ConsumableEntity) Find(new ConsumableEntity(), k).Result;
-                offer.consumables.Add((new Consumable().build(e).build(queryAddress(e.address_id))));
+                offer.consumables.Add(new Consumable().build(c).build(queryAddress(c.address_id)));
             }
-            foreach(int k in offerEntity.device_ids)
+
+            var queD = from d in _context.device where d.offer_id == offerKey select d;
+            List<DeviceEntity> deviceEntities = queD.Select(d => d).ToList();
+            foreach (DeviceEntity d in deviceEntities)
             {
-                DeviceEntity e = (DeviceEntity) Find(new DeviceEntity(), k).Result;
-                offer.devices.Add(new Device().build(e).build(queryAddress(e.address_id)));
+                offer.devices.Add(new Device().build(d).build(queryAddress(d.address_id)));
             }
-            foreach(int k in offerEntity.personal_ids)
+
+            var queP = from p in _context.personal where p.offer_id == offerKey select p;
+            List<PersonalEntity> personalEntities = queP.Select(p => p).ToList();
+            foreach (PersonalEntity p in personalEntities)
             {
-                PersonalEntity p = (PersonalEntity) Find(new PersonalEntity(), k).Result;
-                offer.personals.Add(new Personal().build(p).build(queryAddress(p.address_id)));
+                offer.personals.Add(new Personal().build(queryAddress(p.address_id)));
             }
+
             return Task.FromResult(offer);
         }
 
@@ -577,25 +426,11 @@ namespace Pirat.Services
             }
 
             OfferEntity o = retrieveOfferFromToken(token);
+            
+            //Delete the offer. The resources have the offer id as foreign key and get deleted as well by the db.
 
-            //The ids in the offer entity are no foreign key so we have to delete the associated rows here manually 
-
-            foreach (int k in o.consumable_ids)
-            {
-                var c = (ConsumableEntity) new ConsumableEntity().Find(_context, k);
-                c.Delete(_context);
-            }
-            foreach (int k in o.device_ids)
-            {
-                var d = (DeviceEntity)new DeviceEntity().Find(_context, k);
-                d.Delete(_context);
-            }
-            foreach (int k in o.personal_ids)
-            {
-                var p = (PersonalEntity)new PersonalEntity().Find(_context, k);
-                p.Delete(_context);
-            }
             o.Delete(_context);
+
             return Task.FromResult("Offer deleted");
         }
 
