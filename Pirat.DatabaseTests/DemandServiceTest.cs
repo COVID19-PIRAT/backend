@@ -30,6 +30,8 @@ namespace Pirat.DatabaseTests
 
         private readonly CaptainHookGenerator _captainHookGenerator;
 
+        private readonly ShyPirateGenerator _shyPirateGenerator;
+
         /// <summary>
         /// Called before each test
         /// </summary>
@@ -46,6 +48,7 @@ namespace Pirat.DatabaseTests
             var inputValidator = new InputValidator();
             _demandService = new DemandService(logger.Object, DemandContext, addressMaker.Object, inputValidator);
             _captainHookGenerator = new CaptainHookGenerator();
+            _shyPirateGenerator = new ShyPirateGenerator();
         }
 
         /// <summary>
@@ -82,6 +85,13 @@ namespace Pirat.DatabaseTests
             Console.Out.WriteLine(deviceOriginal);
             Assert.True(deviceOriginal.Equals(deviceFromQuery));
 
+            //check the provider
+            var providerFromQuery = resultDevices.First().provider;
+            var providerOriginal = offer.provider;
+            Console.Out.WriteLine(providerFromQuery);
+            Console.Out.WriteLine(providerOriginal);
+            Assert.True(providerOriginal.Equals(providerFromQuery));
+
             //Get consumable
             var queryConsumable = _captainHookGenerator.GenerateConsumable();
             var resultConsumables = _demandService.QueryOffers(queryConsumable).Result;
@@ -101,6 +111,38 @@ namespace Pirat.DatabaseTests
             var personal = resultPersonal.First();
             Assert.Equal(offer.personals.First().area, personal.resource.area);
             Assert.Equal(offer.personals.First().qualification, personal.resource.qualification);
+
+            //Delete the offer and check if it worked
+            var exception = Record.Exception(() => _demandService.delete(token).Result);
+            Assert.Null(exception);
+
+            //Offer should be not available anymore
+            Assert.Throws<DataNotFoundException>(() => _demandService.queryLink(token).Result);
+        }
+
+        [Fact]
+        public void InsertPrivateOffer_QueryNoProvider()
+        {
+            var offer = _shyPirateGenerator.generateOffer();
+            var token = _demandService.insert(offer).Result;
+
+            //Get device
+            var queryDevice = _shyPirateGenerator.GenerateDevice();
+            var resultDevices = _demandService.QueryOffers(queryDevice).Result;
+            Assert.NotNull(resultDevices);
+            Assert.NotEmpty(resultDevices);
+            var deviceFromQuery = resultDevices.First().resource;
+            var deviceOriginal = offer.devices.First();
+            Console.Out.WriteLine(deviceFromQuery);
+            Console.Out.WriteLine(deviceOriginal);
+            Assert.True(deviceOriginal.Equals(deviceFromQuery));
+
+            //check the provider
+            var providerFromQuery = resultDevices.First().provider;
+            var providerOriginal = offer.provider;
+            Console.Out.WriteLine(providerFromQuery);
+            Console.Out.WriteLine(providerOriginal);
+            Assert.Null(providerFromQuery);
 
             //Delete the offer and check if it worked
             var exception = Record.Exception(() => _demandService.delete(token).Result);

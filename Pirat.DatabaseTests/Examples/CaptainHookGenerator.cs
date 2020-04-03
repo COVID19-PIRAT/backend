@@ -69,20 +69,25 @@ namespace Pirat.DatabaseTests.Examples
             };
         }
 
+        public Provider GenerateProvider()
+        {
+            return new Provider()
+            {
+                name = "Captain Hook",
+                organisation = "Jolly Rogers",
+                phone = "546389",
+                mail = "captainhook.neverland@gmx.de",
+                ispublic = true,
+                address = generateAddress()
+            };
+        }
+
         
         public Offer generateOffer()
         {
             return new Offer()
             {
-                provider = new Provider()
-                {
-                    name = "Captain Hook",
-                    organisation = "Jolly Rogers",
-                    phone = "546389",
-                    mail = "captainhook.neverland@gmx.de",
-                    ispublic = true,
-                    address = generateAddress()
-                },
+                provider = GenerateProvider(),
                 personals = new List<Personal>(){
                     GeneratePersonal()
                 },
