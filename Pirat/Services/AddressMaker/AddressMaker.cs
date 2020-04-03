@@ -11,9 +11,9 @@ using Pirat.Model;
 
 namespace Pirat.Services
 {
-	public class AddressMaker
+	public class AddressMaker : IAddressMaker
 	{
-		public static void SetCoordinates(AddressEntity address)
+		public void SetCoordinates(AddressEntity address)
 		{
 			string apiKey = Environment.GetEnvironmentVariable("PIRAT_GOOGLE_API_KEY");
 			string addressString = address.ToString();

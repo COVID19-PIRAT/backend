@@ -1,10 +1,10 @@
-name: .NET Core
+name: .NET Core Build and Testing 
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: push
+  # push:
+  #   branches: [ master ]
+  # pull_request:
+  #   branches: [ master ]
 
 jobs:
   build:
@@ -21,5 +21,15 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+    - name: Unit Tests
+      run: dotnet test Pirat.Tests/Pirat.Tests.csproj --no-restore --verbosity normal
+    - name: Build containers
+      run: docker-compose -f docker-compose.yml up -d
+    - name: Check running containers
+      run: docker ps -a
+    - name: Check logs
+      run: docker logs postgres
+    - name: Database Tests
+      run: dotnet test Pirat.DatabaseTests/Pirat.DatabaseTests.csproj --no-restore --verbosity normal
+    - name: Integration Tests
+      run: dotnet test Pirat.IntegrationTests/Pirat.IntegrationTests.csproj --no-restore --verbosity normal
