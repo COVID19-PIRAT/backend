@@ -121,6 +121,24 @@ alter table personal owner to postgres;
 create unique index manpower_id_uindex
 	on personal (id);
 
+
+create table region_subscription
+(
+	id serial not null
+		constraint region_subscription_pk
+			primary key,
+	email text not null,
+	subscription_date timestamp default now() not null,
+	active boolean default true not null,
+	name text not null,
+	institution text not null,
+	postalcode text not null,
+	latitude numeric not null,
+	longitude numeric not null
+);
+
+alter table region_subscription owner to postgres;
+
 	
 -- INSERT INTO address 
 -- (id, streetnumber, postalcode, city, country, hascoordinates, latitude, longitude, street) 
