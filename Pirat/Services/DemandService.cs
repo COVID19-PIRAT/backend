@@ -105,6 +105,12 @@ namespace Pirat.Services
                 {
                     resource = resource
                 };
+
+                // ---- HOTFIX
+                // Vorerst sollen keine persönliche Daten veröffentlicht werden.
+                provider.ispublic = false;
+                // ---- END HOTFIX
+
                 if (provider.ispublic)
                 {
                     o.provider = provider;
@@ -182,6 +188,12 @@ namespace Pirat.Services
                 {
                     resource = resource
                 };
+
+                // ---- HOTFIX
+                // Vorerst sollen keine persönliche Daten veröffentlicht werden.
+                provider.ispublic = false;
+                // ---- END HOTFIX
+
                 if (provider.ispublic)
                 {
                     o.provider = provider;
@@ -259,6 +271,12 @@ namespace Pirat.Services
                 {
                     resource = resource
                 };
+
+                // ---- HOTFIX
+                // Vorerst sollen keine persönliche Daten veröffentlicht werden.
+                provider.ispublic = false;
+                // ---- END HOTFIX
+
                 if (provider.ispublic)
                 {
                     o.provider = provider;
