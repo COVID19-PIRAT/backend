@@ -10,11 +10,26 @@ See https://dotnet.microsoft.com/download/dotnet-core/3.1 to get the SDK
 
 # Developing
 
-Highly recommanded: Visual Studio 2019 with ReSharper ( hopefully you are a student for the licence ;) )
+Highly recommanded: Visual Studio (2019) 
+
+Recommanded: ReSharper for Visual Studio
 
 Use Feature Branches for the development and open a pull request.
 
-After Friday try to implement also tests for Features.
+Code quality: To improve the quality we use the analyzer tools FxCop and Puma. If you make a pull request try to fix all warnings. To enable both anaylzers in order to check your code locally you might have to change settings in your IDE. For Visual Studio check that full solution analysis is allowed: Optionen/Options -> Text-Editor/Text Editor -> C# -> Erweitert/Advanced -> Bereich für Hintegrundanalyse/Background analysis scope -> Gesamte Projektmappe/Entire solution must be ticked.
+
+# Executing Tests
+
+Currently we have three Test projects: Pirat.Tests, Pirat.DatabaseTests, Pirat.IntegrationTests
+
+If you want to execute the tests locally make sure you have a fresh build of Pirat and the Test projects. You can build them in your IDE or via console using the command "dotnet build" in the main directory.
+
+Executing Pirat.Tests: This project contains Unit Tests. Run them in your IDE or via console using the command "dotnet test Pirat.Tests/".
+
+Executing Pirat.DatabaseTests: This project contains Tests that need access to a database. Before starting the including tests you need first to start the postgres container. Do this by using the command "(sudo) docker-compose up" in your console. Now a local postgres container runs on port 5432 and you can run the tests in your IDE or via the console with the command "dotnet test Pirat.DatabaseTests/".
+
+Executing Pirat.IntegrationTests: Documentation will come - no Integration Tests to far. 
+
 
 # Running the project
 
