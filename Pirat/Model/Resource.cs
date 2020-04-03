@@ -34,7 +34,7 @@ namespace Pirat.Model
 
         public override string ToString()
         {
-            return "Resource={ " + $"id:{id}" + " }";
+            return "Resource={ " + $"id={id}" + " }";
         }
     }
 }

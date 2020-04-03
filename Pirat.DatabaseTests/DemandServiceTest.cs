@@ -76,20 +76,22 @@ namespace Pirat.DatabaseTests
             var resultDevices = _demandService.QueryOffers(queryDevice).Result;
             Assert.NotNull(resultDevices);
             Assert.NotEmpty(resultDevices);
-            var deviceFromQuery = resultDevices.First();
+            var deviceFromQuery = resultDevices.First().resource;
             var deviceOriginal = offer.devices.First();
             Console.Out.WriteLine(deviceFromQuery);
             Console.Out.WriteLine(deviceOriginal);
-            Assert.True(deviceOriginal.Equals(deviceFromQuery.resource));
+            Assert.True(deviceOriginal.Equals(deviceFromQuery));
 
             //Get consumable
             var queryConsumable = _captainHookGenerator.GenerateConsumable();
             var resultConsumables = _demandService.QueryOffers(queryConsumable).Result;
             Assert.NotNull(resultConsumables);
             Assert.NotEmpty(resultDevices);
-            var consumableFromQuery = resultConsumables.First();
+            var consumableFromQuery = resultConsumables.First().resource;
             var consumableOriginal = offer.consumables.First();
-            Assert.True(consumableOriginal.Equals(consumableFromQuery.resource));
+            Console.Out.WriteLine(consumableFromQuery);
+            Console.Out.WriteLine(consumableOriginal);
+            Assert.True(consumableOriginal.Equals(consumableFromQuery));
 
             //Get personal
             var manpowerQuery = _captainHookGenerator.GenerateManpower();

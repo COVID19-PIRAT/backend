@@ -64,9 +64,9 @@ namespace Pirat.Model
 
         public override string ToString()
         {
-            return "{" + $"{base.ToString()} category={category} name={name} " +
-                   $"manufacturer={manufacturer} ordernumber={ordernumber} " +
-                   $"amount={amount} annotation={annotation}" + "}";
+            return "{" + $"{base.ToString()} category={category}, name={name}, " +
+                   $"manufacturer={manufacturer}, ordernumber={ordernumber}, " +
+                   $"amount={amount}, annotation={annotation}" + "}";
         }
     }
 
@@ -98,7 +98,7 @@ namespace Pirat.Model
         }
         public override string ToString()
         {
-            return "Item={ " + $"{base.ToString()} address={address.ToString()} kilometer={kilometer}" + " }";
+            return "Item={ " + $"{base.ToString()} address={address.ToString()}, kilometer={kilometer}" + " }";
         }
 
     }

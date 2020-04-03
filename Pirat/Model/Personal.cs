@@ -55,8 +55,8 @@ namespace Pirat.Model
 
         public override string ToString()
         {
-            return "PersonalBase={ " + $"{base.ToString()} institution={institution} researchgroup={researchgroup} " +
-                   $"experience_rt_pcr={experience_rt_pcr} annotation={annotation}" + " }";
+            return "PersonalBase={ " + $"{base.ToString()} institution={institution}, researchgroup={researchgroup}, " +
+                   $"experience_rt_pcr={experience_rt_pcr}, annotation={annotation}" + " }";
         }
     }
 

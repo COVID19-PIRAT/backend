@@ -55,7 +55,7 @@ namespace Pirat.Model
 
         public override string ToString()
         {
-            return "Provider={ " + $"{base.ToString()} name:{name} organisation:{organisation} phone:{phone} mail:{mail} ispublic:{ispublic}" + " }";
+            return "Provider={ " + $"{base.ToString()} name:{name}, organisation:{organisation}, phone:{phone}, mail:{mail}, ispublic:{ispublic}" + " }";
         }
     }
 
@@ -107,7 +107,7 @@ namespace Pirat.Model
 
         public override string ToString()
         {
-            return "{" + $"{base.ToString()} address:{address} kilometer:{kilometer}" + "}";
+            return "{" + $"{base.ToString()} address:{address}, kilometer:{kilometer}" + "}";
         }
 
     }

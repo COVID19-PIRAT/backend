@@ -80,8 +80,8 @@ namespace Pirat.Model
 
         public override string ToString()
         {
-            return "Address={ " + $"street={street} postalcode:{postalcode} city:{city} streetnumber:{streetnumber} " +
-                   $"country={country} latitude={latitude} longitude={longitude}" + " }";
+            return "Address={ " + $"street={street}, postalcode={postalcode}, city={city}, streetnumber={streetnumber}, " +
+                   $"country={country}, latitude={latitude}, longitude={longitude}" + " }";
         }
     }
 }
