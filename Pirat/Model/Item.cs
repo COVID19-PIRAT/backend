@@ -40,9 +40,34 @@ namespace Pirat.Model
 
         public override string ToString()
         {
-            String s = "{category=" + category + ", name=" + name + ", manufacturer=" + manufacturer
+            var s = "{category=" + category + ", name=" + name + ", manufacturer=" + manufacturer
                 + ", ordernumber=" + ordernumber + ", amount=" + amount + ", annotation=" + annotation + "}";
             return s;
+        }
+        
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as ItemBase);
+        }
+        
+        public bool Equals(ItemBase other)
+        {
+            return other != null 
+                   && base.Equals(other)
+                   && category.Equals(other.category, StringComparison.Ordinal)
+                   && name.Equals(other.name, StringComparison.Ordinal)
+                   && manufacturer.Equals(other.manufacturer, StringComparison.Ordinal)
+                   && ordernumber.Equals(other.ordernumber, StringComparison.Ordinal)
+                   && amount == other.amount
+                   && annotation.Equals(other.annotation, StringComparison.Ordinal);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(category, name, manufacturer, ordernumber, amount, annotation);
         }
     }
 
@@ -58,8 +83,26 @@ namespace Pirat.Model
         public override string ToString()
         {
             string baseString = base.ToString();
-            string s = "{base=" + baseString + ", address=" + address + "}";
+            string s = "{base=" + baseString + ", address=" + address + ", kilometer=" + kilometer + "}";
             return s;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as Item);
+        }
+
+        public bool Equals(Item other)
+        {
+            return other != null && base.Equals(other) && address.Equals(other.address) && kilometer == other.kilometer;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), address, kilometer);
         }
 
     }

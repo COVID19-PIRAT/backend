@@ -29,6 +29,30 @@ namespace Pirat.Model
         [JsonProperty]
         [Required]
         public bool ispublic { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as ProviderBase);
+        }
+        
+        public bool Equals(ProviderBase other)
+        {
+            return other != null
+                   && name.Equals(other.name, StringComparison.Ordinal)
+                   && organisation.Equals(other.organisation, StringComparison.Ordinal)
+                   && phone.Equals(other.phone, StringComparison.Ordinal)
+                   && mail.Equals(other.mail, StringComparison.Ordinal)
+                   && ispublic == other.ispublic;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(name, organisation, phone, mail, ispublic);
+        }
+
     }
 
 
@@ -66,18 +90,16 @@ namespace Pirat.Model
 
         public override bool Equals(object obj)
         {
-            if(obj == null)
-            {
-                return false;
-            }
-            if(!(obj is Provider))
-            {
-                return false;
-            }
-            var p = (Provider)obj;
-            return (name.Equals(p.name) && organisation.Equals(p.organisation) && address.Equals(p.address) && mail.Equals(p.mail) && phone.Equals(p.phone));
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as Provider);
         }
 
+        public bool Equals(Provider other)
+        {
+            return other != null && base.Equals(other) && address.Equals(other.address) && kilometer == other.kilometer;
+        }
 
     }
 

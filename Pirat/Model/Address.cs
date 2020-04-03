@@ -41,23 +41,6 @@ namespace Pirat.Model
         [FromQuery(Name = "longitude")]
         public decimal longitude { get; set; }
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            if (!(obj is Address))
-            {
-                return false;
-            }
-
-            var a = (Address) obj;
-            return street.Equals(a.street) && postalcode.Equals(a.postalcode) && city.Equals(a.city) &&
-                   streetnumber.Equals(a.streetnumber)
-                   && country.Equals(a.country) && latitude == a.latitude && longitude == a.longitude;
-        }
 
         public Address build(AddressEntity e)
         {
@@ -71,10 +54,28 @@ namespace Pirat.Model
             return this;
         }
 
-        public bool isStoringInDatabasePossible()
+        public override bool Equals(object obj)
         {
-            return (!string.IsNullOrEmpty(postalcode) && !string.IsNullOrEmpty(country));
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as Address);
         }
 
+        public bool Equals(Address other)
+        {
+            return other != null 
+                   && street.Equals(other.street, StringComparison.Ordinal) 
+                   && postalcode.Equals(other.postalcode, StringComparison.Ordinal) 
+                   && city.Equals(other.city, StringComparison.Ordinal) 
+                   && streetnumber.Equals(other.streetnumber, StringComparison.Ordinal)
+                   && country.Equals(other.country, StringComparison.Ordinal) 
+                   && latitude == other.latitude && longitude == other.longitude;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(street, streetnumber, postalcode, city, country, latitude, longitude);
+        }
     }
 }

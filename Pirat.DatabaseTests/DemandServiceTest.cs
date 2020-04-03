@@ -76,18 +76,18 @@ namespace Pirat.DatabaseTests
             var resultDevices = _demandService.QueryOffers(queryDevice).Result;
             Assert.NotNull(resultDevices);
             Assert.NotEmpty(resultDevices);
-            var device = resultDevices.First();
-            Assert.Equal(offer.devices.First().category, device.resource.category);
-            Assert.Equal(offer.devices.First().name, device.resource.name);
+            var deviceFromQuery = resultDevices.First();
+            var deviceOriginal = offer.devices.First();
+            Assert.True(deviceOriginal.Equals(deviceFromQuery.resource));
 
             //Get consumable
             var queryConsumable = _captainHookGenerator.GenerateConsumable();
             var resultConsumables = _demandService.QueryOffers(queryConsumable).Result;
             Assert.NotNull(resultConsumables);
             Assert.NotEmpty(resultDevices);
-            var consumable = resultConsumables.First();
-            Assert.Equal(offer.consumables.First().category, consumable.resource.category);
-            Assert.Equal(offer.consumables.First().name, consumable.resource.name);
+            var consumableFromQuery = resultConsumables.First();
+            var consumableOriginal = offer.consumables.First();
+            Assert.True(consumableOriginal.Equals(consumableFromQuery.resource));
 
             //Get personal
             var manpowerQuery = _captainHookGenerator.GenerateManpower();
@@ -101,10 +101,13 @@ namespace Pirat.DatabaseTests
             //Delete the offer and check if it worked
             var exception = Record.Exception(() => _demandService.delete(token).Result);
             Assert.Null(exception);
+
+            //Offer should be not available anymore
+            Assert.Throws<DataNotFoundException>(() => _demandService.queryLink(token).Result);
         }
 
-        [Fact(Skip = "Not implemented")]
-        public void InsertOffer_BadInputs() //TODO fix  this after merging
+        [Fact]
+        public void InsertOffer_BadInputs()
         {
             var offer = _captainHookGenerator.generateOffer();
             offer.provider.name = "";
