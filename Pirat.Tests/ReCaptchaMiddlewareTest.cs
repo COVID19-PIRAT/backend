@@ -65,7 +65,8 @@ namespace Pirat.Tests
                 "/resources/consumables/124/contact",
                 "/resources/manpower/2333/contact",
                 "/resources/devices/2434/contact",
-                "/telephone-callback"
+                "/telephone-callback",
+                "/subscription"
             };
 
             foreach (var path in blackList)
