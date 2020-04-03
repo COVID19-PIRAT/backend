@@ -19,17 +19,12 @@ namespace Pirat.Model.Entity
         //***Link token
         public string token { get; set; }
 
+        public DateTime timestamp { get; set; }
+
         //***Keys to other tables
 
         public int address_id { get; set; }
 
-        public int[] consumable_ids { get; set; }
-
-        public int[] device_ids { get; set; }
-
-        public int[] personal_ids { get; set; }
-
-        public DateTime timestamp { get; set; }
 
         public OfferEntity build(Provider p)
         {
