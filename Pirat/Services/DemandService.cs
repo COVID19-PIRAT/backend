@@ -412,7 +412,7 @@ namespace Pirat.Services
             List<PersonalEntity> personalEntities = queP.Select(p => p).ToList();
             foreach (PersonalEntity p in personalEntities)
             {
-                offer.personals.Add(new Personal().build(queryAddress(p.address_id)));
+                offer.personals.Add(new Personal().build(p).build(queryAddress(p.address_id)));
             }
 
             return Task.FromResult(offer);

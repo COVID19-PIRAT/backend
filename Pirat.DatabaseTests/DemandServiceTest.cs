@@ -74,18 +74,27 @@ namespace Pirat.DatabaseTests
             var resultDevices = _demandService.QueryOffers(queryDevice).Result;
             Assert.NotNull(resultDevices);
             Assert.NotEmpty(resultDevices);
+            var device = resultDevices.First();
+            Assert.Equal(offer.devices.First().category, device.resource.category);
+            Assert.Equal(offer.devices.First().name, device.resource.name);
 
             //Get consumable
-            var consumable = _captainHookGenerator.GenerateConsumable();
-            var resultConsumables = _demandService.QueryOffers(consumable).Result;
+            var queryConsumable = _captainHookGenerator.GenerateConsumable();
+            var resultConsumables = _demandService.QueryOffers(queryConsumable).Result;
             Assert.NotNull(resultConsumables);
             Assert.NotEmpty(resultDevices);
+            var consumable = resultConsumables.First();
+            Assert.Equal(offer.consumables.First().category, consumable.resource.category);
+            Assert.Equal(offer.consumables.First().name, consumable.resource.name);
 
             //Get personal
-            var manpower = _captainHookGenerator.GenerateManpower();
-            var resultPersonal = _demandService.QueryOffers(manpower).Result;
+            var manpowerQuery = _captainHookGenerator.GenerateManpower();
+            var resultPersonal = _demandService.QueryOffers(manpowerQuery).Result;
             Assert.NotNull(resultPersonal);
             Assert.NotEmpty(resultPersonal);
+            var personal = resultPersonal.First();
+            Assert.Equal(offer.personals.First().area, personal.resource.area);
+            Assert.Equal(offer.personals.First().qualification, personal.resource.qualification);
 
             //Delete the offer and check if it worked
             var exception = Record.Exception(() => _demandService.delete(token).Result);
