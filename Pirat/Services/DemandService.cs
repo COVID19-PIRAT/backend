@@ -295,6 +295,7 @@ namespace Pirat.Services
             offerEntity.Insert(_context);
 
             //create the entities for the resources, calculate their coordinates, give them the offer foreign key and store them
+            //Update the original offer with the ids from the created entities (helps us for testing and if we want to do more stuff with the offer in future features)
 
             int offer_id = offerEntity.id;
 
@@ -311,6 +312,8 @@ namespace Pirat.Services
                     consumableEntity.offer_id = offer_id;
                     consumableEntity.address_id = addressEntity.id;
                     consumableEntity.Insert(_context);
+
+                    c.id = consumableEntity.id;
                 }
             }
             if(!(offer.personals is null))
@@ -326,6 +329,8 @@ namespace Pirat.Services
                     personalEntity.offer_id = offer_id;
                     personalEntity.address_id = addressEntity.id;
                     personalEntity.Insert(_context);
+
+                    p.id = personalEntity.id;
                 }
             }
             if(!(offer.devices is null))
@@ -341,6 +346,8 @@ namespace Pirat.Services
                     deviceEntity.offer_id = offer_id;
                     deviceEntity.address_id = addressEntity.id;
                     deviceEntity.Insert(_context);
+
+                    d.id = deviceEntity.id;
                 }
             }
 
