@@ -93,9 +93,5 @@ namespace Pirat.Model
         [FromQuery(Name = "kilometer")]
         public int kilometer { get; set; }
 
-        public bool isAddressSufficient()
-        {
-            return !string.IsNullOrEmpty(address.postalcode) && !string.IsNullOrEmpty(address.country);
-        }
     }
 }

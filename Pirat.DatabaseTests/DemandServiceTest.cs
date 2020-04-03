@@ -10,6 +10,7 @@ using Pirat.Exceptions;
 using Pirat.Model;
 using Pirat.Model.Entity;
 using Pirat.Services;
+using Pirat.Services.Helper.InputValidator;
 using Xunit;
 
 namespace Pirat.DatabaseTests
@@ -42,7 +43,8 @@ namespace Pirat.DatabaseTests
                 a.longitude = new decimal(0.0);
                 a.hascoordinates = true;
             });
-            _demandService = new DemandService(logger.Object, DemandContext, addressMaker.Object);
+            var inputValidator = new InputValidator();
+            _demandService = new DemandService(logger.Object, DemandContext, addressMaker.Object, inputValidator);
             _captainHookGenerator = new CaptainHookGenerator();
         }
 

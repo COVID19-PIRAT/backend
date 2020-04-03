@@ -70,5 +70,11 @@ namespace Pirat.Model
             longitude = e.longitude;
             return this;
         }
+
+        public bool isStoringInDatabasePossible()
+        {
+            return (!string.IsNullOrEmpty(postalcode) && !string.IsNullOrEmpty(country));
+        }
+
     }
 }

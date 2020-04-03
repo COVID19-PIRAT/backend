@@ -61,10 +61,7 @@ namespace Pirat.Model
             string s = "{base=" + baseString + ", address=" + address + "}";
             return s;
         }
-        public bool isAddressSufficient()
-        {
-            return !string.IsNullOrEmpty(address.postalcode) && !string.IsNullOrEmpty(address.country);
-        }
+
     }
     
 }

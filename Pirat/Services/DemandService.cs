@@ -24,33 +24,25 @@ namespace Pirat.Services
 
         private readonly IAddressMaker _addressMaker;
 
+        private readonly IInputValidator _inputValidator;
+
         private const int TokenLength = 30;
         //TODO Should we use default values if km is 0 in queries?
         private const int KmDistanceDefaultPersonal = 50;
         private const int KmDistanceDefaultDevice = 50;
         private const int KmDistanceDefaultConsumable = 50;
 
-        public DemandService(ILogger<DemandService> logger, DemandContext context, IAddressMaker addressMaker)
+        public DemandService(ILogger<DemandService> logger, DemandContext context, IAddressMaker addressMaker, IInputValidator validator)
         {
             _logger = logger;
             _context = context;
             _addressMaker = addressMaker;
+            _inputValidator = validator;
         }
 
         public Task<List<OfferResource<Consumable>>> QueryOffers(Consumable con)
         {
-            if (string.IsNullOrEmpty(con.category))
-            {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_CONSUMABLE);
-            } 
-            if(!con.isAddressSufficient())
-            {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_ADDRESS);
-            }
-            // if (con.amount < 1)
-            // {
-            //     throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_CONSUMABLE);
-            // }
+            _inputValidator.validateForQuery(con);
 
             var consumable = new ConsumableEntity().build(con);
             var maxDistance = con.kilometer;
@@ -123,18 +115,7 @@ namespace Pirat.Services
 
         public Task<List<OfferResource<Device>>> QueryOffers(Device dev)
         {
-            if (string.IsNullOrEmpty(dev.category))
-            {
-                throw new ArgumentException(Codes.Error.ErrorCodes.INCOMPLETE_DEVICE);
-            }
-            if(!dev.isAddressSufficient())
-            {
-                throw new ArgumentException(Codes.Error.ErrorCodes.INCOMPLETE_ADDRESS);
-            }
-            // if (dev.amount < 1)
-            // {
-            //     throw new ArgumentException(Codes.Error.ErrorCodes.INVALID_AMOUNT_DEVICE);
-            // }
+            _inputValidator.validateForQuery(dev);
 
             var device = new DeviceEntity().build(dev);
             var maxDistance = dev.kilometer;
@@ -206,10 +187,7 @@ namespace Pirat.Services
 
         public Task<List<OfferResource<Personal>>> QueryOffers(Manpower manpower)
         {
-            if (!manpower.isAddressSufficient())
-            {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_PERSONAL);
-            }
+            _inputValidator.validateForQuery(manpower);
 
             var maxDistance = manpower.kilometer;
             var manpowerAddress = manpower.address;
@@ -295,31 +273,8 @@ namespace Pirat.Services
 
         public Task<string> insert(Offer offer)
         {
-            //check the resources
-            if ((offer.consumables == null || !offer.consumables.Any()) &&
-                (offer.devices == null || !offer.devices.Any()) && 
-                (offer.personals == null || !offer.personals.Any()))
-            {
-                throw new ArgumentException(""+Error.ErrorCodes.INCOMPLETE_OFFER);
-            }
-
-            if (offer.consumables != null)
-            {
-                if (offer.consumables.Any(e => e.amount < 1))
-                {
-                    throw new ArgumentException(""+Error.ErrorCodes.INVALID_AMOUNT_CONSUMABLE);
-                }
-            }
-
-            if (offer.devices != null)
-            {
-                if (offer.devices.Any(e => e.amount < 1))
-                {
-                    throw new ArgumentException(""+Error.ErrorCodes.INVALID_AMOUNT_DEVICE);
-                }
-            }
-
-            //check the addresses
+            //check the offer
+            _inputValidator.validateForDatabaseInsertion(offer);
 
             var provider = offer.provider;
 
