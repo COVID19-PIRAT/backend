@@ -56,11 +56,6 @@ namespace Pirat.Services.Helper.InputValidator
                 throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_PERSONAL);
             }
 
-            if (string.IsNullOrEmpty(personal.address.postalcode) || string.IsNullOrEmpty(personal.address.country))
-            {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_ADDRESS);
-            }
-
             validateAddress(personal.address);
         }
 
@@ -74,10 +69,7 @@ namespace Pirat.Services.Helper.InputValidator
                 throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_PROVIDER);
             }
 
-            if (string.IsNullOrEmpty(provider.address.postalcode) || string.IsNullOrEmpty(provider.address.country))
-            {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_ADDRESS);
-            }
+            validateAddress(provider.address);
 
             if ((offer.consumables == null || !offer.consumables.Any()) &&
                 (offer.devices == null || !offer.devices.Any()) &&
