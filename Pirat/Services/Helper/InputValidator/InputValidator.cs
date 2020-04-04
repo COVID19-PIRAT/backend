@@ -51,7 +51,7 @@ namespace Pirat.Services.Helper.InputValidator
 
         public void validateForDatabaseInsertion(Personal personal)
         {
-            if (string.IsNullOrEmpty(personal.qualification) || string.IsNullOrEmpty(personal.area))
+            if (string.IsNullOrEmpty(personal.qualification) || string.IsNullOrEmpty(personal.area) || string.IsNullOrEmpty(personal.qualification))
             {
                 throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_PERSONAL);
             }
