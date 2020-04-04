@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <Folder Include="Configurations\" />
-    <Folder Include="Services\Helper\QueryHelper\" />
   </ItemGroup>
 
   <ItemGroup>
