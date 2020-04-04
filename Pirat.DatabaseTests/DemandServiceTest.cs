@@ -103,7 +103,7 @@ namespace Pirat.DatabaseTests
             Console.Out.WriteLine(providerFromQuery);
             Console.Out.WriteLine(providerOriginal);
             // ---- HOTFIX
-            // Vorerst sollen keine persönliche Daten veröffentlicht werden.
+            // Vorerst sollen keine persÃ¶nliche Daten verÃ¶ffentlicht werden.
             // Assert.True(providerOriginal.Equals(providerFromQuery));
 
             //Get consumable
