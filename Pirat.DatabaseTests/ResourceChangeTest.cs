@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -33,6 +34,8 @@ namespace Pirat.DatabaseTests
 
         private readonly ShyPirateGenerator _shyPirateGenerator;
 
+        private readonly Offer _offer;
+
         private readonly string _token;
 
         public ResourceChangeTest()
@@ -46,15 +49,22 @@ namespace Pirat.DatabaseTests
                 a.longitude = 0;
                 a.hascoordinates = false;
             });
-            var inputValidator = new InputValidator();
-            _resourceDemandService = new ResourceDemandService(loggerDemand.Object, DemandContext, addressMaker.Object, inputValidator);
+
+            InputValidator inputValidator = new InputValidator();
+            this._resourceDemandService = new ResourceDemandService(loggerDemand.Object, DemandContext, addressMaker.Object, inputValidator);
             _resourceUpdateService = new ResourceUpdateService(loggerUpdate.Object, DemandContext, addressMaker.Object, inputValidator);
             _captainHookGenerator = new CaptainHookGenerator();
             _shyPirateGenerator = new ShyPirateGenerator();
-
-
-            var offer = _captainHookGenerator.generateOffer();
-            _token =  _resourceUpdateService.insert(offer).Result;
+            
+            var task = Task.Run(async () =>
+            {
+                Offer offer = _captainHookGenerator.generateOffer();
+                var token = await  _resourceUpdateService.insert(offer);
+                offer = await _resourceDemandService.queryLink(token);
+                return (offer, token);
+            });
+            task.Wait();
+            (_offer, _token) = task.Result;
         }
 
         /// <summary>
@@ -73,82 +83,82 @@ namespace Pirat.DatabaseTests
         }
 
         [Fact(Skip = "TODO")]
-        public void Test_ChangeProviderInformation_Possible()
+        public async void Test_ChangeProviderInformation_Possible()
         {
-            var provider = _captainHookGenerator.GenerateProvider();
+            Provider provider = _captainHookGenerator.GenerateProvider();
             provider.name = "Peter Pan";
             provider.phone = "987766";
             provider.organisation = "Never Grow Up Kids";
             provider.address.postalcode = "88888";
             provider.address.country = "Atlantis";
 
-            var exception = Record.Exception(() => _resourceUpdateService.ChangeInformation(_token, provider).Result);
+            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, provider));
             Assert.Null(exception);
 
-            var device = _captainHookGenerator.GenerateDevice();
-            var response = _resourceDemandService.QueryOffers(device).Result;
+            Device device = _captainHookGenerator.GenerateDevice();
+            var response = await _resourceDemandService.QueryOffers(device);
             Assert.NotNull(response);
             Assert.NotEmpty(response);
-            var providerFromDevice = response.First().provider;
+            Provider providerFromDevice = response.First().provider;
             Console.Out.WriteLine(providerFromDevice);
             Console.Out.WriteLine(provider);
             Assert.True(providerFromDevice.Equals(provider));
         }
 
         [Fact(Skip = "TODO")]
-        public void Test_ChangeProviderMail_NotPossible()
+        public async void Test_ChangeProviderMail_NotPossible()
         {
-            var provider = _captainHookGenerator.GenerateProvider();
+            Provider provider = _captainHookGenerator.GenerateProvider();
             var providerMailOriginal = provider.mail;
             var providerMailChanged = "mail.changed@gmx.de";
 
             provider.mail = providerMailChanged;
 
-            var exception = Record.Exception(() => _resourceUpdateService.ChangeInformation(_token, provider).Result);
+            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, provider));
             Assert.Null(exception);
 
-            var device = _captainHookGenerator.GenerateDevice();
-            var response = _resourceDemandService.QueryOffers(device).Result;
+            Device device = _captainHookGenerator.GenerateDevice();
+            var response = await _resourceDemandService.QueryOffers(device);
             Assert.NotNull(response);
             Assert.NotEmpty(response);
-            var providerFromDevice = response.First().provider;
+            Provider providerFromDevice = response.First().provider;
             Console.Out.WriteLine(providerFromDevice);
             Console.Out.WriteLine(provider);
             Assert.True(providerMailOriginal.Equals(providerFromDevice.mail, StringComparison.Ordinal));
         }
 
         [Fact(Skip = "TODO")]
-        public void Test_ChangeProviderInformation_BadInputs()
+        public async Task Test_ChangeProviderInformation_BadInputs()
         {
-            var provider = _captainHookGenerator.GenerateProvider();
+            Provider provider = _captainHookGenerator.GenerateProvider();
             provider.name = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider));
 
             provider = _captainHookGenerator.GenerateProvider();
             provider.organisation = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider));
 
             //provider = _captainHookGenerator.GenerateProvider();
             //provider.phone = "";
-            //Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider).Result);
+            //await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider));
 
             provider = _captainHookGenerator.GenerateProvider();
             provider.address.postalcode = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider));
 
             provider = _captainHookGenerator.GenerateProvider();
             provider.address.country = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider));
 
             provider = _captainHookGenerator.GenerateProvider();
             provider.mail = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider));
         }
 
         [Fact(Skip = "TODO")]
-        public void Test_ChangeConsumableInformation_Possible()
+        public async void Test_ChangeConsumableInformation_Possible()
         {
-            var consumable = _captainHookGenerator.GenerateConsumable();
+            Consumable consumable = _offer.consumables[0];
             consumable.name = "New name";
             consumable.unit = "Kilogramm";
             consumable.annotation = "Geändert";
@@ -157,69 +167,69 @@ namespace Pirat.DatabaseTests
             consumable.address.postalcode = "85521";
             consumable.address.country = "Seeland";
 
-            var exception = Record.Exception(() => _resourceUpdateService.ChangeInformation(_token, consumable).Result);
+            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, consumable));
             Assert.Null(exception);
 
-            var queryConsumable = _captainHookGenerator.GenerateConsumable();
-            var response = _resourceDemandService.QueryOffers(queryConsumable).Result;
+            Consumable queryConsumable = _captainHookGenerator.GenerateConsumable();
+            var response = await _resourceDemandService.QueryOffers(queryConsumable);
             Assert.NotNull(response);
             Assert.NotEmpty(response);
-            var consumableFromQuery = response.First().resource;
+            Consumable consumableFromQuery = response.First().resource;
             Console.Out.WriteLine(consumableFromQuery);
             Console.Out.WriteLine(consumable);
             Assert.True(consumableFromQuery.Equals(consumable));
         }
 
         [Fact(Skip = "TODO")]
-        public void Test_ChangeConsumableInformation_NotPossible()
+        public async void Test_ChangeConsumableInformation_NotPossible()
         {
-            var consumable = _captainHookGenerator.GenerateConsumable();
+            Consumable consumable = _offer.consumables[0];
             var categoryOriginal = consumable.category;
             consumable.category = "Doch was anderes";
             var idOriginal = consumable.id;
             consumable.id = 999999;
 
-            var exception = Record.Exception(() => _resourceUpdateService.ChangeInformation(_token, consumable).Result);
+            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, consumable));
             Assert.Null(exception);
 
-            var queryConsumable = _captainHookGenerator.GenerateConsumable();
-            var response = _resourceDemandService.QueryOffers(queryConsumable).Result;
+            Consumable queryConsumable = _captainHookGenerator.GenerateConsumable();
+            var response = await _resourceDemandService.QueryOffers(queryConsumable);
             Assert.NotNull(response);
             Assert.NotEmpty(response);
 
-            var consumableFromQuery = response.First().resource;
+            Consumable consumableFromQuery = response.First().resource;
             Assert.True(consumableFromQuery.category.Equals(categoryOriginal));
             Assert.True(consumableFromQuery.id == idOriginal);
         }
 
         [Fact(Skip = "TODO")]
-        public void Test_ChangeConsumableInformation_BadInputs()
+        public async Task Test_ChangeConsumableInformation_BadInputs()
         {
-            var consumable = _captainHookGenerator.GenerateConsumable();
+            Consumable consumable = _offer.consumables[0];
             consumable.name = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable));
 
             consumable = _captainHookGenerator.GenerateConsumable();
             consumable.unit = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable));
 
             consumable = _captainHookGenerator.GenerateConsumable();
             consumable.category = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable));
 
             consumable = _captainHookGenerator.GenerateConsumable();
             consumable.address.postalcode = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable));
 
             consumable = _captainHookGenerator.GenerateConsumable();
             consumable.address.country = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable));
         }
 
         [Fact(Skip = "TODO")]
-        public void Test_ChangeDeviceInformation_Possible()
+        public async void Test_ChangeDeviceInformation_Possible()
         {
-            var device = _captainHookGenerator.GenerateDevice();
+            Device device = _offer.devices[0];
             device.name = "New name";
             device.annotation = "Geändert";
             device.manufacturer = "Doch wer anders";
@@ -227,33 +237,33 @@ namespace Pirat.DatabaseTests
             device.address.postalcode = "85521";
             device.address.country = "Seeland";
 
-            var exception = Record.Exception(() => _resourceUpdateService.ChangeInformation(_token, device).Result);
+            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, device));
             Assert.Null(exception);
 
-            var queryDevice = _captainHookGenerator.GenerateDevice();
-            var response = _resourceDemandService.QueryOffers(queryDevice).Result;
+            Device queryDevice = _captainHookGenerator.GenerateDevice();
+            var response = await _resourceDemandService.QueryOffers(queryDevice);
             Assert.NotNull(response);
             Assert.NotEmpty(response);
-            var consumableFromDevice = response.First().resource;
+            Device consumableFromDevice = response.First().resource;
             Console.Out.WriteLine(consumableFromDevice);
             Console.Out.WriteLine(device);
             Assert.True(consumableFromDevice.Equals(device));
         }
 
         [Fact(Skip = "TODO")]
-        public void Test_ChangeDeviceInformation_NotPossible()
+        public async void Test_ChangeDeviceInformation_NotPossible()
         {
-            var device = _captainHookGenerator.GenerateDevice();
+            Device device = _offer.devices[0];
             var categoryOriginal = device.category;
             device.category = "Doch was anderes";
             var idOriginal = device.id;
             device.id = 999999;
 
-            var exception = Record.Exception(() => _resourceUpdateService.ChangeInformation(_token, device).Result);
+            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, device));
             Assert.Null(exception);
 
-            var queryDevice = _captainHookGenerator.GenerateDevice();
-            var response = _resourceDemandService.QueryOffers(queryDevice).Result;
+            Device queryDevice = _captainHookGenerator.GenerateDevice();
+            var response = await _resourceDemandService.QueryOffers(queryDevice);
             Assert.NotNull(response);
             Assert.NotEmpty(response);
 
@@ -263,23 +273,23 @@ namespace Pirat.DatabaseTests
         }
 
         [Fact(Skip = "TODO")]
-        public void Test_ChangeDeviceInformation_BadInputs()
+        public async Task Test_ChangeDeviceInformation_BadInputs()
         {
-            var device = _captainHookGenerator.GenerateDevice();
+            Device device = _offer.devices[0];
             device.name = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, device).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, device));
 
             device = _captainHookGenerator.GenerateDevice();
             device.category = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, device).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, device));
 
             device = _captainHookGenerator.GenerateDevice();
             device.address.postalcode = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, device).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, device));
 
             device = _captainHookGenerator.GenerateDevice();
             device.address.country = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, device).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, device));
         }
 
         [Fact(Skip = "TODO")]
@@ -289,27 +299,27 @@ namespace Pirat.DatabaseTests
         }
 
         [Fact(Skip = "TODO")]
-        public void Test_ChangePersonalInformation_BadInputs()
+        public async Task Test_ChangePersonalInformation_BadInputs()
         {
-            var personal = _captainHookGenerator.GeneratePersonal();
+            Personal personal = _offer.personals[0];
             personal.qualification = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal));
 
             personal = _captainHookGenerator.GeneratePersonal();
             personal.institution = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal));
 
             personal = _captainHookGenerator.GeneratePersonal();
             personal.area = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal));
 
             personal = _captainHookGenerator.GeneratePersonal();
             personal.address.postalcode = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal));
 
             personal = _captainHookGenerator.GeneratePersonal();
             personal.address.country = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal).Result);
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal));
         }
 
         [Fact(Skip = "TODO")]
