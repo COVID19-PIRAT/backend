@@ -61,7 +61,14 @@ namespace Pirat.DatabaseTests
         /// </summary>
         public void Dispose()
         {
-            //Nothing to do
+            var exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE offer CASCADE"));
+            Assert.Null(exception);
+
+            exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE address CASCADE"));
+            Assert.Null(exception);
+
+            exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE region_subscription CASCADE"));
+            Assert.Null(exception);
         }
 
 

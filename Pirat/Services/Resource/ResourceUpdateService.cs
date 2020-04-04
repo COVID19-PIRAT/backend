@@ -136,6 +136,51 @@ namespace Pirat.Services.Resource
             return Task.FromResult("Offer deleted");
         }
 
+        public Task<string> ChangeInformation(string token, Provider provider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> ChangeInformation(string token, Consumable consumable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> ChangeInformation(string token, Device device)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> ChangeInformation(string token, Personal personal)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> ChangeAmount(string token, Consumable consumable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> ChangeAmount(string token, Device device)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> AddResource(string token, Consumable consumable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> AddResource(string token, Device device)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> AddResource(string token, Personal personal)
+        {
+            throw new NotImplementedException();
+        }
+
         private string createToken()
         {
             Random random = new Random();
