@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Pirat.DatabaseTests
 {
-    class ResourceChangeTest
+    public class ResourceChangeTest
     {
         private const string connectionString =
             "Server=localhost;Port=5432;Database=postgres;User ID=postgres;Password=postgres";
