@@ -22,7 +22,7 @@ namespace Pirat.DatabaseTests.Examples
         {
             return new Device()
             {
-                category = "Uhr",
+                category = "PCR_THERMOCYCLER",
                 name = "Zeitticker",
                 manufacturer = "Piratenrolex",
                 address = generateAddress(),
@@ -60,7 +60,7 @@ namespace Pirat.DatabaseTests.Examples
         {
             return new Consumable()
             {
-                category = "Kanonenkugel",
+                category = "SCHUTZKLEIDUNG",
                 name = "Hook3000",
                 manufacturer = "HookInc",
                 amount = 40,

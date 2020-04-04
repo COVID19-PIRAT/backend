@@ -33,6 +33,40 @@ namespace Pirat.Model
             return this;
         }
 
+        public string GetCategoryLocalizedName(string locale)
+        {
+            if (locale == "de")
+            {
+                return new Dictionary<string, string>()
+                {
+                    { "MASKE", "Maske" },
+                    { "SCHUTZKLEIDUNG", "Schutzkleidung" },
+                    { "SCHUTZBRILLE", "Schutzbrille" },
+                    { "HANDSCHUHE", "Handschuhe" },
+                    { "DESINFEKTIONSMITTEL", "Desinfektionsmittel" },
+                    { "REAKTIONSGEFAESSE", "Reaktionsgefäße" },
+                    { "READOUTPLATES", "Readoutplates" },
+                    { "PIPETTENSPITZEN", "Pipettenspitze" },
+                    { "SONSTIGES", "Sonstiges" },
+                }[category];
+            }
+            else
+            {
+                return new Dictionary<string, string>()
+                {
+                    { "MASKE", "Face mask" },
+                    { "SCHUTZKLEIDUNG", "Protective suit" },
+                    { "SCHUTZBRILLE", "Safety goggle" },
+                    { "HANDSCHUHE", "Glove" },
+                    { "DESINFEKTIONSMITTEL", "Disinfectant" },
+                    { "REAKTIONSGEFAESSE", "Reaction tube" },
+                    { "READOUTPLATES", "Readoutplate" },
+                    { "PIPETTENSPITZEN", "Pipette tip" },
+                    { "SONSTIGES", "Others" },
+                }[category];
+            }
+        }
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -55,6 +89,5 @@ namespace Pirat.Model
         {
             return "Consumable={ " + $"{base.ToString()} + unit={unit}" + " }";
         }
-
     }
 }

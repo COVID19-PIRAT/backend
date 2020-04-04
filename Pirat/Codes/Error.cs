@@ -11,6 +11,8 @@
             public const string INVALID_AMOUNT_CONSUMABLE = "1002:InvalidAmountConsumable";
             public const string INVALID_AMOUNT_DEVICE = "1003:InvalidAmountDevice";
             public const string INVALID_TOKEN = "1004:InvalidToken";
+            public const string INVALID_CATEGORY_CONSUMABLE = "1005:InvalidCategoryConsumable";
+            public const string INVALID_CATEGORY_DEVICE = "1006:InvalidCategoryDevice";
 
             public const string INCOMPLETE_ADDRESS = "2000:IncompleteAddress";
             public const string INCOMPLETE_OFFER = "2001:IncompleteOffer";

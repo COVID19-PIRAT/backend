@@ -20,7 +20,7 @@ namespace Pirat.DatabaseTests.Examples
         {
             return new Device()
             {
-                category = "Säbel",
+                category = "PCR_THERMOCYCLER",
                 name = "Piratenstecher",
                 manufacturer = "W.Turner",
                 address = generateAddress(),
