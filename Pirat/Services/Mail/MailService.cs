@@ -1,12 +1,12 @@
-﻿using MailKit.Net.Smtp;
-using Microsoft.Extensions.Logging;
-using MimeKit;
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MailKit.Net.Smtp;
+using Microsoft.Extensions.Logging;
+using MimeKit;
 using Pirat.Model;
 
-namespace Pirat.Services
+namespace Pirat.Services.Mail
 {
     public class MailService : IMailService
     {

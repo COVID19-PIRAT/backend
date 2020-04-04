@@ -16,6 +16,9 @@ using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Pirat.Codes;
 using Pirat.Extensions.Swagger.SwaggerConfiguration;
 using Pirat.Model.Entity;
+using Pirat.Services.Mail;
+using Pirat.Services.Middleware;
+using Pirat.Services.Resource;
 using Pirat.SwaggerConfiguration;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
@@ -30,7 +33,9 @@ namespace Pirat.Controllers
 
         private readonly ILogger<ResourceController> _logger;
 
-        private readonly IDemandService _demandService;
+        private readonly IResourceDemandService _resourceDemandService;
+
+        private readonly IResourceUpdateService _resourceUpdateService;
 
         private readonly IMailService _mailService;
 
@@ -38,13 +43,15 @@ namespace Pirat.Controllers
 
         public ResourceController(
             ILogger<ResourceController> logger,
-            IDemandService demandService,
+            IResourceDemandService resourceDemandService,
+            IResourceUpdateService resourceUpdateService,
             IMailService mailService,
             IReCaptchaService reCaptchaService
             )
         {
             _logger = logger;
-            _demandService = demandService;
+            _resourceDemandService = resourceDemandService;
+            _resourceUpdateService = resourceUpdateService;
             _mailService = mailService;
             _reCaptchaService = reCaptchaService;
         }
@@ -71,7 +78,7 @@ namespace Pirat.Controllers
             try
             {
                 consumable.address = address;
-                return Ok(await _demandService.QueryOffers(consumable));
+                return Ok(await _resourceDemandService.QueryOffers(consumable));
             }
             catch (ArgumentException e)
             {
@@ -104,7 +111,7 @@ namespace Pirat.Controllers
             try
             {
                 device.address = address;
-                return Ok(await _demandService.QueryOffers(device));
+                return Ok(await _resourceDemandService.QueryOffers(device));
             }
             catch (ArgumentException e)
             {
@@ -136,7 +143,7 @@ namespace Pirat.Controllers
             try
             {
                 manpower.address = address;
-                return Ok(await _demandService.QueryOffers(manpower));
+                return Ok(await _resourceDemandService.QueryOffers(manpower));
             }
             catch (ArgumentException e)
             {
@@ -170,7 +177,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                return Ok(await _demandService.queryLink(token));
+                return Ok(await _resourceDemandService.queryLink(token));
             }
             catch (ArgumentException e)
             {
@@ -208,7 +215,7 @@ namespace Pirat.Controllers
                 {
                     return BadRequest(Error.ErrorCodes.INVALID_MAIL);
                 }
-                var token = await _demandService.insert(offer);
+                var token = await _resourceUpdateService.insert(offer);
                 _mailService.sendNewOfferConfirmationMail(token, offer.provider.mail, offer.provider.name);
                 return Ok(token);
             }
@@ -247,12 +254,12 @@ namespace Pirat.Controllers
             {
                 return BadRequest(Error.ErrorCodes.INVALID_MAIL);
             }
-            var consumable = (ConsumableEntity)await _demandService.Find(new ConsumableEntity(), id);
+            var consumable = (ConsumableEntity)await _resourceDemandService.Find(new ConsumableEntity(), id);
             if (consumable is null)
             {
                 return NotFound(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
             }
-            var offer = (OfferEntity)await _demandService.Find(new OfferEntity(), consumable.offer_id);
+            var offer = (OfferEntity)await _resourceDemandService.Find(new OfferEntity(), consumable.offer_id);
             if (offer is null)
             {
                 return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
@@ -290,12 +297,12 @@ namespace Pirat.Controllers
             {
                 return BadRequest(Error.ErrorCodes.INVALID_MAIL);
             }
-            var device = (DeviceEntity)await _demandService.Find(new DeviceEntity(), id);
+            var device = (DeviceEntity)await _resourceDemandService.Find(new DeviceEntity(), id);
             if (device is null)
             {
                 return NotFound(Error.ErrorCodes.NOTFOUND_DEVICE);
             }
-            var offer = (OfferEntity)await _demandService.Find(new OfferEntity(), device.offer_id);
+            var offer = (OfferEntity)await _resourceDemandService.Find(new OfferEntity(), device.offer_id);
             if (offer is null)
             {
                 return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
@@ -333,12 +340,12 @@ namespace Pirat.Controllers
             {
                 return BadRequest(Error.ErrorCodes.INVALID_MAIL);
             }
-            var personal = (PersonalEntity)await _demandService.Find(new PersonalEntity(), id);
+            var personal = (PersonalEntity)await _resourceDemandService.Find(new PersonalEntity(), id);
             if (personal is null)
             {
                 return NotFound(Error.ErrorCodes.NOTFOUND_PERSONAL);
             }
-            var offer = (OfferEntity)await _demandService.Find(new OfferEntity(), personal.offer_id);
+            var offer = (OfferEntity)await _resourceDemandService.Find(new OfferEntity(), personal.offer_id);
             if (offer is null)
             {
                 return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
@@ -377,7 +384,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                await _demandService.delete(token);
+                await _resourceUpdateService.delete(token);
                 return Ok();
             }
             catch (ArgumentException e)

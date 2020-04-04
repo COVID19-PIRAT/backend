@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 using Cronos;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Pirat.DatabaseContext;
-using Pirat.Model;
+using Pirat.Services.Mail;
 
-namespace Pirat.Services
+namespace Pirat.Services.Schedule
 {
     public class ScheduledNotificationService : IScheduledNotificationService
     {

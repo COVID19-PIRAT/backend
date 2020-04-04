@@ -23,6 +23,10 @@ using Pirat.Helper;
 using Pirat.Services;
 using Pirat.Services.Helper.AddressMaker;
 using Pirat.Services.Helper.InputValidator;
+using Pirat.Services.Mail;
+using Pirat.Services.Middleware;
+using Pirat.Services.Resource;
+using Pirat.Services.Schedule;
 using Pirat.SwaggerConfiguration;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -45,7 +49,8 @@ namespace Pirat
             services.AddHealthChecks();
 
             //Services
-            services.AddTransient<IDemandService, DemandService>();
+            services.AddTransient<IResourceDemandService, ResourceDemandService>();
+            services.AddTransient<IResourceUpdateService, ResourceUpdateService>();
             services.AddTransient<IMailService, MailService>();
             services.AddTransient<IReCaptchaService, ReCaptchaService>(s => 
                 new ReCaptchaService(Environment.GetEnvironmentVariable("PIRAT_GOOGLE_RECAPTCHA_SECRET")));
