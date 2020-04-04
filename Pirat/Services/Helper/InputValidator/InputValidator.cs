@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Pirat.Codes;
 using Pirat.Model;
@@ -91,6 +92,15 @@ namespace Pirat.Services.Helper.InputValidator
             {
                 throw new ArgumentException(Codes.Error.ErrorCodes.INCOMPLETE_DEVICE);
             }
+
+            try
+            {
+                device.GetCategoryLocalizedName("de");
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_CATEGORY_DEVICE);
+            }
             validateAddress(device.address);
         }
 
@@ -99,6 +109,15 @@ namespace Pirat.Services.Helper.InputValidator
             if (string.IsNullOrEmpty(consumable.category))
             {
                 throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_CONSUMABLE);
+            }
+
+            try
+            {
+                consumable.GetCategoryLocalizedName("de");
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_CATEGORY_CONSUMABLE);
             }
             validateAddress(consumable.address);
         }
