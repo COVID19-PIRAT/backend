@@ -10,6 +10,7 @@ using Pirat.Exceptions;
 using Pirat.Model;
 using Pirat.Model.Entity;
 using Pirat.Services;
+using Pirat.Services.Helper.InputValidator;
 using Xunit;
 
 namespace Pirat.DatabaseTests
@@ -29,6 +30,8 @@ namespace Pirat.DatabaseTests
 
         private readonly CaptainHookGenerator _captainHookGenerator;
 
+        private readonly ShyPirateGenerator _shyPirateGenerator;
+
         /// <summary>
         /// Called before each test
         /// </summary>
@@ -38,12 +41,14 @@ namespace Pirat.DatabaseTests
             var addressMaker = new Mock<IAddressMaker>();
             addressMaker.Setup(m => m.SetCoordinates(It.IsAny<AddressEntity>())).Callback((AddressEntity a) =>
             {
-                a.latitude = new decimal(0.0);
-                a.longitude = new decimal(0.0);
-                a.hascoordinates = true;
+                a.latitude = 0;
+                a.longitude = 0;
+                a.hascoordinates = false;
             });
-            _demandService = new DemandService(logger.Object, DemandContext, addressMaker.Object);
+            var inputValidator = new InputValidator();
+            _demandService = new DemandService(logger.Object, DemandContext, addressMaker.Object, inputValidator);
             _captainHookGenerator = new CaptainHookGenerator();
+            _shyPirateGenerator = new ShyPirateGenerator();
         }
 
         /// <summary>
@@ -74,18 +79,31 @@ namespace Pirat.DatabaseTests
             var resultDevices = _demandService.QueryOffers(queryDevice).Result;
             Assert.NotNull(resultDevices);
             Assert.NotEmpty(resultDevices);
-            var device = resultDevices.First();
-            Assert.Equal(offer.devices.First().category, device.resource.category);
-            Assert.Equal(offer.devices.First().name, device.resource.name);
+            var deviceFromQuery = resultDevices.First().resource;
+            var deviceOriginal = offer.devices.First();
+            Console.Out.WriteLine(deviceFromQuery);
+            Console.Out.WriteLine(deviceOriginal);
+            Assert.True(deviceOriginal.Equals(deviceFromQuery));
+
+            //check the provider
+            var providerFromQuery = resultDevices.First().provider; 
+            var providerOriginal = offer.provider;
+            Console.Out.WriteLine(providerFromQuery);
+            Console.Out.WriteLine(providerOriginal);
+            // ---- HOTFIX
+            // Vorerst sollen keine persönliche Daten veröffentlicht werden.
+            // Assert.True(providerOriginal.Equals(providerFromQuery));
 
             //Get consumable
             var queryConsumable = _captainHookGenerator.GenerateConsumable();
             var resultConsumables = _demandService.QueryOffers(queryConsumable).Result;
             Assert.NotNull(resultConsumables);
             Assert.NotEmpty(resultDevices);
-            var consumable = resultConsumables.First();
-            Assert.Equal(offer.consumables.First().category, consumable.resource.category);
-            Assert.Equal(offer.consumables.First().name, consumable.resource.name);
+            var consumableFromQuery = resultConsumables.First().resource;
+            var consumableOriginal = offer.consumables.First();
+            Console.Out.WriteLine(consumableFromQuery);
+            Console.Out.WriteLine(consumableOriginal);
+            Assert.True(consumableOriginal.Equals(consumableFromQuery));
 
             //Get personal
             var manpowerQuery = _captainHookGenerator.GenerateManpower();
@@ -99,10 +117,45 @@ namespace Pirat.DatabaseTests
             //Delete the offer and check if it worked
             var exception = Record.Exception(() => _demandService.delete(token).Result);
             Assert.Null(exception);
+
+            //Offer should be not available anymore
+            Assert.Throws<DataNotFoundException>(() => _demandService.queryLink(token).Result);
         }
 
-        [Fact(Skip = "Not implemented")]
-        public void InsertOffer_BadInputs() //TODO fix  this after merging
+        [Fact]
+        public void InsertPrivateOffer_QueryNoProvider()
+        {
+            var offer = _shyPirateGenerator.generateOffer();
+            var token = _demandService.insert(offer).Result;
+
+            //Get device
+            var queryDevice = _shyPirateGenerator.GenerateDevice();
+            var resultDevices = _demandService.QueryOffers(queryDevice).Result;
+            Assert.NotNull(resultDevices);
+            Assert.NotEmpty(resultDevices);
+            var deviceFromQuery = resultDevices.First().resource;
+            var deviceOriginal = offer.devices.First();
+            Console.Out.WriteLine(deviceFromQuery);
+            Console.Out.WriteLine(deviceOriginal);
+            Assert.True(deviceOriginal.Equals(deviceFromQuery));
+
+            //check the provider
+            var providerFromQuery = resultDevices.First().provider;
+            var providerOriginal = offer.provider;
+            Console.Out.WriteLine(providerFromQuery);
+            Console.Out.WriteLine(providerOriginal);
+            Assert.Null(providerFromQuery);
+
+            //Delete the offer and check if it worked
+            var exception = Record.Exception(() => _demandService.delete(token).Result);
+            Assert.Null(exception);
+
+            //Offer should be not available anymore
+            Assert.Throws<DataNotFoundException>(() => _demandService.queryLink(token).Result);
+        }
+
+        [Fact]
+        public void InsertOffer_BadInputs()
         {
             var offer = _captainHookGenerator.generateOffer();
             offer.provider.name = "";
@@ -123,6 +176,38 @@ namespace Pirat.DatabaseTests
             offer = _captainHookGenerator.generateOffer();
             offer.personals.First().area = "";
             Assert.Throws<ArgumentException>(() => _demandService.insert(offer).Result);
+        }
+
+        [Fact]
+        public void QueryDevice_BadInputs()
+        {
+            var device = _captainHookGenerator.GenerateDevice();
+            device.category = "";
+            Assert.Throws<ArgumentException>(() => _demandService.QueryOffers(device).Result);
+
+            device = _captainHookGenerator.GenerateDevice();
+            device.address.postalcode = "";
+            Assert.Throws<ArgumentException>(() => _demandService.QueryOffers(device).Result);
+        }
+
+        [Fact]
+        public void QueryConsumable_BadInputs()
+        {
+            var consumable = _captainHookGenerator.GenerateConsumable();
+            consumable.category = "";
+            Assert.Throws<ArgumentException>(() => _demandService.QueryOffers(consumable).Result);
+
+            consumable = _captainHookGenerator.GenerateConsumable();
+            consumable.address.country = "";
+            Assert.Throws<ArgumentException>(() => _demandService.QueryOffers(consumable).Result);
+        }
+
+        [Fact]
+        public void QueryManpower_BadInputs()
+        {
+            var manpower = _captainHookGenerator.GenerateManpower();
+            manpower.address.postalcode = "";
+            Assert.Throws<ArgumentException>(() => _demandService.QueryOffers(manpower).Result);
         }
 
         [Fact]

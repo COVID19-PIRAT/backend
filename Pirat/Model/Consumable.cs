@@ -12,7 +12,7 @@ namespace Pirat.Model
     {
         [JsonProperty]
         [FromQuery(Name = "unit")]
-        public string unit { get; set; }
+        public string unit { get; set; } = string.Empty;
 
         public Consumable build(ConsumableEntity c)
         {
@@ -31,6 +31,29 @@ namespace Pirat.Model
         {
             address = a;
             return this;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as Consumable);
+        }
+        
+        public bool Equals(Consumable other)
+        {
+            return other != null && base.Equals(other) && unit.Equals(other.unit, StringComparison.Ordinal);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), unit);
+        }
+
+        public override string ToString()
+        {
+            return "Consumable={ " + $"{base.ToString()} + unit={unit}" + " }";
         }
 
     }

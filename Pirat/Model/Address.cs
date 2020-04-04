@@ -13,25 +13,25 @@ namespace Pirat.Model
 
         [JsonProperty]
         [FromQuery(Name = "street")]
-        public string street { get; set; }
+        public string street { get; set; } = string.Empty;
 
         [JsonProperty]
         [FromQuery(Name = "streetnumber")]
-        public string streetnumber { get; set; }
+        public string streetnumber { get; set; } = string.Empty; 
 
         [JsonProperty]
         [Required]
         [FromQuery(Name = "postalcode")]
-        public string postalcode { get; set; }
+        public string postalcode { get; set; } = string.Empty;
 
         [JsonProperty]
         [FromQuery(Name = "city")]
-        public string city { get; set; }
+        public string city { get; set; } = string.Empty;
 
         [JsonProperty]
         [Required]
         [FromQuery(Name = "country")]
-        public string country { get; set; }
+        public string country { get; set; } = string.Empty;
 
         [JsonProperty]
         [FromQuery(Name = "latitude")]
@@ -41,23 +41,6 @@ namespace Pirat.Model
         [FromQuery(Name = "longitude")]
         public decimal longitude { get; set; }
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            if (!(obj is Address))
-            {
-                return false;
-            }
-
-            var a = (Address) obj;
-            return street.Equals(a.street) && postalcode.Equals(a.postalcode) && city.Equals(a.city) &&
-                   streetnumber.Equals(a.streetnumber)
-                   && country.Equals(a.country) && latitude == a.latitude && longitude == a.longitude;
-        }
 
         public Address build(AddressEntity e)
         {
@@ -69,6 +52,36 @@ namespace Pirat.Model
             latitude = e.latitude;
             longitude = e.longitude;
             return this;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as Address);
+        }
+
+        public bool Equals(Address other)
+        {
+            return other != null 
+                   && street.Equals(other.street, StringComparison.Ordinal) 
+                   && postalcode.Equals(other.postalcode, StringComparison.Ordinal) 
+                   && city.Equals(other.city, StringComparison.Ordinal) 
+                   && streetnumber.Equals(other.streetnumber, StringComparison.Ordinal)
+                   && country.Equals(other.country, StringComparison.Ordinal) 
+                   && latitude == other.latitude && longitude == other.longitude;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(street, streetnumber, postalcode, city, country, latitude, longitude);
+        }
+
+        public override string ToString()
+        {
+            return "Address={ " + $"street={street}, postalcode={postalcode}, city={city}, streetnumber={streetnumber}, " +
+                   $"country={country}, latitude={latitude}, longitude={longitude}" + " }";
         }
     }
 }

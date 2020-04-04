@@ -21,6 +21,8 @@ using Pirat.Extensions;
 using Pirat.Extensions.Swagger;
 using Pirat.Helper;
 using Pirat.Services;
+using Pirat.Services.Helper.AddressMaker;
+using Pirat.Services.Helper.InputValidator;
 using Pirat.SwaggerConfiguration;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -49,6 +51,7 @@ namespace Pirat
                 new ReCaptchaService(Environment.GetEnvironmentVariable("PIRAT_GOOGLE_RECAPTCHA_SECRET")));
             services.AddTransient<IAddressMaker, AddressMaker>();
             services.AddTransient<ISubscriptionService, SubscriptionService>();
+            services.AddTransient<IInputValidator, InputValidator>();
 
             //Cors
             services.AddCors(options =>

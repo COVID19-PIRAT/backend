@@ -16,11 +16,11 @@ namespace Pirat.Model
         [JsonProperty]
         [FromQuery(Name = "institution")]
         // [Required]
-        public string institution { get; set; }
+        public string institution { get; set; } = string.Empty;
 
         [JsonProperty]
         [FromQuery(Name = "researchgroup")]
-        public string researchgroup { get; set; }
+        public string researchgroup { get; set; } = string.Empty;
 
 
         [JsonProperty]
@@ -29,7 +29,35 @@ namespace Pirat.Model
 
         [JsonProperty]
         [FromQuery(Name = "annotation")]
-        public string annotation { get; set; }
+        public string annotation { get; set; } = string.Empty;
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as PersonalBase);
+        }
+
+        public bool Equals(PersonalBase other)
+        {
+            return other != null
+                   && institution.Equals(other.institution, StringComparison.Ordinal)
+                   && researchgroup.Equals(other.researchgroup, StringComparison.Ordinal)
+                   && experience_rt_pcr == other.experience_rt_pcr
+                   && annotation.Equals(other.annotation, StringComparison.Ordinal);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), institution, researchgroup, experience_rt_pcr, annotation);
+        }
+
+        public override string ToString()
+        {
+            return "PersonalBase={ " + $"{base.ToString()} institution={institution}, researchgroup={researchgroup}, " +
+                   $"experience_rt_pcr={experience_rt_pcr}, annotation={annotation}" + " }";
+        }
     }
 
     public class Personal : PersonalBase
@@ -37,12 +65,12 @@ namespace Pirat.Model
         [JsonProperty]
         [FromQuery(Name = "qualification")]
         [Required]
-        public string qualification { get; set; }
+        public string qualification { get; set; } = string.Empty;
 
         [JsonProperty]
         [FromQuery(Name = "area")]
         [Required]
-        public string area { get; set; }
+        public string area { get; set; } = string.Empty;
 
         public Address address { get; set; }
 
@@ -66,9 +94,32 @@ namespace Pirat.Model
             return this;
         }
 
-        public bool isAddressSufficient()
+        public override bool Equals(object obj)
         {
-            return !string.IsNullOrEmpty(address.postalcode) && !string.IsNullOrEmpty(address.country);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as Personal);
+        }
+        
+        public bool Equals(Personal other)
+        {
+            return other != null
+                   && base.Equals(other)
+                   && qualification.Equals(other.qualification, StringComparison.Ordinal)
+                   && area.Equals(other.area, StringComparison.Ordinal)
+                   && address.Equals(other.address)
+                   && kilometer == other.kilometer;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), qualification, area, address, kilometer);
+        }
+
+        public override string ToString()
+        {
+            return "Personal={ " + $"{base.ToString()} qualification={qualification} area={area} address={address} kilometer={kilometer}" + " }";
         }
     }
 
@@ -93,9 +144,5 @@ namespace Pirat.Model
         [FromQuery(Name = "kilometer")]
         public int kilometer { get; set; }
 
-        public bool isAddressSufficient()
-        {
-            return !string.IsNullOrEmpty(address.postalcode) && !string.IsNullOrEmpty(address.country);
-        }
     }
 }
