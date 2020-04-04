@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MailKit.Net.Smtp;
@@ -295,6 +298,39 @@ mail@pirat-tool.com
             {
                 var subject = "PIRAT: Neue Angebote / New Offers";
 
+                var devices = resourceList.devices
+                    .GroupBy(d => d.category)
+                    .OrderBy(k => k.Key.ToString())
+                    .ToDictionary(c => c.Key, c => c.ToList().Count());
+
+                var consumables = resourceList.consumables
+                    .GroupBy(consumable => consumable.category)
+                    .OrderBy(key => key.Key.ToString())
+                    .ToDictionary(entry => entry.Key, entry => entry.ToList().Count());
+
+                var personals = resourceList.personals
+                    .GroupBy(personal => personal.qualification)
+                    .OrderBy(key => key.Key.ToString())
+                    .ToDictionary(entry => entry.Key, entry => entry.ToList().Count());
+
+                StringBuilder newOffers = new StringBuilder("New offers:\n");
+                newOffers.AppendLine("Devices:");
+                foreach (var d in devices)
+                {
+                    newOffers.AppendLine(d.Key + ", " + d.Value);
+                }
+                newOffers.AppendLine("Consumables:");
+                foreach (var c in consumables)
+                {
+                    newOffers.AppendLine(c.Key + ", " + c.Value);
+                }
+                newOffers.AppendLine("Personal:");
+                foreach (var p in personals)
+                {
+                    newOffers.AppendLine(p.Key + ", " + p.Value);
+                }
+                //TODO test this
+                Console.WriteLine(newOffers);
                 var content = $@"
 --- Please scroll down for the English version ---
 
