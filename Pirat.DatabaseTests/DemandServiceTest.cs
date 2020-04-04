@@ -86,11 +86,13 @@ namespace Pirat.DatabaseTests
             Assert.True(deviceOriginal.Equals(deviceFromQuery));
 
             //check the provider
-            var providerFromQuery = resultDevices.First().provider;
+            var providerFromQuery = resultDevices.First().provider; 
             var providerOriginal = offer.provider;
             Console.Out.WriteLine(providerFromQuery);
             Console.Out.WriteLine(providerOriginal);
-            Assert.True(providerOriginal.Equals(providerFromQuery));
+            // ---- HOTFIX
+            // Vorerst sollen keine persönliche Daten veröffentlicht werden.
+            // Assert.True(providerOriginal.Equals(providerFromQuery));
 
             //Get consumable
             var queryConsumable = _captainHookGenerator.GenerateConsumable();
