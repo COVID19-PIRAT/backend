@@ -46,7 +46,7 @@ namespace Pirat.Model
                     { "DESINFEKTIONSMITTEL", "Desinfektionsmittel" },
                     { "REAKTIONSGEFAESSE", "Reaktionsgefäße" },
                     { "READOUTPLATES", "Readoutplates" },
-                    { "PIPETTENSPITZEN", "Pipettenspitzen" },
+                    { "PIPETTENSPITZEN", "Pipettenspitze" },
                     { "SONSTIGES", "Sonstiges" },
                 }[category];
             }
@@ -54,14 +54,14 @@ namespace Pirat.Model
             {
                 return new Dictionary<string, string>()
                 {
-                    { "MASKE", "Face masks" },
-                    { "SCHUTZKLEIDUNG", "Protective suits" },
+                    { "MASKE", "Face mask" },
+                    { "SCHUTZKLEIDUNG", "Protective suit" },
                     { "SCHUTZBRILLE", "Safety goggle" },
-                    { "HANDSCHUHE", "Gloves" },
+                    { "HANDSCHUHE", "Glove" },
                     { "DESINFEKTIONSMITTEL", "Disinfectant" },
-                    { "REAKTIONSGEFAESSE", "Reaction tubes" },
-                    { "READOUTPLATES", "Readoutplates" },
-                    { "PIPETTENSPITZEN", "Pipette tips" },
+                    { "REAKTIONSGEFAESSE", "Reaction tube" },
+                    { "READOUTPLATES", "Readoutplate" },
+                    { "PIPETTENSPITZEN", "Pipette tip" },
                     { "SONSTIGES", "Others" },
                 }[category];
             }
