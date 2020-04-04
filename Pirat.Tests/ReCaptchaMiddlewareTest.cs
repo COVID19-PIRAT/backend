@@ -12,6 +12,7 @@ using Moq;
 using NUnit.Framework;
 using Pirat.Extensions;
 using Pirat.Services;
+using Pirat.Services.Middleware;
 
 namespace Pirat.Tests
 {

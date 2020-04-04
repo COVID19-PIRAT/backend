@@ -8,6 +8,7 @@ using Pirat.Exceptions;
 using Pirat.Extensions.Swagger.SwaggerConfiguration;
 using Pirat.Model;
 using Pirat.Services;
+using Pirat.Services.Mail;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
 

@@ -1,24 +1,20 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using MimeKit;
+using Pirat.Codes;
 using Pirat.DatabaseContext;
 using Pirat.Exceptions;
 using Pirat.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Server.IIS.Core;
-using Pirat.Codes;
 using Pirat.Model.Entity;
+using Pirat.Services.Helper;
 
-namespace Pirat.Services
+namespace Pirat.Services.Resource
 {
-    public class DemandService :IDemandService
+    public class ResourceDemandService : IResourceDemandService
     {
-        private readonly ILogger<DemandService> _logger;
+        private readonly ILogger<ResourceDemandService> _logger;
 
         private readonly DemandContext _context;
 
@@ -26,20 +22,19 @@ namespace Pirat.Services
 
         private readonly IInputValidator _inputValidator;
 
-        private const int TokenLength = 30;
-        //TODO Should we use default values if km is 0 in queries?
-        private const int KmDistanceDefaultPersonal = 50;
-        private const int KmDistanceDefaultDevice = 50;
-        private const int KmDistanceDefaultConsumable = 50;
+        private readonly QueryHelper _queryHelper;
 
-        public DemandService(ILogger<DemandService> logger, DemandContext context, IAddressMaker addressMaker, IInputValidator validator)
+
+        public ResourceDemandService(ILogger<ResourceDemandService> logger, DemandContext context, IAddressMaker addressMaker, IInputValidator validator)
         {
             _logger = logger;
             _context = context;
             _addressMaker = addressMaker;
             _inputValidator = validator;
-        }
 
+            _queryHelper = new QueryHelper(context);
+
+        }
         public Task<List<OfferResource<Consumable>>> QueryOffers(Consumable con)
         {
             _inputValidator.validateForQuery(con);
@@ -51,11 +46,11 @@ namespace Pirat.Services
             _addressMaker.SetCoordinates(location);
 
             var query = from o in _context.offer
-                join c in _context.consumable on o.id equals c.offer_id
-                join ap in _context.address on o.address_id equals ap.id
-                join ac in _context.address on c.address_id equals ac.id
-                where consumable.category.Equals(c.category)
-                select new { o, c, ap, ac };
+                        join c in _context.consumable on o.id equals c.offer_id
+                        join ap in _context.address on o.address_id equals ap.id
+                        join ac in _context.address on c.address_id equals ac.id
+                        where consumable.category.Equals(c.category)
+                        select new { o, c, ap, ac };
 
             if (!string.IsNullOrEmpty(consumable.name))
             {
@@ -79,12 +74,12 @@ namespace Pirat.Services
 
                 var yLatitude = x.ac.latitude;
                 var yLongitude = x.ac.longitude;
-                var distance = computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
+                var distance = DistanceCalculator.computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
                 if (distance > maxDistance && maxDistance != 0)
                 {
                     continue;
                 }
-                resource.kilometer = (int) Math.Round(distance);
+                resource.kilometer = (int)Math.Round(distance);
 
                 var provider = new Provider().build(x.o);
                 var providerAddress = new Address().build(x.ap);
@@ -124,11 +119,11 @@ namespace Pirat.Services
             _addressMaker.SetCoordinates(location);
 
             var query = from o in _context.offer
-                join d in _context.device on o.id equals d.offer_id
-                join ap in _context.address on o.address_id equals ap.id
-                join ac in _context.address on d.address_id equals ac.id
-                where device.category.Equals(d.category)
-                select new { o, d, ap, ac };
+                        join d in _context.device on o.id equals d.offer_id
+                        join ap in _context.address on o.address_id equals ap.id
+                        join ac in _context.address on d.address_id equals ac.id
+                        where device.category.Equals(d.category)
+                        select new { o, d, ap, ac };
 
             if (!string.IsNullOrEmpty(device.name))
             {
@@ -151,7 +146,7 @@ namespace Pirat.Services
 
                 var yLatitude = x.ac.latitude;
                 var yLongitude = x.ac.longitude;
-                var distance = computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
+                var distance = DistanceCalculator.computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
 
                 if (distance > maxDistance && maxDistance != 0)
                 {
@@ -195,9 +190,9 @@ namespace Pirat.Services
             _addressMaker.SetCoordinates(location);
 
             var query = from o in _context.offer
-                join personal in _context.personal on o.id equals personal.offer_id
-                join ap in _context.address on o.address_id equals ap.id
-                join ac in _context.address on personal.address_id equals ac.id
+                        join personal in _context.personal on o.id equals personal.offer_id
+                        join ap in _context.address on o.address_id equals ap.id
+                        join ac in _context.address on personal.address_id equals ac.id
                         select new { o, personal, ap, ac };
 
             if (!string.IsNullOrEmpty(manpower.institution))
@@ -231,7 +226,7 @@ namespace Pirat.Services
 
                 var yLatitude = x.ac.latitude;
                 var yLongitude = x.ac.longitude;
-                var distance = computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
+                var distance = DistanceCalculator.computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
                 if (distance > maxDistance && maxDistance != 0)
                 {
                     continue;
@@ -270,205 +265,48 @@ namespace Pirat.Services
             return Task.FromResult(findable.Find(_context, id));
         }
 
-
-        public Task<string> insert(Offer offer)
-        {
-            //check the offer
-            _inputValidator.validateForDatabaseInsertion(offer);
-
-            var provider = offer.provider;
-
-            //Build as entities
-
-            var offerEntity = new OfferEntity().build(provider);
-            var offerAddressEntity = new AddressEntity().build(provider.address);
-            
-            //Create the coordinates and store the address of the offer
-
-            _addressMaker.SetCoordinates(offerAddressEntity);
-            offerAddressEntity.Insert(_context);
-
-            //Store the offer including the address id as foreign key, the token and a timestamp
-            offerEntity.address_id = offerAddressEntity.id;
-            offerEntity.token = createToken();
-            offerEntity.timestamp = DateTime.Now;
-            offerEntity.Insert(_context);
-
-            //create the entities for the resources, calculate their coordinates, give them the offer foreign key and store them
-            //Update the original offer with the ids from the created entities (helps us for testing and if we want to do more stuff with the offer in future features)
-
-            int offer_id = offerEntity.id;
-
-            if(!(offer.consumables is null))
-            {
-                foreach (var c in offer.consumables)
-                {
-                    var consumableEntity = new ConsumableEntity().build(c);
-                    var addressEntity = new AddressEntity().build(c.address);
-
-                    _addressMaker.SetCoordinates(addressEntity);
-                    addressEntity.Insert(_context);
-
-                    consumableEntity.offer_id = offer_id;
-                    consumableEntity.address_id = addressEntity.id;
-                    consumableEntity.Insert(_context);
-
-                    c.id = consumableEntity.id;
-                }
-            }
-            if(!(offer.personals is null))
-            {
-                foreach (var p in offer.personals)
-                {
-                    var personalEntity = new PersonalEntity().build(p);
-                    var addressEntity = new AddressEntity().build(p.address);
-
-                    _addressMaker.SetCoordinates(addressEntity);
-                    addressEntity.Insert(_context);
-
-                    personalEntity.offer_id = offer_id;
-                    personalEntity.address_id = addressEntity.id;
-                    personalEntity.Insert(_context);
-
-                    p.id = personalEntity.id;
-                }
-            }
-            if(!(offer.devices is null))
-            {
-                foreach (var d in offer.devices)
-                {
-                    var deviceEntity = new DeviceEntity().build(d);
-                    var addressEntity = new AddressEntity().build(d.address);
-
-                    _addressMaker.SetCoordinates(addressEntity);
-                    addressEntity.Insert(_context);
-
-                    deviceEntity.offer_id = offer_id;
-                    deviceEntity.address_id = addressEntity.id;
-                    deviceEntity.Insert(_context);
-
-                    d.id = deviceEntity.id;
-                }
-            }
-
-            //Give back only the token
-
-            return Task.FromResult(offerEntity.token);
-        }
-
         public Task<Offer> queryLink(string token)
         {
-            if (string.IsNullOrEmpty(token) || token.Length != TokenLength)
+            if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
             {
                 throw new ArgumentException(Error.ErrorCodes.INVALID_TOKEN);
             }
 
-            var offerEntity = retrieveOfferFromToken(token);
+            var offerEntity = _queryHelper.retrieveOfferFromToken(token);
             var offerKey = offerEntity.id;
 
             //Build the provider from the offerEntity and the address we retrieve from the address id
 
-            var provider = new Provider().build(offerEntity).build(queryAddress(offerEntity.address_id));
+            var provider = new Provider().build(offerEntity).build(_queryHelper.queryAddress(offerEntity.address_id));
 
             //Create the offer we will send back and retrieve all associated resources
 
-            var offer = new Offer() { provider = provider, consumables = new List<Consumable>(), devices = new List<Device>(), personals = new List<Personal>()};
+            var offer = new Offer() { provider = provider, consumables = new List<Consumable>(), devices = new List<Device>(), personals = new List<Personal>() };
 
             var queC = from c in _context.consumable where c.offer_id == offerKey select c;
             List<ConsumableEntity> consumableEntities = queC.Select(c => c).ToList();
             foreach (ConsumableEntity c in consumableEntities)
             {
-                offer.consumables.Add(new Consumable().build(c).build(queryAddress(c.address_id)));
+                offer.consumables.Add(new Consumable().build(c).build(_queryHelper.queryAddress(c.address_id)));
             }
 
             var queD = from d in _context.device where d.offer_id == offerKey select d;
             List<DeviceEntity> deviceEntities = queD.Select(d => d).ToList();
             foreach (DeviceEntity d in deviceEntities)
             {
-                offer.devices.Add(new Device().build(d).build(queryAddress(d.address_id)));
+                offer.devices.Add(new Device().build(d).build(_queryHelper.queryAddress(d.address_id)));
             }
 
             var queP = from p in _context.personal where p.offer_id == offerKey select p;
             List<PersonalEntity> personalEntities = queP.Select(p => p).ToList();
             foreach (PersonalEntity p in personalEntities)
             {
-                offer.personals.Add(new Personal().build(p).build(queryAddress(p.address_id)));
+                offer.personals.Add(new Personal().build(p).build(_queryHelper.queryAddress(p.address_id)));
             }
 
             return Task.FromResult(offer);
         }
 
-        public Task<string> delete(string token)
-        {
-            if (string.IsNullOrEmpty(token) || token.Length != TokenLength)
-            {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_TOKEN);
-            }
 
-            OfferEntity o = retrieveOfferFromToken(token);
-            
-            //Delete the offer. The resources have the offer id as foreign key and get deleted as well by the db.
-
-            o.Delete(_context);
-
-            return Task.FromResult("Offer deleted");
-        }
-
-        private OfferEntity retrieveOfferFromToken(string token)
-        {
-            var query = from o in _context.offer
-                        where o.token.Equals(token)
-                        select o;
-            List<OfferEntity> offers = query.Select(o => o).ToList();
-
-            if (!offers.Any())
-            {
-                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_OFFER);
-            }
-            if (1 < offers.Count())
-            {
-                throw new InvalidDataStateException(Error.FatalCodes.MORE_THAN_ONE_OFFER_FROM_TOKEN);
-            }
-            return offers.First();
-        }
-
-
-        private string createToken()
-        {
-            Random random = new Random();
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
-            return new string(Enumerable.Repeat(chars, TokenLength)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
-
-        private Address queryAddress(int addressKey)
-        {
-            AddressEntity a = (AddressEntity) new AddressEntity().Find(_context, addressKey);
-            return new Address().build(a);
-        }
-
-        private double computeDistance(decimal latitude1, decimal longitude1, decimal latitude2, decimal longitude2)
-        {
-            //made a short sketch on paper and just got the formula ;)
-            int earthRadius = 6371; //km
-            var latitudeRadian = ConvertDegreesToRadians(Decimal.ToDouble(latitude2 - latitude1));
-            var longitudeRadian = ConvertDegreesToRadians(decimal.ToDouble(longitude2 - longitude1));
-
-
-            var a = Math.Sin(latitudeRadian / 2) * Math.Sin(latitudeRadian / 2) +
-                    Math.Cos(ConvertDegreesToRadians(Decimal.ToDouble(latitude1))) *
-                    Math.Cos(ConvertDegreesToRadians(Decimal.ToDouble(latitude2))) * Math.Sin(longitudeRadian / 2) *
-                    Math.Sin(longitudeRadian / 2);
-
-            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            var d = earthRadius * c;
-            return d;
-        }
-
-        private static double ConvertDegreesToRadians(double degrees)
-        {
-            double radians = (Math.PI / 180) * degrees;
-            return (radians);
-        }
     }
 }

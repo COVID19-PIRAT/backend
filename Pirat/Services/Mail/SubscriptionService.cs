@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Cronos;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Pirat.DatabaseContext;
 using Pirat.Model;
-using Pirat.Model.Entity;
 
-namespace Pirat.Services
+namespace Pirat.Services.Mail
 {
     public class SubscriptionService : ISubscriptionService
     {
