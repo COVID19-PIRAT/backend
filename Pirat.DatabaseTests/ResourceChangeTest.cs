@@ -80,7 +80,7 @@ namespace Pirat.DatabaseTests
             Assert.Null(exception);
         }
 
-        [Fact(Skip = "TODO")]
+        [Fact]
         public async void Test_ChangeProviderInformation_Possible()
         {
             Provider provider = _captainHookGenerator.GenerateProvider();
@@ -103,8 +103,8 @@ namespace Pirat.DatabaseTests
             Assert.True(providerFromDevice.Equals(provider));
         }
 
-        [Fact(Skip = "TODO")]
-        public async void Test_ChangeProviderMail_NotPossible()
+        [Fact]
+        public async void Test_ChangeProviderInformation_NotPossible()
         {
             Provider provider = _captainHookGenerator.GenerateProvider();
             var providerMailOriginal = provider.mail;
@@ -125,7 +125,7 @@ namespace Pirat.DatabaseTests
             Assert.True(providerMailOriginal.Equals(providerFromDevice.mail, StringComparison.Ordinal));
         }
 
-        [Fact(Skip = "TODO")]
+        [Fact]
         public async void Test_ChangeConsumableInformation_Possible()
         {
             Consumable consumable = _offer.consumables[0];
@@ -150,7 +150,7 @@ namespace Pirat.DatabaseTests
             Assert.True(consumableFromQuery.Equals(consumable));
         }
 
-        [Fact(Skip = "TODO")]
+        [Fact]
         public async void Test_ChangeConsumableInformation_NotPossible()
         {
             Consumable consumable = _offer.consumables[0];
@@ -173,7 +173,7 @@ namespace Pirat.DatabaseTests
         }
 
 
-        [Fact(Skip = "TODO")]
+        [Fact]
         public async void Test_ChangeDeviceInformation_Possible()
         {
             Device device = _offer.devices[0];
@@ -197,7 +197,7 @@ namespace Pirat.DatabaseTests
             Assert.True(consumableFromDevice.Equals(device));
         }
 
-        [Fact(Skip = "TODO")]
+        [Fact]
         public async void Test_ChangeDeviceInformation_NotPossible()
         {
             Device device = _offer.devices[0];
@@ -223,7 +223,7 @@ namespace Pirat.DatabaseTests
         /// <summary>
         /// Tests that requests for allowed changes for attributes of personal are made
         /// </summary>
-        [Fact(Skip = "TODO")]
+        [Fact]
         public async void Test_ChangePersonalInformation_Possible()
         {
             Personal personal = _offer.personals[0];
@@ -260,7 +260,7 @@ namespace Pirat.DatabaseTests
         /// <summary>
         /// Tests that requests for changes of non-changeable attributes in personal are not made 
         /// </summary>
-        [Fact(Skip = "TODO")]
+        [Fact]
         public async void Test_ChangePersonalInformation_NotPossible()
         {
             Personal personal = _offer.personals[0];

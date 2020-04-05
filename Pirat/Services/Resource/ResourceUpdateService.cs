@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.Extensions.Logging;
 using Pirat.Codes;
 using Pirat.DatabaseContext;
@@ -134,22 +135,142 @@ namespace Pirat.Services.Resource
 
         public Task ChangeInformation(string token, Provider provider)
         {
+            AddressEntity location = new AddressEntity().build(provider.address);
+            _addressMaker.SetCoordinates(location);
+
+            var query = from o in _context.offer
+                join ap in _context.address on o.address_id equals ap.id
+                where o.token.Equals(token, StringComparison.Ordinal)
+                select new {o, ap};
+
+            query.ToList().ForEach(collection =>
+            {
+                collection.o.name = provider.name;
+                //o.ispublic = provider.ispublic;
+                collection.o.organisation = provider.organisation;
+                collection.o.phone = provider.phone;
+                collection.ap.OverwriteWith(location);
+            });
+
+            //One update in offer table and address table should be done respectively
+
+            var changedRows = _context.SaveChanges();
+            if (changedRows < 2)
+            {
+                throw new DataNotFoundException("todo");
+            }
+            if (2 < changedRows)
+            {
+                throw new InvalidDataStateException("todo");
+            }
+
             return Task.CompletedTask;
         }
 
         public Task ChangeInformation(string token, Consumable consumable)
         {
-            throw new NotImplementedException();
+            AddressEntity location = new AddressEntity().build(consumable.address);
+            _addressMaker.SetCoordinates(location);
+
+            var query = from o in _context.offer
+                join c in _context.consumable on o.id equals c.offer_id
+                join ac in _context.address on c.address_id equals ac.id
+                where o.token.Equals(token, StringComparison.Ordinal) select new {o, c, ac};
+            
+            query.ToList().ForEach((collection) =>
+            {
+                collection.c.annotation = consumable.annotation;
+                collection.c.unit = consumable.unit;
+                collection.c.name = consumable.name;
+                collection.c.manufacturer = consumable.manufacturer;
+                collection.c.ordernumber = consumable.ordernumber;
+                collection.ac.OverwriteWith(location);
+            });
+
+            //One update in consumable table and address table should be done respectively
+
+            var changedRows = _context.SaveChanges();
+            if (changedRows < 2)
+            {
+                throw new DataNotFoundException("todo");
+            }
+            if (2 < changedRows)
+            {
+                throw new InvalidDataStateException("todo");
+            }
+
+            return Task.CompletedTask;
         }
 
         public Task ChangeInformation(string token, Device device)
         {
-            throw new NotImplementedException();
+            AddressEntity location = new AddressEntity().build(device.address);
+            _addressMaker.SetCoordinates(location);
+
+            var query = from o in _context.offer
+                join d in _context.device on o.id equals d.offer_id
+                join ad in _context.address on d.address_id equals ad.id
+                where o.token.Equals(token, StringComparison.Ordinal)
+                select new { o, d, ad };
+
+            query.ToList().ForEach((collection) =>
+            {
+                collection.d.annotation = device.annotation;
+                collection.d.name = device.name;
+                collection.d.manufacturer = device.manufacturer;
+                collection.d.ordernumber = device.ordernumber;
+                collection.ad.OverwriteWith(location);
+            });
+
+            //One update in device table and address table should be done respectively
+
+            var changedRows = _context.SaveChanges();
+            if (changedRows < 2)
+            {
+                throw new DataNotFoundException("todo");
+            }
+            if (2 < changedRows)
+            {
+                throw new InvalidDataStateException("todo");
+            }
+
+            return Task.CompletedTask;
         }
 
         public Task ChangeInformation(string token, Personal personal)
         {
-            throw new NotImplementedException();
+            AddressEntity location = new AddressEntity().build(personal.address);
+            _addressMaker.SetCoordinates(location);
+
+            var query = from o in _context.offer
+                join p in _context.personal on o.id equals p.offer_id
+                join ap in _context.address on p.address_id equals ap.id
+                where o.token.Equals(token, StringComparison.Ordinal)
+                select new { o, p, ap };
+
+            query.ToList().ForEach((collection) =>
+            {
+                collection.p.qualification = personal.qualification;
+                collection.p.area = personal.area;
+                collection.p.researchgroup = personal.researchgroup;
+                collection.p.annotation = personal.annotation;
+                collection.p.experience_rt_pcr = personal.experience_rt_pcr;
+                collection.ap.OverwriteWith(location);
+            });
+
+            //One update in personal table and address table should be done respectively
+
+            var changedRows = _context.SaveChanges();
+            if (changedRows < 2)
+            {
+                throw new DataNotFoundException("todo");
+            }
+            if (2 < changedRows)
+            {
+                throw new InvalidDataStateException("todo");
+            }
+
+            return Task.CompletedTask;
         }
 
         public Task ChangeConsumableAmount(string token, int consumableId, int newAmount)

@@ -29,11 +29,16 @@ namespace Pirat.Model
             return this;
         }
 
-        public AddressEntity build(string postalcode)
+        public void OverwriteWith(AddressEntity other)
         {
-			var address = new AddressEntity();
-            address.postalcode = postalcode;
-            return address;
+            postalcode = other.postalcode;
+            country = other.country;
+            city = other.city;
+            street = other.street;
+            streetnumber = other.streetnumber;
+            latitude = other.latitude;
+            longitude = other.longitude;
+            hascoordinates = other.hascoordinates;
         }
 
 		public override string ToString()
