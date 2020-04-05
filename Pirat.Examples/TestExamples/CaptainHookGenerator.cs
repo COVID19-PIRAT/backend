@@ -26,7 +26,7 @@ namespace Pirat.Examples.TestExamples
                 name = "Zeitticker",
                 manufacturer = "Piratenrolex",
                 address = generateAddress(),
-                amount = 1
+                amount = 5
             };
         }
 

@@ -22,7 +22,7 @@ namespace Pirat.Examples.TestExamples
                 name = "Piratenstecher",
                 manufacturer = "W.Turner",
                 address = generateAddress(),
-                amount = 1
+                amount = 5
             };
         }
 
