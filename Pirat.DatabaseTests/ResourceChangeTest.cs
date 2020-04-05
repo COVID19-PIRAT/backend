@@ -292,12 +292,70 @@ namespace Pirat.DatabaseTests
             await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, device));
         }
 
+        /// <summary>
+        /// Tests that requests for allowed changes for attributes of personal are made
+        /// </summary>
         [Fact(Skip = "TODO")]
-        public void Test_ChangePersonalInformation_Possible()
+        public async void Test_ChangePersonalInformation_Possible()
         {
+            Personal personal = _offer.personals[0];
+            personal.qualification = "Kapitän";
+            personal.area = "Piratenforschung";
+            personal.annotation = "Hier ein neuer Text";
+            personal.experience_rt_pcr = false;
+            personal.address.postalcode = "85521";
+            personal.address.country = "England";
+            personal.researchgroup = "Akademische Piraten";
 
+            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, personal));
+            Assert.Null(exception);
+
+            Manpower queryManpower = new Manpower()
+            {
+                qualification = new List<string>(){ "Kapitän" },
+                area = new List<string>() { "Piratenforschung"},
+                address = new Address()
+                {
+                    postalcode = "85521",
+                    country = "England",
+                }
+            };
+            var response = await _resourceDemandService.QueryOffers(queryManpower);
+            Assert.NotNull(response);
+            Assert.NotEmpty(response);
+            Personal personalFromQuery = response.First().resource;
+            Console.Out.WriteLine(personalFromQuery);
+            Console.Out.WriteLine(personal);
+            Assert.True(personalFromQuery.Equals(personal));
         }
 
+        /// <summary>
+        /// Tests that requests for changes of non-changeable attributes in personal are not made 
+        /// </summary>
+        [Fact(Skip = "TODO")]
+        public async void Test_ChangePersonalInformation_NotPossible()
+        {
+            Personal personal = _offer.personals[0];
+            var idOriginal = personal.id;
+            personal.id = 999999;
+
+            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, personal));
+            Assert.Null(exception);
+
+            Manpower queryManpower = _captainHookGenerator.GenerateManpower();
+
+            var response = await _resourceDemandService.QueryOffers(queryManpower);
+            Assert.NotNull(response);
+            Assert.NotEmpty(response);
+
+            var personalFromQuery = response.First().resource;
+            Assert.True(personalFromQuery.id == idOriginal);
+        }
+
+        /// <summary>
+        /// Tests that requests for changes of personal attributes with wrong values throw an exception
+        /// </summary>
+        /// <returns></returns>
         [Fact(Skip = "TODO")]
         public async Task Test_ChangePersonalInformation_BadInputs()
         {
@@ -322,10 +380,5 @@ namespace Pirat.DatabaseTests
             await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal));
         }
 
-        [Fact(Skip = "TODO")]
-        public void Test_ChangePersonalInformation_NotPossible()
-        {
-
-        }
     }
 }
