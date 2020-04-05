@@ -188,7 +188,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                _resourceInputValidatorService.validateForQuery(token);
+                _resourceInputValidatorService.validateToken(token);
                 return Ok(await _resourceDemandService.queryLink(token));
             }
             catch (ArgumentException e)
@@ -413,7 +413,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                _resourceInputValidatorService.validateForQuery(token);
+                _resourceInputValidatorService.validateToken(token);
                 await _resourceUpdateService.delete(token);
                 return Ok();
             }

@@ -18,7 +18,7 @@ namespace Pirat.Services.Resource
 
         public void validateForQuery(Manpower manpower);
 
-        public void validateForQuery(string token);
+        public void validateToken(string token);
 
         public void validateForChangeInformation(string token, Provider provider);
 

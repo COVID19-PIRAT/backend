@@ -11,6 +11,8 @@ namespace Pirat.Services.Resource
     /// </summary>
     public class ResourceInputValidatorService : IResourceInputValidatorService
     {
+        #region Checks used by different scenarios
+
         private void validateAddress(Address address)
         {
             if (string.IsNullOrEmpty(address.postalcode) || string.IsNullOrEmpty(address.country))
@@ -19,7 +21,30 @@ namespace Pirat.Services.Resource
             }
         }
 
-        public void validateForDatabaseInsertion(Consumable consumable)
+        public void validateToken(string token)
+        {
+            if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_TOKEN);
+            }
+        }
+
+        #endregion
+
+        #region Minimum attributes for information in INSERTIONS and UPDATES
+
+        private void validateInformation(Provider provider)
+        {
+            if (string.IsNullOrEmpty(provider.name) || string.IsNullOrEmpty(provider.organisation) ||
+                string.IsNullOrEmpty(provider.mail))
+            {
+                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_PROVIDER);
+            }
+
+            validateAddress(provider.address);
+        }
+
+        private void validateInformation(Consumable consumable)
         {
             if (string.IsNullOrEmpty(consumable.category) || string.IsNullOrEmpty(consumable.name) ||
                 string.IsNullOrEmpty(consumable.unit))
@@ -27,30 +52,19 @@ namespace Pirat.Services.Resource
                 throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_CONSUMABLE);
             }
 
-            if (consumable.amount < 1)
-            {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_CONSUMABLE);
-            }
-
             validateAddress(consumable.address);
         }
 
-        public void validateForDatabaseInsertion(Device device)
+        private void validateInformation(Device device)
         {
             if (string.IsNullOrEmpty(device.name) || string.IsNullOrEmpty(device.category))
             {
                 throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_DEVICE);
             }
-
-            if (device.amount < 1)
-            {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_DEVICE);
-            }
-
             validateAddress(device.address);
         }
 
-        public void validateForDatabaseInsertion(Personal personal)
+        private void validateInformation(Personal personal)
         {
             if (string.IsNullOrEmpty(personal.qualification) || string.IsNullOrEmpty(personal.area) || string.IsNullOrEmpty(personal.institution))
             {
@@ -60,17 +74,41 @@ namespace Pirat.Services.Resource
             validateAddress(personal.address);
         }
 
-        public void validateForDatabaseInsertion(Offer offer)
-        {
-            var provider = offer.provider;
 
-            if (string.IsNullOrEmpty(provider.name) || string.IsNullOrEmpty(provider.organisation) ||
-                string.IsNullOrEmpty(provider.mail))
+        #endregion
+
+        #region Checks for INSERTIONS
+
+        public void validateForDatabaseInsertion(Consumable consumable)
+        {
+            validateInformation(consumable);
+
+            if (consumable.amount < 1)
             {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_PROVIDER);
+                throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_CONSUMABLE);
             }
 
-            validateAddress(provider.address);
+        }
+
+        public void validateForDatabaseInsertion(Device device)
+        {
+            validateInformation(device);
+
+            if (device.amount < 1)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_DEVICE);
+            }
+
+        }
+
+        public void validateForDatabaseInsertion(Personal personal)
+        {
+            validateInformation(personal);
+        }
+
+        public void validateForDatabaseInsertion(Offer offer)
+        {
+            validateInformation(offer.provider);
 
             if ((offer.consumables == null || !offer.consumables.Any()) &&
                 (offer.devices == null || !offer.devices.Any()) &&
@@ -85,6 +123,10 @@ namespace Pirat.Services.Resource
 
             offer.personals?.ForEach(validateForDatabaseInsertion);
         }
+
+        #endregion
+
+        #region Check for QUERIES
 
         public void validateForQuery(Device device)
         {
@@ -127,32 +169,35 @@ namespace Pirat.Services.Resource
             validateAddress(manpower.address);
         }
 
-        public void validateForQuery(string token)
-        {
-            if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
-            {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_TOKEN);
-            }
-        }
+        #endregion
+
+        #region Checks for UPDATES
 
         public void validateForChangeInformation(string token, Provider provider)
         {
-            throw new NotImplementedException();
+            validateToken(token);
+            validateInformation(provider);
         }
 
         public void validateForChangeInformation(string token, Consumable consumable)
         {
-            throw new NotImplementedException();
+            validateToken(token);
+            validateInformation(consumable);
         }
 
         public void validateForChangeInformation(string token, Device device)
         {
-            throw new NotImplementedException();
+            validateToken(token);
+            validateInformation(device);
         }
 
         public void validateForChangeInformation(string token, Personal personal)
         {
-            throw new NotImplementedException();
+            validateToken(token);
+            validateInformation(personal);
         }
+
+        #endregion
+
     }
 }

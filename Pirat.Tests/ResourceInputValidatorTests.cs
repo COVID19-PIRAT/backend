@@ -19,7 +19,7 @@ namespace Pirat.Tests
         {
             _service = new ResourceInputValidatorService();
             _captainHookGenerator = new CaptainHookGenerator();
-            _dummyToken = "oooooWoooooWoooooWoooooWoooooW";
+            _dummyToken = "VDVZymVwZjedg3PBsStV6KhZ6FAFSP";
         }
 
         [Fact]
@@ -79,7 +79,7 @@ namespace Pirat.Tests
             Assert.Throws<ArgumentException>(() => _service.validateForQuery(manpower));
         }
 
-        [Fact(Skip = "TODO")]
+        [Fact]
         public void Test_ChangeProviderInformation_BadInputs()
         {
             Provider provider = _captainHookGenerator.GenerateProvider();
@@ -111,7 +111,7 @@ namespace Pirat.Tests
         /// Tests that requests for changes of personal attributes with wrong values throw an exception
         /// </summary>
         /// <returns></returns>
-        [Fact(Skip = "TODO")]
+        [Fact]
         public void Test_ChangePersonalInformation_BadInputs()
         {
             Personal personal = _captainHookGenerator.GeneratePersonal();
@@ -135,7 +135,7 @@ namespace Pirat.Tests
             Assert.Throws<ArgumentException>(() => _service.validateForChangeInformation(_dummyToken, personal));
         }
 
-        [Fact(Skip = "TODO")]
+        [Fact]
         public void Test_ChangeDeviceInformation_BadInputs()
         {
             Device device = _captainHookGenerator.GenerateDevice();
@@ -155,7 +155,7 @@ namespace Pirat.Tests
             Assert.Throws<ArgumentException>(() => _service.validateForChangeInformation(_dummyToken, device));
         }
 
-        [Fact(Skip = "TODO")]
+        [Fact]
         public void Test_ChangeConsumableInformation_BadInputs()
         {
             Consumable consumable = _captainHookGenerator.GenerateConsumable();
