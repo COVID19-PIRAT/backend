@@ -14,7 +14,7 @@ namespace Pirat.Services.Resource
 
         public Task<string> insert(Offer offer);
 
-        public Task<string> delete(string link);
+        public Task delete(string link);
 
         public Task ChangeInformation(string token, Provider provider);
 

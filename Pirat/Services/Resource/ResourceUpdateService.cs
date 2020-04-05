@@ -18,17 +18,14 @@ namespace Pirat.Services.Resource
 
         private readonly IAddressMaker _addressMaker;
 
-        private readonly IInputValidator _inputValidator;
-
         private readonly QueryHelper _queryHelper;
 
 
-        public ResourceUpdateService(ILogger<ResourceUpdateService> logger, DemandContext context, IAddressMaker addressMaker, IInputValidator validator)
+        public ResourceUpdateService(ILogger<ResourceUpdateService> logger, DemandContext context, IAddressMaker addressMaker)
         {
             _logger = logger;
             _context = context;
             _addressMaker = addressMaker;
-            _inputValidator = validator;
 
             _queryHelper = new QueryHelper(context);
 
@@ -37,8 +34,6 @@ namespace Pirat.Services.Resource
 
         public Task<string> insert(Offer offer)
         {
-            //check the offer
-            _inputValidator.validateForDatabaseInsertion(offer);
 
             var provider = offer.provider;
 
@@ -120,7 +115,7 @@ namespace Pirat.Services.Resource
             return Task.FromResult(offerEntity.token);
         }
 
-        public Task<string> delete(string token)
+        public Task delete(string token)
         {
             if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
             {
@@ -133,12 +128,12 @@ namespace Pirat.Services.Resource
 
             o.Delete(_context);
 
-            return Task.FromResult("Offer deleted");
+            return Task.CompletedTask;
         }
 
         public Task ChangeInformation(string token, Provider provider)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task ChangeInformation(string token, Consumable consumable)

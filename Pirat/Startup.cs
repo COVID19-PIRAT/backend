@@ -22,7 +22,6 @@ using Pirat.Extensions.Swagger;
 using Pirat.Helper;
 using Pirat.Services;
 using Pirat.Services.Helper.AddressMaker;
-using Pirat.Services.Helper.InputValidator;
 using Pirat.Services.Mail;
 using Pirat.Services.Middleware;
 using Pirat.Services.Resource;
@@ -56,7 +55,8 @@ namespace Pirat
                 new ReCaptchaService(Environment.GetEnvironmentVariable("PIRAT_GOOGLE_RECAPTCHA_SECRET")));
             services.AddTransient<IAddressMaker, AddressMaker>();
             services.AddTransient<ISubscriptionService, SubscriptionService>();
-            services.AddTransient<IInputValidator, InputValidator>();
+            services.AddTransient<IResourceInputValidatorService, ResourceInputValidatorService>();
+            services.AddTransient<IMailInputValidatorService, MailInputValidatorService>();
 
             //Cors
             services.AddCors(options =>

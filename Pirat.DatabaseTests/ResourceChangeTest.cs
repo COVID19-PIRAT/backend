@@ -7,10 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Pirat.DatabaseContext;
-using Pirat.DatabaseTests.Examples;
+using Pirat.Examples.TestExamples;
 using Pirat.Model;
 using Pirat.Services;
-using Pirat.Services.Helper.InputValidator;
 using Pirat.Services.Resource;
 using Xunit;
 
@@ -50,9 +49,8 @@ namespace Pirat.DatabaseTests
                 a.hascoordinates = false;
             });
 
-            InputValidator inputValidator = new InputValidator();
-            this._resourceDemandService = new ResourceDemandService(loggerDemand.Object, DemandContext, addressMaker.Object, inputValidator);
-            _resourceUpdateService = new ResourceUpdateService(loggerUpdate.Object, DemandContext, addressMaker.Object, inputValidator);
+            this._resourceDemandService = new ResourceDemandService(loggerDemand.Object, DemandContext, addressMaker.Object);
+            _resourceUpdateService = new ResourceUpdateService(loggerUpdate.Object, DemandContext, addressMaker.Object);
             _captainHookGenerator = new CaptainHookGenerator();
             _shyPirateGenerator = new ShyPirateGenerator();
             
@@ -128,34 +126,6 @@ namespace Pirat.DatabaseTests
         }
 
         [Fact(Skip = "TODO")]
-        public async Task Test_ChangeProviderInformation_BadInputs()
-        {
-            Provider provider = _captainHookGenerator.GenerateProvider();
-            provider.name = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider));
-
-            provider = _captainHookGenerator.GenerateProvider();
-            provider.organisation = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider));
-
-            //provider = _captainHookGenerator.GenerateProvider();
-            //provider.phone = "";
-            //await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider));
-
-            provider = _captainHookGenerator.GenerateProvider();
-            provider.address.postalcode = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider));
-
-            provider = _captainHookGenerator.GenerateProvider();
-            provider.address.country = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider));
-
-            provider = _captainHookGenerator.GenerateProvider();
-            provider.mail = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, provider));
-        }
-
-        [Fact(Skip = "TODO")]
         public async void Test_ChangeConsumableInformation_Possible()
         {
             Consumable consumable = _offer.consumables[0];
@@ -202,29 +172,6 @@ namespace Pirat.DatabaseTests
             Assert.True(consumableFromQuery.id == idOriginal);
         }
 
-        [Fact(Skip = "TODO")]
-        public async Task Test_ChangeConsumableInformation_BadInputs()
-        {
-            Consumable consumable = _offer.consumables[0];
-            consumable.name = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable));
-
-            consumable = _captainHookGenerator.GenerateConsumable();
-            consumable.unit = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable));
-
-            consumable = _captainHookGenerator.GenerateConsumable();
-            consumable.category = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable));
-
-            consumable = _captainHookGenerator.GenerateConsumable();
-            consumable.address.postalcode = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable));
-
-            consumable = _captainHookGenerator.GenerateConsumable();
-            consumable.address.country = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, consumable));
-        }
 
         [Fact(Skip = "TODO")]
         public async void Test_ChangeDeviceInformation_Possible()
@@ -272,25 +219,6 @@ namespace Pirat.DatabaseTests
             Assert.True(deviceFromQuery.id == idOriginal);
         }
 
-        [Fact(Skip = "TODO")]
-        public async Task Test_ChangeDeviceInformation_BadInputs()
-        {
-            Device device = _offer.devices[0];
-            device.name = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, device));
-
-            device = _captainHookGenerator.GenerateDevice();
-            device.category = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, device));
-
-            device = _captainHookGenerator.GenerateDevice();
-            device.address.postalcode = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, device));
-
-            device = _captainHookGenerator.GenerateDevice();
-            device.address.country = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, device));
-        }
 
         /// <summary>
         /// Tests that requests for allowed changes for attributes of personal are made
@@ -350,34 +278,6 @@ namespace Pirat.DatabaseTests
 
             var personalFromQuery = response.First().resource;
             Assert.True(personalFromQuery.id == idOriginal);
-        }
-
-        /// <summary>
-        /// Tests that requests for changes of personal attributes with wrong values throw an exception
-        /// </summary>
-        /// <returns></returns>
-        [Fact(Skip = "TODO")]
-        public async Task Test_ChangePersonalInformation_BadInputs()
-        {
-            Personal personal = _offer.personals[0];
-            personal.qualification = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal));
-
-            personal = _captainHookGenerator.GeneratePersonal();
-            personal.institution = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal));
-
-            personal = _captainHookGenerator.GeneratePersonal();
-            personal.area = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal));
-
-            personal = _captainHookGenerator.GeneratePersonal();
-            personal.address.postalcode = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal));
-
-            personal = _captainHookGenerator.GeneratePersonal();
-            personal.address.country = "";
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.ChangeInformation(_token, personal));
         }
 
     }

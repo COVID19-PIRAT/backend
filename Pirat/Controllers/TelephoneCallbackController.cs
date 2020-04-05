@@ -20,10 +20,13 @@ namespace Pirat.Controllers
     {
 
         private readonly IMailService _mailService;
+        private readonly IMailInputValidatorService _mailInputValidatorService;
 
-        public TelephoneCallbackController(IMailService mailService)
+
+        public TelephoneCallbackController(IMailService mailService, IMailInputValidatorService mailInputValidatorService)
         {
             _mailService = mailService;
+            _mailInputValidatorService = mailInputValidatorService;
         }
 
 
@@ -35,12 +38,16 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public IActionResult Post([FromBody] TelephoneCallbackRequest telephoneCallbackRequest)
         {
-            if (!_mailService.verifyMail(telephoneCallbackRequest.email))
+            try
             {
-                return BadRequest(Error.ErrorCodes.INVALID_MAIL);
+                _mailInputValidatorService.validateMail(telephoneCallbackRequest.email);
+                this._mailService.sendTelephoneCallbackMail(telephoneCallbackRequest);
+                return Ok();
             }
-            this._mailService.sendTelephoneCallbackMail(telephoneCallbackRequest);
-            return Ok();
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
     }

@@ -4,12 +4,12 @@ using System.Linq;
 using Pirat.Codes;
 using Pirat.Model;
 
-namespace Pirat.Services.Helper.InputValidator
+namespace Pirat.Services.Resource
 {
     /// <summary>
-    /// This validator checks if information coming from the front end is sufficient for the tasks
+    /// This service checks if resource information coming from the front end is sufficient for the tasks
     /// </summary>
-    public class InputValidator : IInputValidator
+    public class ResourceInputValidatorService : IResourceInputValidatorService
     {
         private void validateAddress(Address address)
         {
@@ -125,6 +125,34 @@ namespace Pirat.Services.Helper.InputValidator
         public void validateForQuery(Manpower manpower)
         {
             validateAddress(manpower.address);
+        }
+
+        public void validateForQuery(string token)
+        {
+            if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_TOKEN);
+            }
+        }
+
+        public void validateForChangeInformation(string token, Provider provider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void validateForChangeInformation(string token, Consumable consumable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void validateForChangeInformation(string token, Device device)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void validateForChangeInformation(string token, Personal personal)
+        {
+            throw new NotImplementedException();
         }
     }
 }

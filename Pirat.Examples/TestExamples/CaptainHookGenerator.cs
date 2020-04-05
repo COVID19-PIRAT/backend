@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Pirat.Model;
 
-namespace Pirat.DatabaseTests.Examples
+namespace Pirat.Examples.TestExamples
 {
     /// <summary>
     /// A generator to create test objects. Avoid static objects.

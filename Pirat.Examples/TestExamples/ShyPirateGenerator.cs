@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Pirat.Model;
 
-namespace Pirat.DatabaseTests.Examples
+namespace Pirat.Examples.TestExamples
 {
-    class ShyPirateGenerator
+    public class ShyPirateGenerator
     {
         public Address generateAddress()
         {
