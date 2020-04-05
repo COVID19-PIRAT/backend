@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -284,7 +284,7 @@ namespace Pirat.DatabaseTests
         /// Tests if the amount of devices and consumables can be increased, regardless whether a reason is provided.
         /// This test does not check the impact on the "change" table!
         /// </summary>
-        [Fact(Skip = "TODO")]
+        [Fact]
         public async void Test_IncreaseDeviceOrConsumableAmount_Possible()
         {
             Device device = _offer.devices[0];
@@ -320,8 +320,8 @@ namespace Pirat.DatabaseTests
         /// <summary>
         /// Tests if the amount of devices and consumables can be decreased when a reason if provided.
         /// </summary>
-        [Fact(Skip = "TODO")]
-        public async void Test_DecreaseDeviceOrConsumableAmount_Possible()
+        [Fact]
+        public async Task Test_DecreaseDeviceOrConsumableAmount_Possible()
         {
             Device device = _offer.devices[0];
             Consumable consumable = _offer.consumables[0];
@@ -343,8 +343,8 @@ namespace Pirat.DatabaseTests
         /// <summary>
         /// Tests that the amount cannot be decreased if no reason is given.
         /// </summary>
-        [Fact(Skip = "TODO")]
-        public async void Test_DecreaseDeviceOrConsumableAmount_MissingReason_Error()
+        [Fact]
+        public async Task Test_DecreaseDeviceOrConsumableAmount_MissingReason_Error()
         {
             Device device = _offer.devices[0];
             Consumable consumable = _offer.consumables[0];
@@ -367,8 +367,8 @@ namespace Pirat.DatabaseTests
         /// <summary>
         /// Tests that the amount cannot be decreased to 0.
         /// </summary>
-        [Fact(Skip = "TODO")]
-        public async void Test_DecreaseDeviceOrConsumableAmount_InvalidAmount_Error()
+        [Fact]
+        public async Task Test_DecreaseDeviceOrConsumableAmount_InvalidAmount_Error()
         {
             Device device = _offer.devices[0];
             Consumable consumable = _offer.consumables[0];

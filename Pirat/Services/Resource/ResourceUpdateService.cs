@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Pirat.Codes;
 using Pirat.DatabaseContext;
+using Pirat.Exceptions;
 using Pirat.Model;
 using Pirat.Model.Entity;
 
@@ -156,9 +157,47 @@ namespace Pirat.Services.Resource
             return ChangeConsumableAmount(token, consumableId, newAmount, null);
         }
 
-        public Task ChangeConsumableAmount(string token, int consumableId, int newAmount, string reason)
+        public async Task ChangeConsumableAmount(string token, int consumableId, int newAmount, string reason)
         {
-            throw new NotImplementedException();
+            // Get consumable from database
+            var query = from o in _context.offer
+                join c in _context.consumable on o.id equals c.offer_id
+                where token.Equals(o.token)
+                      && c.id == consumableId
+                select c;
+            var foundConsumables = query.ToList();
+            if (foundConsumables.Count == 0)
+            {
+                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
+            }
+            ConsumableEntity consumable = foundConsumables[0];
+            
+            // If amount has not changed: do nothing
+            if (consumable.amount == newAmount)
+            {
+                return;
+            }
+            
+            // If amount has increased: no reason required
+            if (consumable.amount < newAmount)
+            {
+                // TODO Add "log" to change
+                consumable.amount = newAmount;
+                consumable.Update(_context);
+                return;
+            }
+            
+            // If amount has decreased: ensure that a reason is provided
+            if (reason == null || reason.Trim().Length == 0)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
+            }
+            if (newAmount < 1)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_CONSUMABLE);
+            }
+            consumable.amount = newAmount;
+            consumable.Update(_context);
         }
 
         public Task ChangeDeviceAmount(string token, int deviceId, int newAmount)
@@ -166,9 +205,47 @@ namespace Pirat.Services.Resource
             return ChangeDeviceAmount(token, deviceId, newAmount, null);
         }
 
-        public Task ChangeDeviceAmount(string token, int deviceId, int newAmount, string reason)
+        public async Task ChangeDeviceAmount(string token, int deviceId, int newAmount, string reason)
         {
-            throw new NotImplementedException();
+            // Get consumable from database
+            var query = from o in _context.offer
+                join d in _context.device on o.id equals d.offer_id
+                where token.Equals(o.token)
+                      && d.id == deviceId
+                select d;
+            var foundDevices = query.ToList();
+            if (foundDevices.Count == 0)
+            {
+                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
+            }
+            DeviceEntity device = foundDevices[0];
+            
+            // If amount has not changed: do nothing
+            if (device.amount == newAmount)
+            {
+                return;
+            }
+            
+            // If amount has increased: no reason required
+            if (device.amount < newAmount)
+            {
+                // TODO Add "log" to change
+                device.amount = newAmount;
+                device.Update(_context);
+                return;
+            }
+            
+            // If amount has decreased: ensure that a reason is provided
+            if (reason == null || reason.Trim().Length == 0)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
+            }
+            if (newAmount < 1)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_DEVICE);
+            }
+            device.amount = newAmount;
+            device.Update(_context);
         }
 
         public Task AddResource(string token, Consumable consumable)
