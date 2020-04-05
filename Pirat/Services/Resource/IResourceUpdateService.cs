@@ -31,29 +31,11 @@ namespace Pirat.Services.Resource
         public Task ChangeDeviceAmount(string token, int deviceId, int newAmount);
         
         public Task ChangeDeviceAmount(string token, int deviceId, int newAmount, string reason);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="consumable"></param>
-        /// <returns>The ID of the created Consumable</returns>
-        public Task<int> AddResource(string token, Consumable consumable);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="device"></param>
-        /// <returns>The ID of the created Device</returns>
-        public Task<int> AddResource(string token, Device device);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="personal"></param>
-        /// <returns>The ID of the created Personal</returns>
-        public Task<int> AddResource(string token, Personal personal);
+        
+        public Task AddResource(string token, Consumable consumable);
+        
+        public Task AddResource(string token, Device device);
+        
+        public Task AddResource(string token, Personal personal);
     }
 }

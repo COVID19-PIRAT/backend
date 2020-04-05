@@ -387,5 +387,68 @@ namespace Pirat.DatabaseTests
             Assert.Equal(consumable.amount,
                 (await _resourceDemandService.queryLink(_token)).consumables[0].amount);
         }
+
+        /// <summary>
+        /// Tests if valid devices, consumables, and personals can be added.
+        /// </summary>
+        [Fact(Skip = "TODO")]
+        public async void Test_AddResource_Possible()
+        {
+            Offer oldOffer = _offer;
+            Device newDevice = _captainHookGenerator.GenerateDevice();
+            newDevice.name = "A new name";
+            newDevice.annotation = "Brand new";
+            Consumable newConsumable = _captainHookGenerator.GenerateConsumable();
+            newConsumable.amount = 20;
+            newConsumable.category = "PIPETTENSPITZEN";
+            Personal newPersonal = _captainHookGenerator.GeneratePersonal();
+            newPersonal.address.postalcode = "22459";
+            newPersonal.qualification = "PHD_STUDENT";
+
+            await _resourceUpdateService.AddResource(_token, newDevice);
+            Offer newOffer = await _resourceDemandService.queryLink(_token);
+            Assert.Equal(oldOffer.devices.Count + 1, newOffer.devices.Count);
+            Assert.Equal(newDevice, newOffer.devices.Find(x => x.id == newDevice.id));
+            
+            await _resourceUpdateService.AddResource(_token, newConsumable);
+            newOffer = await _resourceDemandService.queryLink(_token);
+            Assert.Equal(oldOffer.consumables.Count + 1, newOffer.consumables.Count);
+            Assert.Equal(newConsumable, newOffer.consumables.Find(x => x.id == newConsumable.id));
+            
+            await _resourceUpdateService.AddResource(_token, newPersonal);
+            newOffer = await _resourceDemandService.queryLink(_token);
+            Assert.Equal(oldOffer.personals.Count + 1, newOffer.personals.Count);
+            Assert.Equal(newPersonal, newOffer.personals.Find(x => x.id == newPersonal.id));
+        }
+
+        /// <summary>
+        /// Tests a little if invalid values are blocked. This is not a comprehensive test of the validation!
+        /// </summary>
+        [Fact(Skip = "TODO")]
+        public async void Test_AddResource_InvalidValues_Error()
+        {
+            Offer oldOffer = _offer;
+            Device newDevice = _captainHookGenerator.GenerateDevice();
+            newDevice.name = ""; // Invalid!
+            newDevice.annotation = "Brand new";
+            Consumable newConsumable = _captainHookGenerator.GenerateConsumable();
+            newConsumable.amount = 0; // Invalid!
+            newConsumable.category = "PIPETTENSPITZEN";
+            Personal newPersonal = _captainHookGenerator.GeneratePersonal();
+            newPersonal.address.postalcode = "22459";
+            newPersonal.qualification = null; // Invalid!
+            
+            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService.AddResource(_token, newDevice));
+            Offer newOffer = await _resourceDemandService.queryLink(_token);
+            Assert.Equal(oldOffer.devices.Count, newOffer.devices.Count);
+            
+            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService.AddResource(_token, newConsumable));
+            newOffer = await _resourceDemandService.queryLink(_token);
+            Assert.Equal(oldOffer.consumables.Count, newOffer.consumables.Count);
+            
+            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService.AddResource(_token, newPersonal));
+            newOffer = await _resourceDemandService.queryLink(_token);
+            Assert.Equal(oldOffer.personals.Count, newOffer.personals.Count);
+        }
     }
 }
