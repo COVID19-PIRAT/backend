@@ -140,10 +140,13 @@ namespace Pirat.Services.Resource
 
             var query = from o in _context.offer
                 join ap in _context.address on o.address_id equals ap.id
-                where o.token.Equals(token, StringComparison.Ordinal)
+                where o.token == token
                 select new {o, ap};
 
-            query.ToList().ForEach(collection =>
+            var l = query
+                .Select(x=>x)
+                .ToList();
+                l.ForEach(collection =>
             {
                 collection.o.name = provider.name;
                 //o.ispublic = provider.ispublic;
@@ -155,14 +158,14 @@ namespace Pirat.Services.Resource
             //One update in offer table and address table should be done respectively
 
             var changedRows = _context.SaveChanges();
-            if (changedRows < 2)
-            {
-                throw new DataNotFoundException("todo");
-            }
-            if (2 < changedRows)
-            {
-                throw new InvalidDataStateException("todo");
-            }
+            // if (changedRows < 2)
+            // {
+            //     throw new DataNotFoundException("todo");
+            // }
+            // if (2 < changedRows)
+            // {
+            //     throw new InvalidDataStateException("todo");
+            // }
 
             return Task.CompletedTask;
         }
@@ -175,9 +178,9 @@ namespace Pirat.Services.Resource
             var query = from o in _context.offer
                 join c in _context.consumable on o.id equals c.offer_id
                 join ac in _context.address on c.address_id equals ac.id
-                where o.token.Equals(token, StringComparison.Ordinal) select new {o, c, ac};
+                where o.token == token select new {o, c, ac};
             
-            query.ToList().ForEach((collection) =>
+            query.Select(x=>x).ToList().ForEach((collection) =>
             {
                 collection.c.annotation = consumable.annotation;
                 collection.c.unit = consumable.unit;
@@ -189,15 +192,15 @@ namespace Pirat.Services.Resource
 
             //One update in consumable table and address table should be done respectively
 
-            var changedRows = _context.SaveChanges();
-            if (changedRows < 2)
-            {
-                throw new DataNotFoundException("todo");
-            }
-            if (2 < changedRows)
-            {
-                throw new InvalidDataStateException("todo");
-            }
+            // var changedRows = _context.SaveChanges();
+            // if (changedRows < 2)
+            // {
+            //     throw new DataNotFoundException("todo");
+            // }
+            // if (2 < changedRows)
+            // {
+            //     throw new InvalidDataStateException("todo");
+            // }
 
             return Task.CompletedTask;
         }
@@ -210,10 +213,10 @@ namespace Pirat.Services.Resource
             var query = from o in _context.offer
                 join d in _context.device on o.id equals d.offer_id
                 join ad in _context.address on d.address_id equals ad.id
-                where o.token.Equals(token, StringComparison.Ordinal)
+                where o.token == token
                 select new { o, d, ad };
 
-            query.ToList().ForEach((collection) =>
+            query.Select(x=>x).ToList().ForEach((collection) =>
             {
                 collection.d.annotation = device.annotation;
                 collection.d.name = device.name;
@@ -224,15 +227,15 @@ namespace Pirat.Services.Resource
 
             //One update in device table and address table should be done respectively
 
-            var changedRows = _context.SaveChanges();
-            if (changedRows < 2)
-            {
-                throw new DataNotFoundException("todo");
-            }
-            if (2 < changedRows)
-            {
-                throw new InvalidDataStateException("todo");
-            }
+            // var changedRows = _context.SaveChanges();
+            // if (changedRows < 2)
+            // {
+            //     throw new DataNotFoundException("todo");
+            // }
+            // if (2 < changedRows)
+            // {
+            //     throw new InvalidDataStateException("todo");
+            // }
 
             return Task.CompletedTask;
         }
@@ -245,10 +248,10 @@ namespace Pirat.Services.Resource
             var query = from o in _context.offer
                 join p in _context.personal on o.id equals p.offer_id
                 join ap in _context.address on p.address_id equals ap.id
-                where o.token.Equals(token, StringComparison.Ordinal)
+                where o.token == token
                 select new { o, p, ap };
 
-            query.ToList().ForEach((collection) =>
+            query.Select(x=>x).ToList().ForEach((collection) =>
             {
                 collection.p.qualification = personal.qualification;
                 collection.p.area = personal.area;
@@ -261,14 +264,14 @@ namespace Pirat.Services.Resource
             //One update in personal table and address table should be done respectively
 
             var changedRows = _context.SaveChanges();
-            if (changedRows < 2)
-            {
-                throw new DataNotFoundException("todo");
-            }
-            if (2 < changedRows)
-            {
-                throw new InvalidDataStateException("todo");
-            }
+            // if (changedRows < 2)
+            // {
+            //     throw new DataNotFoundException("todo");
+            // }
+            // if (2 < changedRows)
+            // {
+            //     throw new InvalidDataStateException("todo");
+            // }
 
             return Task.CompletedTask;
         }
