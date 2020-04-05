@@ -18,17 +18,14 @@ namespace Pirat.Services.Resource
 
         private readonly IAddressMaker _addressMaker;
 
-        private readonly IInputValidator _inputValidator;
-
         private readonly QueryHelper _queryHelper;
 
 
-        public ResourceUpdateService(ILogger<ResourceUpdateService> logger, DemandContext context, IAddressMaker addressMaker, IInputValidator validator)
+        public ResourceUpdateService(ILogger<ResourceUpdateService> logger, DemandContext context, IAddressMaker addressMaker)
         {
             _logger = logger;
             _context = context;
             _addressMaker = addressMaker;
-            _inputValidator = validator;
 
             _queryHelper = new QueryHelper(context);
 
@@ -37,8 +34,6 @@ namespace Pirat.Services.Resource
 
         public Task<string> insert(Offer offer)
         {
-            //check the offer
-            _inputValidator.validateForDatabaseInsertion(offer);
 
             var provider = offer.provider;
 
@@ -120,7 +115,7 @@ namespace Pirat.Services.Resource
             return Task.FromResult(offerEntity.token);
         }
 
-        public Task<string> delete(string token)
+        public Task delete(string token)
         {
             if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
             {
@@ -133,7 +128,62 @@ namespace Pirat.Services.Resource
 
             o.Delete(_context);
 
-            return Task.FromResult("Offer deleted");
+            return Task.CompletedTask;
+        }
+
+        public Task ChangeInformation(string token, Provider provider)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task ChangeInformation(string token, Consumable consumable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ChangeInformation(string token, Device device)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ChangeInformation(string token, Personal personal)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ChangeConsumableAmount(string token, int consumableId, int newAmount)
+        {
+            return ChangeConsumableAmount(token, consumableId, newAmount, null);
+        }
+
+        public Task ChangeConsumableAmount(string token, int consumableId, int newAmount, string reason)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ChangeDeviceAmount(string token, int deviceId, int newAmount)
+        {
+            return ChangeDeviceAmount(token, deviceId, newAmount, null);
+        }
+
+        public Task ChangeDeviceAmount(string token, int deviceId, int newAmount, string reason)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> AddResource(string token, Consumable consumable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> AddResource(string token, Device device)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> AddResource(string token, Personal personal)
+        {
+            throw new NotImplementedException();
         }
 
         private string createToken()

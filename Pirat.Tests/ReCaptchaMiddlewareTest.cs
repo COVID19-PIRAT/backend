@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Primitives;
 using Moq;
-using NUnit.Framework;
 using Pirat.Extensions;
 using Pirat.Services;
 using Pirat.Services.Middleware;
+using Xunit;
 
 namespace Pirat.Tests
 {
@@ -35,7 +35,7 @@ namespace Pirat.Tests
             return context;
         }
 
-        [Test]
+        [Fact]
         public async Task Test_MissingReCaptcha()
         {
             var recaptchaServiceMock = new Mock<IReCaptchaService>();
@@ -48,11 +48,11 @@ namespace Pirat.Tests
             await reCaptchaMiddleware.Invoke(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             var result = new StreamReader(context.Response.Body).ReadToEnd();
-            Assert.AreEqual("Missing ReCaptcha", result);
+            Assert.Equal("Missing ReCaptcha", result);
             Assert.True(StatusCodes.Status400BadRequest == context.Response.StatusCode);
         }
 
-        [Test]
+        [Fact]
         public async Task Test_Blacklist_WrongReCaptcha()
         {
             var recaptchaServiceMock = new Mock<IReCaptchaService>();
@@ -77,12 +77,12 @@ namespace Pirat.Tests
                 await reCaptchaMiddleware.Invoke(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
                 var result = new StreamReader(context.Response.Body).ReadToEnd();
-                Assert.AreEqual("Wrong ReCaptcha", result);
+                Assert.Equal("Wrong ReCaptcha", result);
                 Assert.True(StatusCodes.Status403Forbidden == context.Response.StatusCode);
             }
         }
 
-        [Test]
+        [Fact]
         public async Task Test_ShouldPass()
         {
             var recaptchaServiceMock = new Mock<IReCaptchaService>();

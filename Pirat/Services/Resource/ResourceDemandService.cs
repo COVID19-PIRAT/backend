@@ -20,25 +20,20 @@ namespace Pirat.Services.Resource
 
         private readonly IAddressMaker _addressMaker;
 
-        private readonly IInputValidator _inputValidator;
-
         private readonly QueryHelper _queryHelper;
 
 
-        public ResourceDemandService(ILogger<ResourceDemandService> logger, DemandContext context, IAddressMaker addressMaker, IInputValidator validator)
+        public ResourceDemandService(ILogger<ResourceDemandService> logger, DemandContext context, IAddressMaker addressMaker)
         {
             _logger = logger;
             _context = context;
             _addressMaker = addressMaker;
-            _inputValidator = validator;
 
             _queryHelper = new QueryHelper(context);
 
         }
         public Task<List<OfferResource<Consumable>>> QueryOffers(Consumable con)
         {
-            _inputValidator.validateForQuery(con);
-
             var consumable = new ConsumableEntity().build(con);
             var maxDistance = con.kilometer;
             var consumableAddress = con.address;
@@ -110,8 +105,6 @@ namespace Pirat.Services.Resource
 
         public Task<List<OfferResource<Device>>> QueryOffers(Device dev)
         {
-            _inputValidator.validateForQuery(dev);
-
             var device = new DeviceEntity().build(dev);
             var maxDistance = dev.kilometer;
             var deviceAddress = dev.address;
@@ -182,8 +175,6 @@ namespace Pirat.Services.Resource
 
         public Task<List<OfferResource<Personal>>> QueryOffers(Manpower manpower)
         {
-            _inputValidator.validateForQuery(manpower);
-
             var maxDistance = manpower.kilometer;
             var manpowerAddress = manpower.address;
             var location = new AddressEntity().build(manpowerAddress);
@@ -267,11 +258,6 @@ namespace Pirat.Services.Resource
 
         public Task<Offer> queryLink(string token)
         {
-            if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
-            {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_TOKEN);
-            }
-
             var offerEntity = _queryHelper.retrieveOfferFromToken(token);
             var offerKey = offerEntity.id;
 
