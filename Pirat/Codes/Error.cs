@@ -13,6 +13,7 @@
             public const string INVALID_TOKEN = "1004:InvalidToken";
             public const string INVALID_CATEGORY_CONSUMABLE = "1005:InvalidCategoryConsumable";
             public const string INVALID_CATEGORY_DEVICE = "1006:InvalidCategoryDevice";
+            public const string INVALID_REASON = "1007:InvalidReason";
 
             public const string INCOMPLETE_ADDRESS = "2000:IncompleteAddress";
             public const string INCOMPLETE_OFFER = "2001:IncompleteOffer";

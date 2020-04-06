@@ -139,6 +139,21 @@ create table region_subscription
 
 alter table region_subscription owner to postgres;
 
+
+create table change
+(
+	id serial not null
+		constraint change_pk
+			primary key,
+	element_type text not null,
+	element_id integer not null,
+	change_type text not null,
+	timestamp timestamp not null,
+	reason text
+);
+
+alter table change owner to postgres;
+
 	
 -- INSERT INTO address 
 -- (id, streetnumber, postalcode, city, country, hascoordinates, latitude, longitude, street) 
