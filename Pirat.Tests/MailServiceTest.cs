@@ -1,7 +1,8 @@
-using NUnit.Framework;
 using System;
 using Pirat.Services.Mail;
 using Pirat.DatabaseTests.Examples;
+using Pirat.Examples.TestExamples;
+using Xunit;
 
 /**
  * Correct formatting should be discussed, but in order to write tests an arbitrary formatting will be chosen.
@@ -31,8 +32,7 @@ namespace Pirat.Tests
         private CaptainHookGenerator _captainHookGenerator;
         private AnneBonnyGenerator _anneBonnyGenerator;
 
-        [SetUp]
-        public void SetUpPirateGenerators()
+        public MailServiceTest()
         {
             _captainHookGenerator = new CaptainHookGenerator();
             _anneBonnyGenerator = new AnneBonnyGenerator();
@@ -41,17 +41,17 @@ namespace Pirat.Tests
         //#######################################################################################################################//
         //=================================================== Language: English =================================================//
         //#######################################################################################################################//
-        [Test]
+        [Fact]
         public void SummarizeResourcesToFormattedString_NoUpdate_PrintsInCorrectFormat()
         {
             var resourcesList = new SubscriptionService.ResourceList();
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
             Console.WriteLine(summary);
-            Assert.AreEqual("No new resources available.\r\n", summary);
+            Assert.Equal("No new resources available.\r\n", summary);
         }
 
-        [Test]
+        [Fact]
         public void SummarizeResourcesToFormattedString_OnePersonalEN_PrintsInCorrectFormat()
         {
             var personal = _captainHookGenerator.GeneratePersonal();
@@ -60,12 +60,12 @@ namespace Pirat.Tests
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
             Console.WriteLine(summary);
-            Assert.AreEqual("1 New offer found:\r\n" +
+            Assert.Equal("1 New offer found:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n", summary);
         }
 
-        [Test]
+        [Fact]
         public void SummarizeResourcesToFormattedString_OneDeviceEN_PrintsInCorrectFormat()
         {
             var device = _captainHookGenerator.GenerateDevice();
@@ -74,12 +74,12 @@ namespace Pirat.Tests
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
             Console.WriteLine(summary);
-            Assert.AreEqual("1 New offer found:\r\n" +
+            Assert.Equal("1 New offer found:\r\n" +
                             "Devices:\r\n" +
                             "+ 1 PCR thermal cycler\r\n", summary);
         }
 
-        [Test]
+        [Fact]
         public void SummarizeResourcesToFormattedString_OneConsumableEN_PrintsInCorrectFormat()
         {
             var consumable = _captainHookGenerator.GenerateConsumable();
@@ -88,12 +88,12 @@ namespace Pirat.Tests
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
             Console.WriteLine(summary);
-            Assert.AreEqual("1 New offer found:\r\n" +
+            Assert.Equal("1 New offer found:\r\n" +
                             "Consumables:\r\n" +
                             "+ 1 Protective suit\r\n", summary);
         }
 
-        [Test]
+        [Fact]
         public void SummarizeResourcesToFormattedString_1Personal3Devices2ConsumablesEN_PrintsInCorrectFormat()
         {
             var personal1 = _captainHookGenerator.GeneratePersonal();
@@ -112,7 +112,7 @@ namespace Pirat.Tests
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
             Console.WriteLine(summary);
-            Assert.AreEqual("5 New offers found:\r\n" +
+            Assert.Equal("5 New offers found:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n" +
                             "Devices:\r\n" +
@@ -121,7 +121,7 @@ namespace Pirat.Tests
                             "+ 2 Protective suit\r\n", summary);
         }
 
-        [Test]
+        [Fact]
         public void
             SummarizeResourcesToFormattedString_2Personal3Devices2ConsumablesFromDifferentCategoriesEN_PrintsInCorrectFormat()
         {
@@ -143,7 +143,7 @@ namespace Pirat.Tests
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
             Console.WriteLine(summary);
-            Assert.AreEqual("6 New offers found:\r\n" +
+            Assert.Equal("6 New offers found:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n" +
                             "+ 1 Heart Surgeon\r\n" +
@@ -158,17 +158,17 @@ namespace Pirat.Tests
         //==================================================== Language: German =================================================//
         //#######################################################################################################################//
 
-        [Test]
+        [Fact]
         public void SummarizeResourcesToFormattedString_NoUpdateDE_PrintsInCorrectFormat()
         {
             var resourcesList = new SubscriptionService.ResourceList();
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
             Console.WriteLine(summary);
-            Assert.AreEqual("Keine neuen Ressourcen gefunden.\r\n", summary);
+            Assert.Equal("Keine neuen Ressourcen gefunden.\r\n", summary);
         }
 
-        [Test]
+        [Fact]
         public void SummarizeResourcesToFormattedString_OnePersonalDE_PrintsInCorrectFormat()
         {
             var personal = _captainHookGenerator.GeneratePersonal();
@@ -177,12 +177,12 @@ namespace Pirat.Tests
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
             Console.WriteLine(summary);
-            Assert.AreEqual("1 Neues Angebot gefunden:\r\n" +
+            Assert.Equal("1 Neues Angebot gefunden:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n", summary);
         }
 
-        [Test]
+        [Fact]
         public void SummarizeResourcesToFormattedString_OneDeviceDE_PrintsInCorrectFormat()
         {
             var device = _captainHookGenerator.GenerateDevice();
@@ -191,12 +191,12 @@ namespace Pirat.Tests
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
             Console.WriteLine(summary);
-            Assert.AreEqual("1 Neues Angebot gefunden:\r\n" +
+            Assert.Equal("1 Neues Angebot gefunden:\r\n" +
                             "Geräte:\r\n" +
                             "+ 1 PCR Thermocycler\r\n", summary);
         }
 
-        [Test]
+        [Fact]
         public void SummarizeResourcesToFormattedString_OneConsumableDE_PrintsInCorrectFormat()
         {
             var consumable = _captainHookGenerator.GenerateConsumable();
@@ -205,12 +205,12 @@ namespace Pirat.Tests
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
             Console.WriteLine(summary);
-            Assert.AreEqual("1 Neues Angebot gefunden:\r\n" +
+            Assert.Equal("1 Neues Angebot gefunden:\r\n" +
                             "Verbrauchsmaterial:\r\n" +
                             "+ 1 Schutzkleidung\r\n", summary);
         }
 
-        [Test]
+        [Fact]
         public void SummarizeResourcesToFormattedString_1Personal3Devices2ConsumablesDE_PrintsInCorrectFormat()
         {
             var personal1 = _captainHookGenerator.GeneratePersonal();
@@ -229,7 +229,7 @@ namespace Pirat.Tests
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
             Console.WriteLine(summary);
-            Assert.AreEqual("5 Neue Angebote gefunden:\r\n" +
+            Assert.Equal("5 Neue Angebote gefunden:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n" +
                             "Geräte:\r\n" +
@@ -238,7 +238,7 @@ namespace Pirat.Tests
                             "+ 2 Schutzkleidung\r\n", summary);
         }
 
-        [Test]
+        [Fact]
         public void
             SummarizeResourcesToFormattedString_2Personal3Devices2ConsumablesFromDifferentCategoriesDE_PrintsInCorrectFormat()
         {
@@ -260,7 +260,7 @@ namespace Pirat.Tests
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
             Console.WriteLine(summary);
-            Assert.AreEqual("6 Neue Angebote gefunden:\r\n" +
+            Assert.Equal("6 Neue Angebote gefunden:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n" +
                             "+ 1 Heart Surgeon\r\n" +
