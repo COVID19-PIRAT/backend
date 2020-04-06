@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Castle.Core.Internal;
+//using Castle.Core.Internal;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using MimeKit;
@@ -298,8 +298,8 @@ mail@pirat-tool.com
         {
             //TODO Add details about what was added. However, this is currently difficult because the backend does not know the readable names.
             //TODO add these two strings to mail content at appropriate position
-            string offersDE = summarizeResourcesToFormattedString(resourceList, Language.DE);
-            string offersEN = summarizeResourcesToFormattedString(resourceList, Language.EN);
+            string offersDE = SummarizeResourcesToFormattedString(resourceList, Language.DE);
+            string offersEN = SummarizeResourcesToFormattedString(resourceList, Language.EN);
 
             await Task.Run(() =>
             {
@@ -313,6 +313,8 @@ Liebe/r {regionSubscription.name},
 
 wir haben neue Angebote für Sie auf PIRAT in der Nähe von {regionSubscription.postalcode}. Sie können sie unter https://pirat-tool.com/suchanfrage finden.
 
+{offersDE}
+
 Falls Sie die Benachrichtigung beenden wollen oder noch Fragen zu PIRAT haben, melden Sie sich gerne jederzeit unter mail@pirat-tool.com.
 
 
@@ -324,6 +326,8 @@ Ihr PIRAT-Team
 Dear {regionSubscription.name},
 
 There are new offers on PIRAT for you in the region {regionSubscription.postalcode}. You can find them under https://en.pirat-tool.com/suchanfrage.
+
+{offersEN}
 
 If you wish to cancel the subscription or have any questions regarding PIRAT, please contact us at mail@pirat-tool.com.
 
@@ -392,47 +396,63 @@ mail@pirat-tool.com
         }
 
         //TODO refactor this monstrosity of a method
-        public string summarizeResourcesToFormattedString(SubscriptionService.ResourceList resourceList,
+        public string SummarizeResourcesToFormattedString(SubscriptionService.ResourceList resourceList,
             Language language)
         {
             var devices = resourceList.devices
-                .GroupBy(d => d.category)
-                .OrderBy(k => k.Key.ToString())
-                .ToDictionary(c => c.Key, c => c.ToList().Count());
+                .GroupBy(device => device.GetCategoryLocalizedName(language.ToString().ToLower()))
+                .OrderBy(k=> k.Key)
+                .ToDictionary(c => c.Key, c => c.ToList().Count);
 
             var consumables = resourceList.consumables
-                .GroupBy(consumable => consumable.category)
-                .OrderBy(key => key.Key.ToString())
-                .ToDictionary(entry => entry.Key, entry => entry.ToList().Count());
+                .GroupBy(consumable => consumable.GetCategoryLocalizedName(language.ToString().ToLower()))
+                .OrderBy(key => key.Key)
+                .ToDictionary(entry => entry.Key, entry => entry.ToList().Count);
 
             var personals = resourceList.personals
                 .GroupBy(personal => personal.qualification)
-                .OrderBy(key => key.Key.ToString())
-                .ToDictionary(entry => entry.Key, entry => entry.ToList().Count());
+                .OrderBy(key => key.Key)
+                .ToDictionary(entry => entry.Key, entry => entry.ToList().Count);
+
             StringBuilder newOffers = new StringBuilder();
-            if (personals.IsNullOrEmpty() && devices.IsNullOrEmpty() && consumables.IsNullOrEmpty())
+            if (!personals.Any() && !devices.Any() && !consumables.Any())
             {
                 if (language == Language.EN)
                 {
                     newOffers.AppendLine("No new resources available.");
                 }
-                else
+                else if (language == Language.DE)
                 {
                     newOffers.AppendLine("Keine neuen Ressourcen gefunden.");
                 }
             }
             else
             {
+                int newItemAmount = personals.Count + devices.Count + consumables.Count;
                 if (language == Language.EN)
                 {
-                    newOffers.AppendLine("New offers found:");
+                    if (newItemAmount == 1)
+                    {
+                        newOffers.AppendLine(newItemAmount + " New offer found:");
+                    }
+                    else
+                    {
+                        newOffers.AppendLine(newItemAmount + " New offers found:");
+                    }
                 }
-                else if(language == Language.DE)
+                else if (language == Language.DE)
                 {
-                    newOffers.AppendLine("Neue Angebote gefunden:");
+                    if (newItemAmount == 1)
+                    {
+                        newOffers.AppendLine(newItemAmount + " Neues Angebot gefunden:");
+                    }
+                    else
+                    {
+                        newOffers.AppendLine(newItemAmount + " Neue Angebote gefunden:");
+                    }
                 }
 
-                if (!personals.IsNullOrEmpty())
+                if (personals.Any())
                 {
                     newOffers.AppendLine("Personal:");
                     foreach (var p in personals)
@@ -441,13 +461,13 @@ mail@pirat-tool.com
                     }
                 }
 
-                if (!devices.IsNullOrEmpty())
+                if (devices.Any())
                 {
                     if (language == Language.EN)
                     {
                         newOffers.AppendLine("Devices:");
                     }
-                    else
+                    else if (language == Language.DE)
                     {
                         newOffers.AppendLine("Geräte:");
                     }
@@ -458,15 +478,15 @@ mail@pirat-tool.com
                     }
                 }
 
-                if (!consumables.IsNullOrEmpty())
+                if (consumables.Any())
                 {
                     if (language == Language.EN)
                     {
                         newOffers.AppendLine("Consumables:");
                     }
-                    else
+                    else if (language == Language.DE)
                     {
-                        newOffers.AppendLine("Verbrauchsgegenstände:");
+                        newOffers.AppendLine("Verbrauchsmaterial:");
                     }
 
                     foreach (var c in consumables)

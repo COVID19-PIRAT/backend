@@ -30,14 +30,22 @@ using Pirat.DatabaseTests.Examples;
  *{[+ (amount) Device(s)]}       //() means the enclosed string may be ommited when singular
  *{[+ (amount) Consumable(s)]}   //{} means this line can be repeated
  *
- * TODO test different category items
+ * List is not ordered
  */
 
 namespace Pirat.Tests
 {
     public class MailServiceTest
     {
-        private readonly CaptainHookGenerator _captainHookGenerator = new CaptainHookGenerator();
+        private CaptainHookGenerator _captainHookGenerator;
+        private AnneBonnyGenerator _anneBonnyGenerator;
+
+        [SetUp]
+        public void SetUpPirateGenerators()
+        {
+            _captainHookGenerator = new CaptainHookGenerator();
+            _anneBonnyGenerator = new AnneBonnyGenerator();
+        }
 
         //#######################################################################################################################//
         //=================================================== Language: English =================================================//
@@ -47,7 +55,7 @@ namespace Pirat.Tests
         {
             var resourcesList = new SubscriptionService.ResourceList();
             var mailService = new MailService(null);
-            string summary = mailService.summarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
+            string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
             Console.WriteLine(summary);
             Assert.AreEqual("No new resources available.\r\n", summary);
         }
@@ -59,9 +67,9 @@ namespace Pirat.Tests
             var resourcesList = new SubscriptionService.ResourceList();
             resourcesList.personals.Add(personal);
             var mailService = new MailService(null);
-            string summary = mailService.summarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
+            string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
             Console.WriteLine(summary);
-            Assert.AreEqual("New offers found:\r\n" +
+            Assert.AreEqual("1 New offer found:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n", summary);
         }
@@ -73,11 +81,11 @@ namespace Pirat.Tests
             var resourcesList = new SubscriptionService.ResourceList();
             resourcesList.devices.Add(device);
             var mailService = new MailService(null);
-            string summary = mailService.summarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
+            string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
             Console.WriteLine(summary);
-            Assert.AreEqual("New offers found:\r\n" +
+            Assert.AreEqual("1 New offer found:\r\n" +
                             "Devices:\r\n" +
-                            "+ 1 PCR_THERMOCYCLER\r\n", summary);
+                            "+ 1 PCR thermal cycler\r\n", summary);
         }
 
         [Test]
@@ -87,11 +95,11 @@ namespace Pirat.Tests
             var resourcesList = new SubscriptionService.ResourceList();
             resourcesList.consumables.Add(consumable);
             var mailService = new MailService(null);
-            string summary = mailService.summarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
+            string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
             Console.WriteLine(summary);
-            Assert.AreEqual("New offers found:\r\n" +
+            Assert.AreEqual("1 New offer found:\r\n" +
                             "Consumables:\r\n" +
-                            "+ 1 SCHUTZKLEIDUNG\r\n", summary);
+                            "+ 1 Protective suit\r\n", summary);
         }
 
         [Test]
@@ -111,15 +119,49 @@ namespace Pirat.Tests
             resourcesList.consumables.Add(consumable1);
             resourcesList.consumables.Add(consumable2);
             var mailService = new MailService(null);
-            string summary = mailService.summarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
+            string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
             Console.WriteLine(summary);
-            Assert.AreEqual("New offers found:\r\n" +
+            Assert.AreEqual("5 New offers found:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n" +
                             "Devices:\r\n" +
-                            "+ 3 PCR_THERMOCYCLER\r\n" +
+                            "+ 3 PCR thermal cycler\r\n" +
                             "Consumables:\r\n" +
-                            "+ 2 SCHUTZKLEIDUNG\r\n", summary);
+                            "+ 2 Protective suit\r\n", summary);
+        }
+
+        [Test]
+        public void
+            SummarizeResourcesToFormattedString_2Personal3Devices2ConsumablesFromDifferentCategoriesEN_PrintsInCorrectFormat()
+        {
+            var personal1 = _captainHookGenerator.GeneratePersonal();
+            var personal2= _anneBonnyGenerator.GeneratePersonal();
+            var device1 = _anneBonnyGenerator.GenerateDevice();
+            var device2 = _captainHookGenerator.GenerateDevice();
+            var device3 = _captainHookGenerator.GenerateDevice();
+            var consumable1 = _captainHookGenerator.GenerateConsumable();
+            var consumable2 = _anneBonnyGenerator.GenerateConsumable();
+            var resourcesList = new SubscriptionService.ResourceList();
+            resourcesList.personals.Add(personal1);
+            resourcesList.personals.Add(personal2);
+            resourcesList.devices.Add(device1);
+            resourcesList.devices.Add(device2);
+            resourcesList.devices.Add(device3);
+            resourcesList.consumables.Add(consumable1);
+            resourcesList.consumables.Add(consumable2);
+            var mailService = new MailService(null);
+            string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
+            Console.WriteLine(summary);
+            Assert.AreEqual("6 New offers found:\r\n" +
+                            "Personal:\r\n" +
+                            "+ 1 Entern\r\n" +
+                            "+ 1 Heart Surgeon\r\n" +
+                            "Devices:\r\n" +
+                            "+ 1 Centrifuge\r\n" +
+                            "+ 2 PCR thermal cycler\r\n" +
+                            "Consumables:\r\n" +
+                            "+ 1 Face mask\r\n" +
+                            "+ 1 Protective suit\r\n", summary);
         }
         //#######################################################################################################################//
         //==================================================== Language: German =================================================//
@@ -130,7 +172,7 @@ namespace Pirat.Tests
         {
             var resourcesList = new SubscriptionService.ResourceList();
             var mailService = new MailService(null);
-            string summary = mailService.summarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
+            string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
             Console.WriteLine(summary);
             Assert.AreEqual("Keine neuen Ressourcen gefunden.\r\n", summary);
         }
@@ -142,9 +184,9 @@ namespace Pirat.Tests
             var resourcesList = new SubscriptionService.ResourceList();
             resourcesList.personals.Add(personal);
             var mailService = new MailService(null);
-            string summary = mailService.summarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
+            string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
             Console.WriteLine(summary);
-            Assert.AreEqual("Neue Angebote gefunden:\r\n" +
+            Assert.AreEqual("1 Neues Angebot gefunden:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n", summary);
         }
@@ -156,11 +198,11 @@ namespace Pirat.Tests
             var resourcesList = new SubscriptionService.ResourceList();
             resourcesList.devices.Add(device);
             var mailService = new MailService(null);
-            string summary = mailService.summarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
+            string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
             Console.WriteLine(summary);
-            Assert.AreEqual("Neue Angebote gefunden:\r\n" +
+            Assert.AreEqual("1 Neues Angebot gefunden:\r\n" +
                             "Geräte:\r\n" +
-                            "+ 1 PCR_THERMOCYCLER\r\n", summary);
+                            "+ 1 PCR Thermocycler\r\n", summary);
         }
 
         [Test]
@@ -170,11 +212,11 @@ namespace Pirat.Tests
             var resourcesList = new SubscriptionService.ResourceList();
             resourcesList.consumables.Add(consumable);
             var mailService = new MailService(null);
-            string summary = mailService.summarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
+            string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
             Console.WriteLine(summary);
-            Assert.AreEqual("Neue Angebote gefunden:\r\n" +
-                            "Verbrauchsgegenstände:\r\n" +
-                            "+ 1 SCHUTZKLEIDUNG\r\n", summary);
+            Assert.AreEqual("1 Neues Angebot gefunden:\r\n" +
+                            "Verbrauchsmaterial:\r\n" +
+                            "+ 1 Schutzkleidung\r\n", summary);
         }
 
         [Test]
@@ -194,15 +236,49 @@ namespace Pirat.Tests
             resourcesList.consumables.Add(consumable1);
             resourcesList.consumables.Add(consumable2);
             var mailService = new MailService(null);
-            string summary = mailService.summarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
+            string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
             Console.WriteLine(summary);
-            Assert.AreEqual("Neue Angebote gefunden:\r\n" +
+            Assert.AreEqual("5 Neue Angebote gefunden:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n" +
                             "Geräte:\r\n" +
-                            "+ 3 PCR_THERMOCYCLER\r\n" +
-                            "Verbrauchsgegenstände:\r\n" +
-                            "+ 2 SCHUTZKLEIDUNG\r\n", summary);
+                            "+ 3 PCR Thermocycler\r\n" +
+                            "Verbrauchsmaterial:\r\n" +
+                            "+ 2 Schutzkleidung\r\n", summary);
+        }
+
+        [Test]
+        public void
+            SummarizeResourcesToFormattedString_2Personal3Devices2ConsumablesFromDifferentCategoriesDE_PrintsInCorrectFormat()
+        {
+            var personal1 = _captainHookGenerator.GeneratePersonal();
+            var personal2 = _anneBonnyGenerator.GeneratePersonal();
+            var device1 = _anneBonnyGenerator.GenerateDevice();
+            var device2 = _captainHookGenerator.GenerateDevice();
+            var device3 = _captainHookGenerator.GenerateDevice();
+            var consumable1 = _anneBonnyGenerator.GenerateConsumable();
+            var consumable2 = _captainHookGenerator.GenerateConsumable();
+            var resourcesList = new SubscriptionService.ResourceList();
+            resourcesList.personals.Add(personal1);
+            resourcesList.personals.Add(personal2);
+            resourcesList.devices.Add(device1);
+            resourcesList.devices.Add(device2);
+            resourcesList.devices.Add(device3);
+            resourcesList.consumables.Add(consumable1);
+            resourcesList.consumables.Add(consumable2);
+            var mailService = new MailService(null);
+            string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
+            Console.WriteLine(summary);
+            Assert.AreEqual("6 Neue Angebote gefunden:\r\n" +
+                            "Personal:\r\n" +
+                            "+ 1 Entern\r\n" +
+                            "+ 1 Heart Surgeon\r\n" +
+                            "Geräte:\r\n" +
+                            "+ 2 PCR Thermocycler\r\n" +
+                            "+ 1 Zentrifuge\r\n" +
+                            "Verbrauchsmaterial:\r\n" +
+                            "+ 1 Maske\r\n" +
+                            "+ 1 Schutzkleidung\r\n", summary);
         }
     }
 }
