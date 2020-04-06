@@ -1,15 +1,6 @@
 using NUnit.Framework;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Net.Mime;
-using AutoBogus;
-using Microsoft.Extensions.Logging;
-using Pirat.Model;
 using Pirat.Services.Mail;
-using Moq;
-using NUnit.Framework.Internal;
 using Pirat.DatabaseTests.Examples;
 
 /**
