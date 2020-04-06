@@ -154,7 +154,7 @@ namespace Pirat.Services.Resource
 
         public Task ChangeConsumableAmount(string token, int consumableId, int newAmount)
         {
-            return ChangeConsumableAmount(token, consumableId, newAmount, null);
+            return ChangeConsumableAmount(token, consumableId, newAmount, "");
         }
 
         public async Task ChangeConsumableAmount(string token, int consumableId, int newAmount, string reason)
@@ -198,7 +198,7 @@ namespace Pirat.Services.Resource
             }
             
             // If amount has decreased: ensure that a reason is provided
-            if (reason == null || reason.Trim().Length == 0)
+            if (reason.Trim().Length == 0)
             {
                 throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
             }
@@ -266,7 +266,7 @@ namespace Pirat.Services.Resource
             }
             
             // If amount has decreased: ensure that a reason is provided
-            if (reason == null || reason.Trim().Length == 0)
+            if (reason.Trim().Length == 0)
             {
                 throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
             }

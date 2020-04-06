@@ -13,10 +13,10 @@ namespace Pirat.Model
         public int element_id { get; set; }
         
         public string change_type { get; set; }
+
+        public string reason { get; set; } = string.Empty;
         
-        public string reason { get; set; }
-        
-        public DateTime timestamp { get; set; }
+        public DateTime timestamp { get; set; } = DateTime.Now;
 
         public Insertable Insert(DemandContext context)
         {
