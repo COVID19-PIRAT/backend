@@ -171,17 +171,17 @@ namespace Pirat.Services.Resource
             throw new NotImplementedException();
         }
 
-        public Task<int> AddResource(string token, Consumable consumable)
+        public Task AddResource(string token, Consumable consumable)
         {
             throw new NotImplementedException();
         }
 
-        public Task<int> AddResource(string token, Device device)
+        public Task AddResource(string token, Device device)
         {
             throw new NotImplementedException();
         }
 
-        public Task<int> AddResource(string token, Personal personal)
+        public Task AddResource(string token, Personal personal)
         {
             throw new NotImplementedException();
         }

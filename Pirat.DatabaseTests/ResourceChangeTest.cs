@@ -280,5 +280,175 @@ namespace Pirat.DatabaseTests
             Assert.True(personalFromQuery.id == idOriginal);
         }
 
+        /// <summary>
+        /// Tests if the amount of devices and consumables can be increased, regardless whether a reason is provided.
+        /// This test does not check the impact on the "change" table!
+        /// </summary>
+        [Fact(Skip = "TODO")]
+        public async void Test_IncreaseDeviceOrConsumableAmount_Possible()
+        {
+            Device device = _offer.devices[0];
+            Consumable consumable = _offer.consumables[0];
+
+            // Device, with no reason
+            var newAmount = device.amount + 2;
+            await _resourceUpdateService.ChangeDeviceAmount(_token, device.id, newAmount);
+            Device changedDevice = (await _resourceDemandService.queryLink(_token)).devices[0];
+            Assert.Equal(newAmount, changedDevice.amount);
+            
+            // Device, with a reason
+            newAmount += 3;
+            await _resourceUpdateService.ChangeDeviceAmount(_token, device.id, newAmount,
+                "This is an unnecessary reason.");
+            changedDevice = (await _resourceDemandService.queryLink(_token)).devices[0];
+            Assert.Equal(newAmount, changedDevice.amount);
+            
+            // Consumable, with no reason
+            newAmount = consumable.amount + 5;
+            await _resourceUpdateService.ChangeConsumableAmount(_token, consumable.id, newAmount);
+            Consumable changedConsumable = (await _resourceDemandService.queryLink(_token)).consumables[0];
+            Assert.Equal(newAmount, changedConsumable.amount);
+            
+            // Consumable, with a reason
+            newAmount += 99;
+            await _resourceUpdateService.ChangeConsumableAmount(_token, consumable.id, newAmount, 
+                "This is an unnecessary reason.");
+            changedConsumable = (await _resourceDemandService.queryLink(_token)).consumables[0];
+            Assert.Equal(newAmount, changedConsumable.amount);
+        }
+
+        /// <summary>
+        /// Tests if the amount of devices and consumables can be decreased when a reason if provided.
+        /// </summary>
+        [Fact(Skip = "TODO")]
+        public async void Test_DecreaseDeviceOrConsumableAmount_Possible()
+        {
+            Device device = _offer.devices[0];
+            Consumable consumable = _offer.consumables[0];
+            
+            // Device
+            var newAmount = device.amount - 2;
+            await _resourceUpdateService.ChangeDeviceAmount(_token, device.id, newAmount,
+                "Given away with the help of PIRAT");
+            Device changedDevice = (await _resourceDemandService.queryLink(_token)).devices[0];
+            Assert.Equal(newAmount, changedDevice.amount);
+            
+            // Consumable
+            newAmount = consumable.amount - 5;
+            await _resourceUpdateService.ChangeConsumableAmount(_token, consumable.id, newAmount, "Eaten by a shark");
+            Consumable changedConsumable = (await _resourceDemandService.queryLink(_token)).consumables[0];
+            Assert.Equal(newAmount, changedConsumable.amount);
+        }
+
+        /// <summary>
+        /// Tests that the amount cannot be decreased if no reason is given.
+        /// </summary>
+        [Fact(Skip = "TODO")]
+        public async void Test_DecreaseDeviceOrConsumableAmount_MissingReason_Error()
+        {
+            Device device = _offer.devices[0];
+            Consumable consumable = _offer.consumables[0];
+            
+            // Device, missing reason
+            var newAmount = device.amount - 2;
+            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService
+                .ChangeDeviceAmount(_token, device.id, newAmount, ""));
+            Assert.Equal(device.amount,
+                (await _resourceDemandService.queryLink(_token)).devices[0].amount);
+
+            // Consumable, missing reason
+            newAmount = consumable.amount - 5;
+            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService
+                .ChangeConsumableAmount(_token, consumable.id, newAmount));
+            Assert.Equal(consumable.amount,
+                (await _resourceDemandService.queryLink(_token)).consumables[0].amount);
+        }
+
+        /// <summary>
+        /// Tests that the amount cannot be decreased to 0.
+        /// </summary>
+        [Fact(Skip = "TODO")]
+        public async void Test_DecreaseDeviceOrConsumableAmount_InvalidAmount_Error()
+        {
+            Device device = _offer.devices[0];
+            Consumable consumable = _offer.consumables[0];
+            
+            // Device, invalid amount
+            var newAmount = 0;
+            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService
+                .ChangeDeviceAmount(_token, device.id, newAmount, "A reasonable reason"));
+            Assert.Equal(device.amount,
+                (await _resourceDemandService.queryLink(_token)).devices[0].amount);
+
+            // Consumable, invalid amount
+            newAmount = 0;
+            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService
+                .ChangeConsumableAmount(_token, consumable.id, newAmount, "I forgot the reason"));
+            Assert.Equal(consumable.amount,
+                (await _resourceDemandService.queryLink(_token)).consumables[0].amount);
+        }
+
+        /// <summary>
+        /// Tests if valid devices, consumables, and personals can be added.
+        /// </summary>
+        [Fact(Skip = "TODO")]
+        public async void Test_AddResource_Possible()
+        {
+            Offer oldOffer = _offer;
+            Device newDevice = _captainHookGenerator.GenerateDevice();
+            newDevice.name = "A new name";
+            newDevice.annotation = "Brand new";
+            Consumable newConsumable = _captainHookGenerator.GenerateConsumable();
+            newConsumable.amount = 20;
+            newConsumable.category = "PIPETTENSPITZEN";
+            Personal newPersonal = _captainHookGenerator.GeneratePersonal();
+            newPersonal.address.postalcode = "22459";
+            newPersonal.qualification = "PHD_STUDENT";
+
+            await _resourceUpdateService.AddResource(_token, newDevice);
+            Offer newOffer = await _resourceDemandService.queryLink(_token);
+            Assert.Equal(oldOffer.devices.Count + 1, newOffer.devices.Count);
+            Assert.Equal(newDevice, newOffer.devices.Find(x => x.id == newDevice.id));
+            
+            await _resourceUpdateService.AddResource(_token, newConsumable);
+            newOffer = await _resourceDemandService.queryLink(_token);
+            Assert.Equal(oldOffer.consumables.Count + 1, newOffer.consumables.Count);
+            Assert.Equal(newConsumable, newOffer.consumables.Find(x => x.id == newConsumable.id));
+            
+            await _resourceUpdateService.AddResource(_token, newPersonal);
+            newOffer = await _resourceDemandService.queryLink(_token);
+            Assert.Equal(oldOffer.personals.Count + 1, newOffer.personals.Count);
+            Assert.Equal(newPersonal, newOffer.personals.Find(x => x.id == newPersonal.id));
+        }
+
+        /// <summary>
+        /// Tests a little if invalid values are blocked. This is not a comprehensive test of the validation!
+        /// </summary>
+        [Fact(Skip = "TODO")]
+        public async void Test_AddResource_InvalidValues_Error()
+        {
+            Offer oldOffer = _offer;
+            Device newDevice = _captainHookGenerator.GenerateDevice();
+            newDevice.name = ""; // Invalid!
+            newDevice.annotation = "Brand new";
+            Consumable newConsumable = _captainHookGenerator.GenerateConsumable();
+            newConsumable.amount = 0; // Invalid!
+            newConsumable.category = "PIPETTENSPITZEN";
+            Personal newPersonal = _captainHookGenerator.GeneratePersonal();
+            newPersonal.address.postalcode = "22459";
+            newPersonal.qualification = null; // Invalid!
+            
+            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService.AddResource(_token, newDevice));
+            Offer newOffer = await _resourceDemandService.queryLink(_token);
+            Assert.Equal(oldOffer.devices.Count, newOffer.devices.Count);
+            
+            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService.AddResource(_token, newConsumable));
+            newOffer = await _resourceDemandService.queryLink(_token);
+            Assert.Equal(oldOffer.consumables.Count, newOffer.consumables.Count);
+            
+            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService.AddResource(_token, newPersonal));
+            newOffer = await _resourceDemandService.queryLink(_token);
+            Assert.Equal(oldOffer.personals.Count, newOffer.personals.Count);
+        }
     }
 }
