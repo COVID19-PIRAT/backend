@@ -20,11 +20,14 @@ namespace Pirat.Controllers
     {
         private readonly IMailService _mailService;
 
+        private readonly IMailInputValidatorService _mailInputValidatorService;
+
         private readonly ISubscriptionService _subscriptionService;
 
-        public SubscriptionController(IMailService mailService, ISubscriptionService subscriptionService)
+        public SubscriptionController(IMailService mailService, IMailInputValidatorService mailInputValidatorService, ISubscriptionService subscriptionService)
         {
             _mailService = mailService;
+            _mailInputValidatorService = mailInputValidatorService;
             _subscriptionService = subscriptionService;
         }
 
@@ -38,12 +41,9 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public IActionResult Post([FromBody] RegionSubscription regionsubscription)
         {
-            if (!_mailService.verifyMail(regionsubscription.email))
-            {
-                return BadRequest(Error.ErrorCodes.INVALID_MAIL);
-            }
             try
             {
+                _mailInputValidatorService.validateMail(regionsubscription.email);
                 this._subscriptionService.SubscribeRegion(regionsubscription);
                 this._mailService.sendRegionSubscriptionConformationMail(regionsubscription);
             }

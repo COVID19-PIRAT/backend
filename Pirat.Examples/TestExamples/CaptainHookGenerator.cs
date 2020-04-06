@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Pirat.Model;
 
-namespace Pirat.DatabaseTests.Examples
+namespace Pirat.Examples.TestExamples
 {
     /// <summary>
     /// A generator to create test objects. Avoid static objects.
@@ -26,7 +26,7 @@ namespace Pirat.DatabaseTests.Examples
                 name = "Zeitticker",
                 manufacturer = "Piratenrolex",
                 address = generateAddress(),
-                amount = 1
+                amount = 5
             };
         }
 

@@ -37,7 +37,11 @@ namespace Pirat.Controllers
 
         private readonly IResourceUpdateService _resourceUpdateService;
 
+        private readonly IResourceInputValidatorService _resourceInputValidatorService;
+
         private readonly IMailService _mailService;
+
+        private readonly IMailInputValidatorService _mailInputValidatorService;
 
         private readonly IReCaptchaService _reCaptchaService;
 
@@ -45,14 +49,18 @@ namespace Pirat.Controllers
             ILogger<ResourceController> logger,
             IResourceDemandService resourceDemandService,
             IResourceUpdateService resourceUpdateService,
+            IResourceInputValidatorService resourceInputValidatorService,
             IMailService mailService,
+            IMailInputValidatorService mailInputValidatorService,
             IReCaptchaService reCaptchaService
             )
         {
             _logger = logger;
             _resourceDemandService = resourceDemandService;
             _resourceUpdateService = resourceUpdateService;
+            _resourceInputValidatorService = resourceInputValidatorService;
             _mailService = mailService;
+            _mailInputValidatorService = mailInputValidatorService;
             _reCaptchaService = reCaptchaService;
         }
 
@@ -78,6 +86,7 @@ namespace Pirat.Controllers
             try
             {
                 consumable.address = address;
+                _resourceInputValidatorService.validateForQuery(consumable);
                 return Ok(await _resourceDemandService.QueryOffers(consumable));
             }
             catch (ArgumentException e)
@@ -111,6 +120,7 @@ namespace Pirat.Controllers
             try
             {
                 device.address = address;
+                _resourceInputValidatorService.validateForQuery(device);
                 return Ok(await _resourceDemandService.QueryOffers(device));
             }
             catch (ArgumentException e)
@@ -143,6 +153,7 @@ namespace Pirat.Controllers
             try
             {
                 manpower.address = address;
+                _resourceInputValidatorService.validateForQuery(manpower);
                 return Ok(await _resourceDemandService.QueryOffers(manpower));
             }
             catch (ArgumentException e)
@@ -177,6 +188,7 @@ namespace Pirat.Controllers
         {
             try
             {
+                _resourceInputValidatorService.validateToken(token);
                 return Ok(await _resourceDemandService.queryLink(token));
             }
             catch (ArgumentException e)
@@ -211,10 +223,8 @@ namespace Pirat.Controllers
         {
             try
             {
-                if (!_mailService.verifyMail(offer.provider.mail))
-                {
-                    return BadRequest(Error.ErrorCodes.INVALID_MAIL);
-                }
+                _mailInputValidatorService.validateMail(offer.provider.mail);
+                _resourceInputValidatorService.validateForDatabaseInsertion(offer);
                 var token = await _resourceUpdateService.insert(offer);
                 _mailService.sendNewOfferConfirmationMail(token, offer.provider.mail, offer.provider.name);
                 return Ok(token);
@@ -250,26 +260,33 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> ConsumableAnonymousContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
-            if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
+            try
             {
-                return BadRequest(Error.ErrorCodes.INVALID_MAIL);
+                _mailInputValidatorService.validateMail(contactInformationDemand.senderEmail);
+
+                var consumable = (ConsumableEntity) await _resourceDemandService.Find(new ConsumableEntity(), id);
+                if (consumable is null)
+                {
+                    return NotFound(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
+                }
+
+                var offer = (OfferEntity) await _resourceDemandService.Find(new OfferEntity(), consumable.offer_id);
+                if (offer is null)
+                {
+                    return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
+                }
+
+                var mailAddressReceiver = offer.mail;
+                var mailUserNameReceiver = offer.name;
+                _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
+                    mailUserNameReceiver);
+                _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
+                return Ok();
             }
-            var consumable = (ConsumableEntity)await _resourceDemandService.Find(new ConsumableEntity(), id);
-            if (consumable is null)
+            catch (ArgumentException e)
             {
-                return NotFound(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
+                return BadRequest(e.Message);
             }
-            var offer = (OfferEntity)await _resourceDemandService.Find(new OfferEntity(), consumable.offer_id);
-            if (offer is null)
-            {
-                return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
-            }
-            var mailAddressReceiver = offer.mail;
-            var mailUserNameReceiver = offer.name;
-            _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
-                mailUserNameReceiver);
-            _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
-            return Ok();
         }
 
         /// <summary>
@@ -293,26 +310,32 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> DeviceAnonymContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
-            if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
+            try
             {
-                return BadRequest(Error.ErrorCodes.INVALID_MAIL);
+                _mailInputValidatorService.validateMail(contactInformationDemand.senderEmail);
+                var device = (DeviceEntity) await _resourceDemandService.Find(new DeviceEntity(), id);
+                if (device is null)
+                {
+                    return NotFound(Error.ErrorCodes.NOTFOUND_DEVICE);
+                }
+
+                var offer = (OfferEntity) await _resourceDemandService.Find(new OfferEntity(), device.offer_id);
+                if (offer is null)
+                {
+                    return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
+                }
+
+                var mailAddressReceiver = offer.mail;
+                var mailUserNameReceiver = offer.name;
+                _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
+                    mailUserNameReceiver);
+                _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
+                return Ok();
             }
-            var device = (DeviceEntity)await _resourceDemandService.Find(new DeviceEntity(), id);
-            if (device is null)
+            catch (ArgumentException e)
             {
-                return NotFound(Error.ErrorCodes.NOTFOUND_DEVICE);
+                return BadRequest(e.Message);
             }
-            var offer = (OfferEntity)await _resourceDemandService.Find(new OfferEntity(), device.offer_id);
-            if (offer is null)
-            {
-                return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
-            }
-            var mailAddressReceiver = offer.mail;
-            var mailUserNameReceiver = offer.name;
-            _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
-                mailUserNameReceiver);
-            _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
-            return Ok();
         }
 
         /// <summary>
@@ -336,26 +359,32 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> PersonalAnonymContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
-            if (!_mailService.verifyMail(contactInformationDemand.senderEmail))
+            try
             {
-                return BadRequest(Error.ErrorCodes.INVALID_MAIL);
+                _mailInputValidatorService.validateMail(contactInformationDemand.senderEmail);
+                var personal = (PersonalEntity) await _resourceDemandService.Find(new PersonalEntity(), id);
+                if (personal is null)
+                {
+                    return NotFound(Error.ErrorCodes.NOTFOUND_PERSONAL);
+                }
+
+                var offer = (OfferEntity) await _resourceDemandService.Find(new OfferEntity(), personal.offer_id);
+                if (offer is null)
+                {
+                    return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
+                }
+
+                var mailAddressReceiver = offer.mail;
+                var mailUserNameReceiver = offer.name;
+                _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
+                    mailUserNameReceiver);
+                _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
+                return Ok();
             }
-            var personal = (PersonalEntity)await _resourceDemandService.Find(new PersonalEntity(), id);
-            if (personal is null)
+            catch (ArgumentException e)
             {
-                return NotFound(Error.ErrorCodes.NOTFOUND_PERSONAL);
+                return BadRequest(e.Message);
             }
-            var offer = (OfferEntity)await _resourceDemandService.Find(new OfferEntity(), personal.offer_id);
-            if (offer is null)
-            {
-                return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
-            }
-            var mailAddressReceiver = offer.mail;
-            var mailUserNameReceiver = offer.name;
-            _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
-                mailUserNameReceiver);
-            _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
-            return Ok();
         }
 
 
@@ -384,6 +413,7 @@ namespace Pirat.Controllers
         {
             try
             {
+                _resourceInputValidatorService.validateToken(token);
                 await _resourceUpdateService.delete(token);
                 return Ok();
             }

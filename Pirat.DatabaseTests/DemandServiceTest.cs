@@ -5,12 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Pirat.DatabaseContext;
-using Pirat.DatabaseTests.Examples;
+using Pirat.Examples.TestExamples;
 using Pirat.Exceptions;
 using Pirat.Model;
 using Pirat.Model.Entity;
 using Pirat.Services;
-using Pirat.Services.Helper.InputValidator;
 using Pirat.Services.Resource;
 using Xunit;
 
@@ -49,9 +48,8 @@ namespace Pirat.DatabaseTests
                 a.longitude = 0;
                 a.hascoordinates = false;
             });
-            var inputValidator = new InputValidator();
-            _resourceDemandService = new ResourceDemandService(loggerDemand.Object, DemandContext, addressMaker.Object, inputValidator);
-            _resourceUpdateService = new ResourceUpdateService(loggerUpdate.Object, DemandContext, addressMaker.Object, inputValidator);
+            _resourceDemandService = new ResourceDemandService(loggerDemand.Object, DemandContext, addressMaker.Object);
+            _resourceUpdateService = new ResourceUpdateService(loggerUpdate.Object, DemandContext, addressMaker.Object);
             _captainHookGenerator = new CaptainHookGenerator();
             _shyPirateGenerator = new ShyPirateGenerator();
         }
@@ -61,12 +59,19 @@ namespace Pirat.DatabaseTests
         /// </summary>
         public void Dispose()
         {
-            //Nothing to do
+            var exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE offer CASCADE"));
+            Assert.Null(exception);
+
+            exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE address CASCADE"));
+            Assert.Null(exception);
+
+            exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE region_subscription CASCADE"));
+            Assert.Null(exception);
         }
 
 
         [Fact]
-        public void InsertOffer_QueryOfferElements_DeleteOffer()
+        public async void InsertOffer_QueryOfferElements_DeleteOffer()
         {
             //Insert the offer
             var offer = _captainHookGenerator.generateOffer();
@@ -96,7 +101,7 @@ namespace Pirat.DatabaseTests
             Console.Out.WriteLine(providerFromQuery);
             Console.Out.WriteLine(providerOriginal);
             // ---- HOTFIX
-            // Vorerst sollen keine persönliche Daten veröffentlicht werden.
+            // Vorerst sollen keine persÃ¶nliche Daten verÃ¶ffentlicht werden.
             // Assert.True(providerOriginal.Equals(providerFromQuery));
 
             //Get consumable
@@ -120,7 +125,7 @@ namespace Pirat.DatabaseTests
             Assert.Equal(offer.personals.First().qualification, personal.resource.qualification);
 
             //Delete the offer and check if it worked
-            var exception = Record.Exception(() => _resourceUpdateService.delete(token).Result);
+            var exception = await Record.ExceptionAsync(() => _resourceUpdateService.delete(token));
             Assert.Null(exception);
 
             //Offer should be not available anymore
@@ -128,7 +133,7 @@ namespace Pirat.DatabaseTests
         }
 
         [Fact]
-        public void InsertPrivateOffer_QueryNoProvider()
+        public async void InsertPrivateOffer_QueryNoProvider()
         {
             var offer = _shyPirateGenerator.generateOffer();
             var token = _resourceUpdateService.insert(offer).Result;
@@ -152,68 +157,13 @@ namespace Pirat.DatabaseTests
             Assert.Null(providerFromQuery);
 
             //Delete the offer and check if it worked
-            var exception = Record.Exception(() => _resourceUpdateService.delete(token).Result);
+            var exception = await Record.ExceptionAsync(() => _resourceUpdateService.delete(token));
             Assert.Null(exception);
 
             //Offer should be not available anymore
             Assert.Throws<DataNotFoundException>(() => _resourceDemandService.queryLink(token).Result);
         }
 
-        [Fact]
-        public void InsertOffer_BadInputs()
-        {
-            var offer = _captainHookGenerator.generateOffer();
-            offer.provider.name = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.insert(offer).Result);
-
-            offer = _captainHookGenerator.generateOffer();
-            offer.consumables.First().unit = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.insert(offer).Result);
-
-            offer = _captainHookGenerator.generateOffer();
-            offer.devices.First().category = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.insert(offer).Result);
-
-            offer = _captainHookGenerator.generateOffer();
-            offer.personals.First().qualification = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.insert(offer).Result);
-
-            offer = _captainHookGenerator.generateOffer();
-            offer.personals.First().area = "";
-            Assert.Throws<ArgumentException>(() => _resourceUpdateService.insert(offer).Result);
-        }
-
-        [Fact]
-        public void QueryDevice_BadInputs()
-        {
-            var device = _captainHookGenerator.GenerateDevice();
-            device.category = "";
-            Assert.Throws<ArgumentException>(() => _resourceDemandService.QueryOffers(device).Result);
-
-            device = _captainHookGenerator.GenerateDevice();
-            device.address.postalcode = "";
-            Assert.Throws<ArgumentException>(() => _resourceDemandService.QueryOffers(device).Result);
-        }
-
-        [Fact]
-        public void QueryConsumable_BadInputs()
-        {
-            var consumable = _captainHookGenerator.GenerateConsumable();
-            consumable.category = "";
-            Assert.Throws<ArgumentException>(() => _resourceDemandService.QueryOffers(consumable).Result);
-
-            consumable = _captainHookGenerator.GenerateConsumable();
-            consumable.address.country = "";
-            Assert.Throws<ArgumentException>(() => _resourceDemandService.QueryOffers(consumable).Result);
-        }
-
-        [Fact]
-        public void QueryManpower_BadInputs()
-        {
-            var manpower = _captainHookGenerator.GenerateManpower();
-            manpower.address.postalcode = "";
-            Assert.Throws<ArgumentException>(() => _resourceDemandService.QueryOffers(manpower).Result);
-        }
 
         [Fact]
         public void QueryLink_NotExist()

@@ -114,7 +114,7 @@ namespace Pirat.Tests
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
             Console.WriteLine(summary);
-            Assert.Equal("5 New offers found:\r\n" +
+            Assert.Equal("6 New offers found:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n" +
                             "Devices:\r\n" +
@@ -145,7 +145,7 @@ namespace Pirat.Tests
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
             Console.WriteLine(summary);
-            Assert.Equal("6 New offers found:\r\n" +
+            Assert.Equal("7 New offers found:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n" +
                             "+ 1 Heart Surgeon\r\n" +
@@ -231,7 +231,7 @@ namespace Pirat.Tests
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
             Console.WriteLine(summary);
-            Assert.Equal("5 Neue Angebote gefunden:\r\n" +
+            Assert.Equal("6 Neue Angebote gefunden:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n" +
                             "Geräte:\r\n" +
@@ -262,7 +262,7 @@ namespace Pirat.Tests
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
             Console.WriteLine(summary);
-            Assert.Equal("6 Neue Angebote gefunden:\r\n" +
+            Assert.Equal("7 Neue Angebote gefunden:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n" +
                             "+ 1 Heart Surgeon\r\n" +

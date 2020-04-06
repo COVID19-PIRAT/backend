@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Pirat.Codes;
 using Pirat.DatabaseContext;
+using Pirat.Exceptions;
 using Pirat.Model;
 using Pirat.Model.Entity;
 
@@ -18,17 +19,14 @@ namespace Pirat.Services.Resource
 
         private readonly IAddressMaker _addressMaker;
 
-        private readonly IInputValidator _inputValidator;
-
         private readonly QueryHelper _queryHelper;
 
 
-        public ResourceUpdateService(ILogger<ResourceUpdateService> logger, DemandContext context, IAddressMaker addressMaker, IInputValidator validator)
+        public ResourceUpdateService(ILogger<ResourceUpdateService> logger, DemandContext context, IAddressMaker addressMaker)
         {
             _logger = logger;
             _context = context;
             _addressMaker = addressMaker;
-            _inputValidator = validator;
 
             _queryHelper = new QueryHelper(context);
 
@@ -37,8 +35,6 @@ namespace Pirat.Services.Resource
 
         public Task<string> insert(Offer offer)
         {
-            //check the offer
-            _inputValidator.validateForDatabaseInsertion(offer);
 
             var provider = offer.provider;
 
@@ -120,7 +116,7 @@ namespace Pirat.Services.Resource
             return Task.FromResult(offerEntity.token);
         }
 
-        public Task<string> delete(string token)
+        public Task delete(string token)
         {
             if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
             {
@@ -133,7 +129,178 @@ namespace Pirat.Services.Resource
 
             o.Delete(_context);
 
-            return Task.FromResult("Offer deleted");
+            return Task.CompletedTask;
+        }
+
+        public Task ChangeInformation(string token, Provider provider)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task ChangeInformation(string token, Consumable consumable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ChangeInformation(string token, Device device)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ChangeInformation(string token, Personal personal)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ChangeConsumableAmount(string token, int consumableId, int newAmount)
+        {
+            return ChangeConsumableAmount(token, consumableId, newAmount, "");
+        }
+
+        public async Task ChangeConsumableAmount(string token, int consumableId, int newAmount, string reason)
+        {
+            // Get consumable from database
+            var query = from o in _context.offer
+                join c in _context.consumable on o.id equals c.offer_id
+                where token.Equals(o.token)
+                      && c.id == consumableId
+                select c;
+            var foundConsumables = query.ToList();
+            if (foundConsumables.Count == 0)
+            {
+                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
+            }
+            ConsumableEntity consumable = foundConsumables[0];
+            
+            // If amount has not changed: do nothing
+            if (consumable.amount == newAmount)
+            {
+                return;
+            }
+            
+            // If amount has increased: no reason required
+            if (consumable.amount < newAmount)
+            {
+                consumable.amount = newAmount;
+                consumable.Update(_context);
+                
+                // Add log
+                new Change()
+                {
+                    change_type = "INCREASE_AMOUNT",
+                    element_id = consumable.id,
+                    element_type = "consumable",
+                    reason = reason,
+                    timestamp = DateTime.Now
+                }.Insert(_context);
+                
+                return;
+            }
+            
+            // If amount has decreased: ensure that a reason is provided
+            if (reason.Trim().Length == 0)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
+            }
+            if (newAmount < 1)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_CONSUMABLE);
+            }
+            consumable.amount = newAmount;
+            consumable.Update(_context);
+            
+            // Add log
+            new Change()
+            {
+                change_type = "DECREASE_AMOUNT",
+                element_id = consumable.id,
+                element_type = "consumable",
+                reason = reason,
+                timestamp = DateTime.Now
+            }.Insert(_context);
+        }
+
+        public Task ChangeDeviceAmount(string token, int deviceId, int newAmount)
+        {
+            return ChangeDeviceAmount(token, deviceId, newAmount, null);
+        }
+
+        public async Task ChangeDeviceAmount(string token, int deviceId, int newAmount, string reason)
+        {
+            // Get consumable from database
+            var query = from o in _context.offer
+                join d in _context.device on o.id equals d.offer_id
+                where token.Equals(o.token)
+                      && d.id == deviceId
+                select d;
+            var foundDevices = query.ToList();
+            if (foundDevices.Count == 0)
+            {
+                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
+            }
+            DeviceEntity device = foundDevices[0];
+            
+            // If amount has not changed: do nothing
+            if (device.amount == newAmount)
+            {
+                return;
+            }
+            
+            // If amount has increased: no reason required
+            if (device.amount < newAmount)
+            {
+                device.amount = newAmount;
+                device.Update(_context);
+                
+                // Add log
+                new Change()
+                {
+                    change_type = "INCREASE_AMOUNT",
+                    element_id = device.id,
+                    element_type = "device",
+                    reason = reason,
+                    timestamp = DateTime.Now
+                }.Insert(_context);
+                
+                return;
+            }
+            
+            // If amount has decreased: ensure that a reason is provided
+            if (reason.Trim().Length == 0)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
+            }
+            if (newAmount < 1)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_DEVICE);
+            }
+            device.amount = newAmount;
+            device.Update(_context);
+            
+            // Add log
+            new Change()
+            {
+                change_type = "DECREASE_AMOUNT",
+                element_id = device.id,
+                element_type = "device",
+                reason = reason,
+                timestamp = DateTime.Now
+            }.Insert(_context);
+        }
+
+        public Task AddResource(string token, Consumable consumable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddResource(string token, Device device)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddResource(string token, Personal personal)
+        {
+            throw new NotImplementedException();
         }
 
         private string createToken()
