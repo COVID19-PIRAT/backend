@@ -1,7 +1,9 @@
 using System;
+using System.Threading.Tasks;
 using Pirat.Services.Mail;
 using Pirat.DatabaseTests.Examples;
 using Pirat.Examples.TestExamples;
+using Pirat.Model;
 using Xunit;
 
 /**
@@ -27,10 +29,10 @@ using Xunit;
 
 namespace Pirat.Tests
 {
-    public class MailServiceTest
+    public class MailServiceTest : IMailService
     {
-        private CaptainHookGenerator _captainHookGenerator;
-        private AnneBonnyGenerator _anneBonnyGenerator;
+        private readonly CaptainHookGenerator _captainHookGenerator;
+        private readonly AnneBonnyGenerator _anneBonnyGenerator;
 
         public MailServiceTest()
         {
@@ -270,6 +272,38 @@ namespace Pirat.Tests
                             "Verbrauchsmaterial:\r\n" +
                             "+ 1 Maske\r\n" +
                             "+ 1 Schutzkleidung\r\n", summary);
+        }
+
+        //Auto generated as xUnit cannot run without
+        public void sendNewOfferConfirmationMail(string confirmationLink, string receiverMailAddress, string receiverMailUserName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void sendTelephoneCallbackMail(TelephoneCallbackRequest telephoneCallbackRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void sendDemandMailToProvider(ContactInformationDemand demandInformation, string mailAddressReceiver,
+            string receiverMailUserName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void sendDemandConformationMailToDemander(ContactInformationDemand demandInformation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void sendRegionSubscriptionConformationMail(RegionSubscription regionSubscription)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task sendNotificationAboutNewOffers(RegionSubscription regionSubscription, SubscriptionService.ResourceList resourceList)
+        {
+            throw new NotImplementedException();
         }
     }
 }
