@@ -49,7 +49,7 @@ namespace Pirat.Tests
             var resourcesList = new SubscriptionService.ResourceList();
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
-            Console.WriteLine(summary);
+            //Console.WriteLine(summary);
             Assert.Equal("No new resources available.\r\n", summary);
         }
 
@@ -61,7 +61,7 @@ namespace Pirat.Tests
             resourcesList.personals.Add(personal);
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
-            Console.WriteLine(summary);
+            //Console.WriteLine(summary);
             Assert.Equal("1 New offer found:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n", summary);
@@ -75,7 +75,7 @@ namespace Pirat.Tests
             resourcesList.devices.Add(device);
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
-            Console.WriteLine(summary);
+            //Console.WriteLine(summary);
             Assert.Equal("1 New offer found:\r\n" +
                             "Devices:\r\n" +
                             "+ 1 PCR thermal cycler\r\n", summary);
@@ -89,7 +89,7 @@ namespace Pirat.Tests
             resourcesList.consumables.Add(consumable);
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
-            Console.WriteLine(summary);
+            //Console.WriteLine(summary);
             Assert.Equal("1 New offer found:\r\n" +
                             "Consumables:\r\n" +
                             "+ 1 Protective suit\r\n", summary);
@@ -113,7 +113,7 @@ namespace Pirat.Tests
             resourcesList.consumables.Add(consumable2);
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
-            Console.WriteLine(summary);
+            //Console.WriteLine(summary);
             Assert.Equal("6 New offers found:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n" +
@@ -144,7 +144,7 @@ namespace Pirat.Tests
             resourcesList.consumables.Add(consumable2);
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.EN);
-            Console.WriteLine(summary);
+            //Console.WriteLine(summary);
             Assert.Equal("7 New offers found:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n" +
@@ -166,7 +166,7 @@ namespace Pirat.Tests
             var resourcesList = new SubscriptionService.ResourceList();
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
-            Console.WriteLine(summary);
+            //Console.WriteLine(summary);
             Assert.Equal("Keine neuen Ressourcen gefunden.\r\n", summary);
         }
 
@@ -178,7 +178,7 @@ namespace Pirat.Tests
             resourcesList.personals.Add(personal);
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
-            Console.WriteLine(summary);
+            //Console.WriteLine(summary);
             Assert.Equal("1 Neues Angebot gefunden:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n", summary);
@@ -192,7 +192,7 @@ namespace Pirat.Tests
             resourcesList.devices.Add(device);
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
-            Console.WriteLine(summary);
+            //Console.WriteLine(summary);
             Assert.Equal("1 Neues Angebot gefunden:\r\n" +
                             "Geräte:\r\n" +
                             "+ 1 PCR Thermocycler\r\n", summary);
@@ -206,7 +206,7 @@ namespace Pirat.Tests
             resourcesList.consumables.Add(consumable);
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
-            Console.WriteLine(summary);
+            //Console.WriteLine(summary);
             Assert.Equal("1 Neues Angebot gefunden:\r\n" +
                             "Verbrauchsmaterial:\r\n" +
                             "+ 1 Schutzkleidung\r\n", summary);
@@ -230,7 +230,7 @@ namespace Pirat.Tests
             resourcesList.consumables.Add(consumable2);
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
-            Console.WriteLine(summary);
+            //Console.WriteLine(summary);
             Assert.Equal("6 Neue Angebote gefunden:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n" +
@@ -261,7 +261,7 @@ namespace Pirat.Tests
             resourcesList.consumables.Add(consumable2);
             var mailService = new MailService(null);
             string summary = mailService.SummarizeResourcesToFormattedString(resourcesList, MailService.Language.DE);
-            Console.WriteLine(summary);
+            //Console.WriteLine(summary);
             Assert.Equal("7 Neue Angebote gefunden:\r\n" +
                             "Personal:\r\n" +
                             "+ 1 Entern\r\n" +

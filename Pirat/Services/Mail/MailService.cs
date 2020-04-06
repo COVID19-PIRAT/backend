@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
@@ -407,7 +406,7 @@ mail@pirat-tool.com
             }
             else
             {
-                int newItemAmount = personals.Count + devices.Count + consumables.Count;
+                int newItemAmount = resourceList.personals.Count + resourceList.devices.Count + resourceList.consumables.Count;
                 if (language == Language.EN)
                 {
                     if (newItemAmount == 1)
