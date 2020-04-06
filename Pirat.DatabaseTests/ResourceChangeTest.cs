@@ -80,6 +80,9 @@ namespace Pirat.DatabaseTests
             Assert.Null(exception);
         }
 
+        /// <summary>
+        /// Tests if provider information can be changed in the database
+        /// </summary>
         [Fact]
         public async Task Test_ChangeProviderInformation_Possible()
         {
@@ -110,6 +113,9 @@ namespace Pirat.DatabaseTests
             //Assert.True(providerFromDevice.Equals(provider));
         }
 
+        /// <summary>
+        /// Tests if unchangeable provider information are indeed not changed in the database
+        /// </summary>
         [Fact]
         public async Task Test_ChangeProviderInformation_NotPossible()
         {
@@ -137,6 +143,9 @@ namespace Pirat.DatabaseTests
             //Assert.True(providerMailOriginal.Equals(providerFromDevice.mail, StringComparison.Ordinal));
         }
 
+        /// <summary>
+        /// Tests if consumable information can be changed in the database
+        /// </summary>
         [Fact]
         public async Task Test_ChangeConsumableInformation_Possible()
         {
@@ -175,6 +184,9 @@ namespace Pirat.DatabaseTests
             Assert.True(consumableFromQuery.Equals(consumable));
         }
 
+        /// <summary>
+        /// Tests if unchangeable consumable information are indeed not changed in the database
+        /// </summary>
         [Fact]
         public async Task Test_ChangeConsumableInformation_NotPossible()
         {
@@ -201,7 +213,9 @@ namespace Pirat.DatabaseTests
             Assert.True(consumableFromQuery.id == idOriginal);
         }
 
-
+        /// <summary>
+        /// Tests if device information can be changed in the database
+        /// </summary>
         [Fact]
         public async Task Test_ChangeDeviceInformation_Possible()
         {
@@ -239,6 +253,9 @@ namespace Pirat.DatabaseTests
             Assert.True(deviceFromQuery.Equals(device));
         }
 
+        /// <summary>
+        /// Tests if unchangeable device information are indeed not changed in the database
+        /// </summary>
         [Fact]
         public async Task Test_ChangeDeviceInformation_NotPossible()
         {
@@ -267,7 +284,7 @@ namespace Pirat.DatabaseTests
 
 
         /// <summary>
-        /// Tests that requests for allowed changes for attributes of personal are made
+        /// Tests if personal information can be changed in the database
         /// </summary>
         [Fact]
         public async Task Test_ChangePersonalInformation_Possible()
@@ -310,7 +327,7 @@ namespace Pirat.DatabaseTests
         }
 
         /// <summary>
-        /// Tests that requests for changes of non-changeable attributes in personal are not made 
+        /// Tests if unchangeable personal information are indeed not changed in the database
         /// </summary>
         [Fact]
         public async Task Test_ChangePersonalInformation_NotPossible()
@@ -334,7 +351,8 @@ namespace Pirat.DatabaseTests
             var personalFromQuery = response.First().resource;
             Assert.True(personalFromQuery.id == idOriginal);
         }
-        
+
+        //Tests for provider, device, consumable and personal that include changes only in address information 
         [Fact]
         public async Task Test_ChangeInformation_OnlyAddress_Possible()
         {
@@ -371,7 +389,8 @@ namespace Pirat.DatabaseTests
             Assert.True(changedRows == 1);
             
         }
-        
+
+        //Tests for provider, device, consumable and personal that include only changes in non-address information 
         [Fact]
         public async Task Test_ChangeInformation_AddressUnchanged_Possible()
         {
