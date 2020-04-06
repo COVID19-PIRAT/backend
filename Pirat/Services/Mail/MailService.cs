@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Castle.Core.Internal;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using MimeKit;
@@ -13,7 +14,6 @@ namespace Pirat.Services.Mail
 {
     public class MailService : IMailService
     {
-
         private readonly MailSender _defaultMailSender;
 
         // A copy of every email that this system sends out will also be sent to this address
@@ -25,7 +25,7 @@ namespace Pirat.Services.Mail
         {
             _logger = logger;
 
-            _defaultMailSender = new MailSender() 
+            _defaultMailSender = new MailSender()
             {
                 mailSenderAddress = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_ADDRESS"),
                 mailSenderUserName = Environment.GetEnvironmentVariable("PIRAT_SENDER_MAIL_USERNAME"),
@@ -43,17 +43,21 @@ namespace Pirat.Services.Mail
             {
                 return false;
             }
+
             return MailboxAddress.TryParse(mailAddress, out _);
         }
 
         private bool verifyMailWithRegex(string mailAddress)
         {
-            string pattern = @"^(?!\.)(""([^""\r\\]|\\[""\r\\])*""|" + @"([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)" + @"@[a-z0-9][\w\.-]*[a-z0-9]\.[a-z][a-z\.]*[a-z]$";
+            string pattern = @"^(?!\.)(""([^""\r\\]|\\[""\r\\])*""|" +
+                             @"([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)" +
+                             @"@[a-z0-9][\w\.-]*[a-z0-9]\.[a-z][a-z\.]*[a-z]$";
             var regex = new Regex(pattern, RegexOptions.IgnoreCase);
             return regex.IsMatch(mailAddress);
         }
 
-        public async void sendDemandMailToProvider(ContactInformationDemand demandInformation, string mailAddressReceiver, string receiverMailUserName)
+        public async void sendDemandMailToProvider(ContactInformationDemand demandInformation,
+            string mailAddressReceiver, string receiverMailUserName)
         {
             await Task.Run(() =>
             {
@@ -171,12 +175,11 @@ mail@pirat-tool.com
             });
         }
 
-        public async void sendNewOfferConfirmationMail(string token, string receiverMailAddress, string receiverMailUserName)
+        public async void sendNewOfferConfirmationMail(string token, string receiverMailAddress,
+            string receiverMailUserName)
         {
-            
             await Task.Run(() =>
             {
-
                 var piratHostServer = Environment.GetEnvironmentVariable("PIRAT_HOST");
 
                 var fullLink = $"{piratHostServer}/change/{token}";
@@ -228,13 +231,12 @@ mail@pirat-tool.com
         {
             await Task.Run(() =>
             {
-
                 var mailInternalReceiverMail = Environment.GetEnvironmentVariable("PIRAT_INTERNAL_RECEIVER_MAIL");
 
                 // Substring() to prevent too long subjects.
                 string subject = $"[Rückrufanfrage] " +
                                  $"[Thema: {telephoneCallbackRequest.topic.Substring(0, Math.Min(telephoneCallbackRequest.topic.Length, 20))}] " +
-                                 $"von {telephoneCallbackRequest.name.Substring(0, Math.Min(telephoneCallbackRequest.name.Length, 30))}"; 
+                                 $"von {telephoneCallbackRequest.name.Substring(0, Math.Min(telephoneCallbackRequest.name.Length, 30))}";
                 string content = $"Eine Rückrufanfrage:\n\nVon: {telephoneCallbackRequest.name}\n" +
                                  $"Datum: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}\n" +
                                  $"Thema: {telephoneCallbackRequest.topic}\n" +
@@ -291,46 +293,18 @@ mail@pirat-tool.com
             });
         }
 
-        public async Task sendNotificationAboutNewOffers(RegionSubscription regionSubscription, SubscriptionService.ResourceList resourceList)
+        public async Task sendNotificationAboutNewOffers(RegionSubscription regionSubscription,
+            SubscriptionService.ResourceList resourceList)
         {
-            // TODO Add details about what was added. However, this is currently difficult because the backend does not know the readable names.
+            //TODO Add details about what was added. However, this is currently difficult because the backend does not know the readable names.
+            //TODO add these two strings to mail content at appropriate position
+            string offersDE = summarizeResourcesToFormattedString(resourceList, Language.DE);
+            string offersEN = summarizeResourcesToFormattedString(resourceList, Language.EN);
+
             await Task.Run(() =>
             {
                 var subject = "PIRAT: Neue Angebote / New Offers";
 
-                var devices = resourceList.devices
-                    .GroupBy(d => d.category)
-                    .OrderBy(k => k.Key.ToString())
-                    .ToDictionary(c => c.Key, c => c.ToList().Count());
-
-                var consumables = resourceList.consumables
-                    .GroupBy(consumable => consumable.category)
-                    .OrderBy(key => key.Key.ToString())
-                    .ToDictionary(entry => entry.Key, entry => entry.ToList().Count());
-
-                var personals = resourceList.personals
-                    .GroupBy(personal => personal.qualification)
-                    .OrderBy(key => key.Key.ToString())
-                    .ToDictionary(entry => entry.Key, entry => entry.ToList().Count());
-
-                StringBuilder newOffers = new StringBuilder("New offers:\n");
-                newOffers.AppendLine("Devices:");
-                foreach (var d in devices)
-                {
-                    newOffers.AppendLine(d.Key + ", " + d.Value);
-                }
-                newOffers.AppendLine("Consumables:");
-                foreach (var c in consumables)
-                {
-                    newOffers.AppendLine(c.Key + ", " + c.Value);
-                }
-                newOffers.AppendLine("Personal:");
-                foreach (var p in personals)
-                {
-                    newOffers.AppendLine(p.Key + ", " + p.Value);
-                }
-                //TODO test this
-                Console.WriteLine(newOffers);
                 var content = $@"
 --- Please scroll down for the English version ---
 
@@ -407,13 +381,110 @@ mail@pirat-tool.com
                 // TODO Analyze which different reasons there could be for an exception
                 // TODO Do something...
             }
+
             // TODO put disconnect into finally?
+        }
+
+        public enum Language
+        {
+            DE,
+            EN
+        }
+
+        //TODO refactor this monstrosity of a method
+        public string summarizeResourcesToFormattedString(SubscriptionService.ResourceList resourceList,
+            Language language)
+        {
+            var devices = resourceList.devices
+                .GroupBy(d => d.category)
+                .OrderBy(k => k.Key.ToString())
+                .ToDictionary(c => c.Key, c => c.ToList().Count());
+
+            var consumables = resourceList.consumables
+                .GroupBy(consumable => consumable.category)
+                .OrderBy(key => key.Key.ToString())
+                .ToDictionary(entry => entry.Key, entry => entry.ToList().Count());
+
+            var personals = resourceList.personals
+                .GroupBy(personal => personal.qualification)
+                .OrderBy(key => key.Key.ToString())
+                .ToDictionary(entry => entry.Key, entry => entry.ToList().Count());
+            StringBuilder newOffers = new StringBuilder();
+            if (personals.IsNullOrEmpty() && devices.IsNullOrEmpty() && consumables.IsNullOrEmpty())
+            {
+                if (language == Language.EN)
+                {
+                    newOffers.AppendLine("No new resources available.");
+                }
+                else
+                {
+                    newOffers.AppendLine("Keine neuen Ressourcen gefunden.");
+                }
+            }
+            else
+            {
+                if (language == Language.EN)
+                {
+                    newOffers.AppendLine("New offers found:");
+                }
+                else if(language == Language.DE)
+                {
+                    newOffers.AppendLine("Neue Angebote gefunden:");
+                }
+
+                if (!personals.IsNullOrEmpty())
+                {
+                    newOffers.AppendLine("Personal:");
+                    foreach (var p in personals)
+                    {
+                        newOffers.AppendLine("+ " + p.Value + " " + p.Key); //TODO refactoring switch key with value
+                    }
+                }
+
+                if (!devices.IsNullOrEmpty())
+                {
+                    if (language == Language.EN)
+                    {
+                        newOffers.AppendLine("Devices:");
+                    }
+                    else
+                    {
+                        newOffers.AppendLine("Geräte:");
+                    }
+
+                    foreach (var d in devices)
+                    {
+                        newOffers.AppendLine("+ " + d.Value + " " + d.Key);
+                    }
+                }
+
+                if (!consumables.IsNullOrEmpty())
+                {
+                    if (language == Language.EN)
+                    {
+                        newOffers.AppendLine("Consumables:");
+                    }
+                    else
+                    {
+                        newOffers.AppendLine("Verbrauchsgegenstände:");
+                    }
+
+                    foreach (var c in consumables)
+                    {
+                        newOffers.AppendLine("+ " + c.Value + " " + c.Key);
+                    }
+                }
+            }
+
+            return newOffers.ToString();
         }
     }
 
-    class MailSender {
+
+    class MailSender
+    {
         public string mailSenderAddress { get; set; }
-    
+
         public string mailSenderUserName { get; set; }
 
         public string mailSenderPassword { get; set; }
