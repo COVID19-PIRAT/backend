@@ -145,10 +145,7 @@ namespace Pirat.Services.Resource
                 where o.token == token
                 select new {o, ap};
 
-            var l = query
-                .Select(x => x)
-                .ToList();
-            l.ForEach(collection =>
+            query.ToList().ForEach(collection =>
             {
                 collection.o.name = provider.name;
                 //o.ispublic = provider.ispublic; //TODO everything non public so far
@@ -169,17 +166,16 @@ namespace Pirat.Services.Resource
 
         public Task<int> ChangeInformation(string token, Consumable consumable)
         {
-
             AddressEntity location = new AddressEntity().build(consumable.address);
             _addressMaker.SetCoordinates(location);
 
             var query = from o in _context.offer
                 join c in _context.consumable on o.id equals c.offer_id
                 join ac in _context.address on c.address_id equals ac.id
-                where o.token == token
+                where o.token == token && c.id == consumable.id
                 select new {o, c, ac};
 
-            query.Select(x => x).ToList().ForEach((collection) =>
+            query.ToList().ForEach((collection) =>
             {
                 collection.c.annotation = consumable.annotation;
                 collection.c.unit = consumable.unit;
@@ -206,10 +202,10 @@ namespace Pirat.Services.Resource
             var query = from o in _context.offer
                 join d in _context.device on o.id equals d.offer_id
                 join ad in _context.address on d.address_id equals ad.id
-                where o.token == token
+                where o.token == token && d.id == device.id
                 select new { o, d, ad };
 
-            query.Select(x=>x).ToList().ForEach((collection) =>
+            query.ToList().ForEach((collection) =>
             {
                 collection.d.annotation = device.annotation;
                 collection.d.name = device.name;
@@ -235,10 +231,10 @@ namespace Pirat.Services.Resource
             var query = from o in _context.offer
                 join p in _context.personal on o.id equals p.offer_id
                 join ap in _context.address on p.address_id equals ap.id
-                where o.token == token
+                where o.token == token && p.id == personal.id
                 select new {o, p, ap};
 
-            query.Select(x => x).ToList().ForEach((collection) =>
+            query.ToList().ForEach((collection) =>
             {
                 collection.p.qualification = personal.qualification;
                 collection.p.institution = personal.institution;

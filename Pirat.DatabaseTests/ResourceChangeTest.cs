@@ -98,19 +98,15 @@ namespace Pirat.DatabaseTests
             var changedRows = await _resourceUpdateService.ChangeInformation(_token, provider);
             Assert.True(changedRows == 2);
 
-            //We take a device to make a query and from this query we also get the changed provider
-            Device device = _captainHookGenerator.GenerateDevice();
-            var response = await _resourceDemandService.QueryOffers(device);
+            //We take a the token to get the offer with the updated provider
+            var response = await _resourceDemandService.queryLink(_token);
 
             //Assert
             Assert.NotNull(response);
-            Assert.NotEmpty(response);
-            Provider providerFromDevice = response.First().provider;
-            Console.Out.WriteLine(providerFromDevice);
+            Provider providerFromOffer = response.provider;
+            Console.Out.WriteLine(providerFromOffer);
             Console.Out.WriteLine(provider);
-            //TODO: 1. Provider is null because so far everything is non public
-            //TODO: 2. If the provider is non-public we should create a provider object with empty attributes instead
-            //Assert.True(providerFromDevice.Equals(provider));
+            Assert.True(providerFromOffer.Equals(provider));
         }
 
         /// <summary>
@@ -129,18 +125,15 @@ namespace Pirat.DatabaseTests
             var changedRows = await  _resourceUpdateService.ChangeInformation(_token, provider);
             Assert.True(changedRows == 0);
 
-            //We take a device to make a query and from this query we also get the changed provider
-            Device device = _captainHookGenerator.GenerateDevice();
-            var response = await _resourceDemandService.QueryOffers(device);
+            //We take a the token to get the offer with the updated provider
+            var response = await _resourceDemandService.queryLink(_token);
 
             //Assert
             Assert.NotNull(response);
-            Assert.NotEmpty(response);
-            Provider providerFromDevice = response.First().provider;
-            Console.Out.WriteLine(providerFromDevice);
+            Provider providerFromOffer = response.provider;
+            Console.Out.WriteLine(providerFromOffer);
             Console.Out.WriteLine(provider);
-            //TODO: everything is not public so far so we get null
-            //Assert.True(providerMailOriginal.Equals(providerFromDevice.mail, StringComparison.Ordinal));
+            Assert.True(providerMailOriginal.Equals(providerFromOffer.mail, StringComparison.Ordinal));
         }
 
         /// <summary>
