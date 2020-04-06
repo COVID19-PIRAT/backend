@@ -134,7 +134,7 @@ namespace Pirat.Services.Resource
             return Task.CompletedTask;
         }
 
-        public Task ChangeInformation(string token, Provider provider)
+        public Task<int> ChangeInformation(string token, Provider provider)
         {
 
             AddressEntity location = new AddressEntity().build(provider.address);
@@ -151,7 +151,7 @@ namespace Pirat.Services.Resource
             l.ForEach(collection =>
             {
                 collection.o.name = provider.name;
-                //o.ispublic = provider.ispublic;
+                //o.ispublic = provider.ispublic; //TODO everything non public so far
                 collection.o.organisation = provider.organisation;
                 collection.o.phone = provider.phone;
                 collection.ap.OverwriteWith(location);
@@ -167,7 +167,7 @@ namespace Pirat.Services.Resource
             return Task.FromResult(changedRows);
         }
 
-        public Task ChangeInformation(string token, Consumable consumable)
+        public Task<int> ChangeInformation(string token, Consumable consumable)
         {
 
             AddressEntity location = new AddressEntity().build(consumable.address);
@@ -188,25 +188,17 @@ namespace Pirat.Services.Resource
                 collection.c.ordernumber = consumable.ordernumber;
                 collection.ac.OverwriteWith(location);
             });
-            _context.SaveChanges();
-                
+            int changedRows = _context.SaveChanges();
 
-            //One update in consumable table and address table should be done respectively
+            if (2 < changedRows)
+            {
+                throw new InvalidDataStateException(Error.FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
+            }
 
-            // var changedRows = _context.SaveChanges();
-            // if (changedRows < 2)
-            // {
-            //     throw new DataNotFoundException("todo");
-            // }
-            // if (2 < changedRows)
-            // {
-            //     throw new InvalidDataStateException("todo");
-            // }
-
-            return Task.CompletedTask;
+            return Task.FromResult(changedRows);
         }
 
-        public Task ChangeInformation(string token, Device device)
+        public Task<int> ChangeInformation(string token, Device device)
         {
             AddressEntity location = new AddressEntity().build(device.address);
             _addressMaker.SetCoordinates(location);
@@ -225,24 +217,17 @@ namespace Pirat.Services.Resource
                 collection.d.ordernumber = device.ordernumber;
                 collection.ad.OverwriteWith(location);
             });
-            _context.SaveChanges();
+            int changedRows = _context.SaveChanges();
 
-            //One update in device table and address table should be done respectively
+            if (2 < changedRows)
+            {
+                throw new InvalidDataStateException(Error.FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
+            }
 
-            // var changedRows = _context.SaveChanges();
-            // if (changedRows < 2)
-            // {
-            //     throw new DataNotFoundException("todo");
-            // }
-            // if (2 < changedRows)
-            // {
-            //     throw new InvalidDataStateException("todo");
-            // }
-
-            return Task.CompletedTask;
+            return Task.FromResult(changedRows);
         }
 
-        public Task ChangeInformation(string token, Personal personal)
+        public Task<int> ChangeInformation(string token, Personal personal)
         {
             AddressEntity location = new AddressEntity().build(personal.address);
             _addressMaker.SetCoordinates(location);
@@ -256,27 +241,21 @@ namespace Pirat.Services.Resource
             query.Select(x => x).ToList().ForEach((collection) =>
             {
                 collection.p.qualification = personal.qualification;
+                collection.p.institution = personal.institution;
                 collection.p.area = personal.area;
                 collection.p.researchgroup = personal.researchgroup;
                 collection.p.annotation = personal.annotation;
                 collection.p.experience_rt_pcr = personal.experience_rt_pcr;
                 collection.ap.OverwriteWith(location);
             });
-            _context.SaveChanges();
+            int changedRows = _context.SaveChanges();
 
-            //One update in personal table and address table should be done respectively
+            if (2 < changedRows)
+            {
+                throw new InvalidDataStateException(Error.FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
+            }
 
-            //var changedRows = 
-            // if (changedRows < 2)
-            // {
-            //     throw new DataNotFoundException("todo");
-            // }
-            // if (2 < changedRows)
-            // {
-            //     throw new InvalidDataStateException("todo");
-            // }
-
-            return Task.CompletedTask;
+            return Task.FromResult(changedRows);
         }
 
         public Task ChangeConsumableAmount(string token, int consumableId, int newAmount)

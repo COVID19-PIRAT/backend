@@ -16,13 +16,13 @@ namespace Pirat.Services.Resource
 
         public Task delete(string link);
 
-        public Task ChangeInformation(string token, Provider provider);
+        public Task<int> ChangeInformation(string token, Provider provider);
 
-        public Task ChangeInformation(string token, Consumable consumable);
+        public Task<int> ChangeInformation(string token, Consumable consumable);
 
-        public Task ChangeInformation(string token, Device device);
+        public Task<int> ChangeInformation(string token, Device device);
 
-        public Task ChangeInformation(string token, Personal personal);
+        public Task<int> ChangeInformation(string token, Personal personal);
 
         public Task ChangeConsumableAmount(string token, int consumableId, int newAmount);
         
