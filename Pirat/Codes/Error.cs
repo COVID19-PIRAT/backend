@@ -43,11 +43,15 @@
 
         }
 
+        /// <summary>
+        /// Use these codes when the server or the database reach a state that should never be reached
+        /// </summary>
         public static class FatalCodes
         {
 
             public const string MORE_THAN_ONE_OFFER_FROM_TOKEN = "9000:MoreThanOneOfferFromToken";
-    
+            public const string UPDATES_MADE_IN_TOO_MANY_ROWS = "9001:UpdatesMadeInTooManyRows";
+
         }
     }
 }

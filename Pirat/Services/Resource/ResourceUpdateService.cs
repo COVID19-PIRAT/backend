@@ -156,21 +156,15 @@ namespace Pirat.Services.Resource
                 collection.o.phone = provider.phone;
                 collection.ap.OverwriteWith(location);
             });
-            _context.SaveChanges();
+            
+            int changedRows = _context.SaveChanges();
 
-            //One update in offer table and address table should be done respectively
+            if (2 < changedRows)
+            {
+                throw new InvalidDataStateException(Error.FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
+            }
 
-            //var changedRows = _context.SaveChanges();
-            // if (changedRows < 2)
-            // {
-            //     throw new DataNotFoundException("todo");
-            // }
-            // if (2 < changedRows)
-            // {
-            //     throw new InvalidDataStateException("todo");
-            // }
-
-            return Task.CompletedTask;
+            return Task.FromResult(changedRows);
         }
 
         public Task ChangeInformation(string token, Consumable consumable)
