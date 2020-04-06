@@ -181,9 +181,19 @@ namespace Pirat.Services.Resource
             // If amount has increased: no reason required
             if (consumable.amount < newAmount)
             {
-                // TODO Add "log" to change
                 consumable.amount = newAmount;
                 consumable.Update(_context);
+                
+                // Add log
+                new Change()
+                {
+                    change_type = "INCREASE_AMOUNT",
+                    element_id = consumable.id,
+                    element_type = "consumable",
+                    reason = reason,
+                    timestamp = DateTime.Now
+                }.Insert(_context);
+                
                 return;
             }
             
@@ -198,6 +208,16 @@ namespace Pirat.Services.Resource
             }
             consumable.amount = newAmount;
             consumable.Update(_context);
+            
+            // Add log
+            new Change()
+            {
+                change_type = "DECREASE_AMOUNT",
+                element_id = consumable.id,
+                element_type = "consumable",
+                reason = reason,
+                timestamp = DateTime.Now
+            }.Insert(_context);
         }
 
         public Task ChangeDeviceAmount(string token, int deviceId, int newAmount)
@@ -229,9 +249,19 @@ namespace Pirat.Services.Resource
             // If amount has increased: no reason required
             if (device.amount < newAmount)
             {
-                // TODO Add "log" to change
                 device.amount = newAmount;
                 device.Update(_context);
+                
+                // Add log
+                new Change()
+                {
+                    change_type = "INCREASE_AMOUNT",
+                    element_id = device.id,
+                    element_type = "device",
+                    reason = reason,
+                    timestamp = DateTime.Now
+                }.Insert(_context);
+                
                 return;
             }
             
@@ -246,6 +276,16 @@ namespace Pirat.Services.Resource
             }
             device.amount = newAmount;
             device.Update(_context);
+            
+            // Add log
+            new Change()
+            {
+                change_type = "DECREASE_AMOUNT",
+                element_id = device.id,
+                element_type = "device",
+                reason = reason,
+                timestamp = DateTime.Now
+            }.Insert(_context);
         }
 
         public Task AddResource(string token, Consumable consumable)
