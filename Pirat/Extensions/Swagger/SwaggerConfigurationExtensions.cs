@@ -22,6 +22,11 @@ namespace Pirat.Extensions.Swagger
             services.AddSwaggerExamplesFromAssemblyOf<OfferRequestExample>();
             services.AddSwaggerExamplesFromAssemblyOf<ErrorCodeResponseExample>();
             services.AddSwaggerExamplesFromAssemblyOf<OfferConsumableResponseExample>();
+            services.AddSwaggerExamplesFromAssemblyOf<ProviderRequestExample>();
+            services.AddSwaggerExamplesFromAssemblyOf<ConsumableRequestExample>();
+            services.AddSwaggerExamplesFromAssemblyOf<DeviceRequestExample>();
+            services.AddSwaggerExamplesFromAssemblyOf<PersonalRequestExample>();
+            services.AddSwaggerExamplesFromAssemblyOf<AmountChangeRequestExample>();
             //Add more examples here for swagger response and swagger request
 
 

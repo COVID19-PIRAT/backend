@@ -63,7 +63,7 @@ namespace Pirat.Controllers
             _mailInputValidatorService = mailInputValidatorService;
             _reCaptchaService = reCaptchaService;
         }
-
+        
         //***********GET REQUESTS
 
         /// <summary>
@@ -415,6 +415,215 @@ namespace Pirat.Controllers
             {
                 _resourceInputValidatorService.validateToken(token);
                 await _resourceUpdateService.delete(token);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+
+        //***************PUT REQUESTS
+
+
+        [HttpPut("offers/{token:string}/provider")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [SwaggerRequestExample(typeof(Provider), typeof(ProviderRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> ChangeProvider(string token, [FromBody] Provider provider)
+        {
+            try
+            {
+                _resourceInputValidatorService.validateForChangeInformation(token, provider);
+                int changedRows = await _resourceUpdateService.ChangeInformation(token, provider);
+                return Ok(changedRows);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+
+        [HttpPut("offers/{token:string}/consumable/{id:int}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [SwaggerRequestExample(typeof(Consumable), typeof(ConsumableRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> ChangeResource(string token, int id, [FromBody] Consumable consumable)
+        {
+            try
+            {
+                consumable.id = id;
+                _resourceInputValidatorService.validateForChangeInformation(token, consumable);
+                int changedRows = await _resourceUpdateService.ChangeInformation(token, consumable);
+                return Ok(changedRows);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+        [HttpPut("offers/{token:string}/device/{id:int}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [SwaggerRequestExample(typeof(Device), typeof(DeviceRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> ChangeResource(string token, int id, [FromBody] Device device)
+        {
+            try
+            {
+                device.id = id;
+                _resourceInputValidatorService.validateForChangeInformation(token, device);
+                int changedRows = await _resourceUpdateService.ChangeInformation(token, device);
+                return Ok(changedRows);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+        [HttpPut("offers/{token:string}/personal/{id:int}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [SwaggerRequestExample(typeof(Personal), typeof(PersonalRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> ChangeResource(string token, int id, [FromBody] Personal personal)
+        {
+            try
+            {
+                personal.id = id;
+                _resourceInputValidatorService.validateForChangeInformation(token, personal);
+                int changedRows = await _resourceUpdateService.ChangeInformation(token, personal);
+                return Ok(changedRows);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+        [HttpPut("offers/{token:string}/consumable/{id:int}/amount")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [SwaggerRequestExample(typeof(AmountChange), typeof(AmountChangeRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> ChangeAmountConsumable(string token, int id, [FromBody] AmountChange amountChange)
+        {
+            try
+            {
+                await _resourceUpdateService.ChangeConsumableAmount(token, id, amountChange.amount, amountChange.reason);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+        [HttpPut("offers/{token:string}/device/{id:int}/amount")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> ChangeAmountDevice(string token, int id, [FromBody] AmountChange amountChange)
+        {
+            try
+            {
+                await _resourceUpdateService.ChangeDeviceAmount(token, id, amountChange.amount, amountChange.reason);
                 return Ok();
             }
             catch (ArgumentException e)
