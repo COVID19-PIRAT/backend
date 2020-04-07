@@ -34,7 +34,7 @@ namespace Pirat.DatabaseTests
         private readonly ShyPirateGenerator _shyPirateGenerator;
 
         private readonly Offer _offer;
-
+        
         private readonly string _token;
 
         public ResourceChangeTest()
@@ -57,7 +57,7 @@ namespace Pirat.DatabaseTests
             var task = Task.Run(async () =>
             {
                 Offer offer = _captainHookGenerator.generateOffer();
-                var token = await  _resourceUpdateService.insert(offer);
+                var token = await _resourceUpdateService.insert(offer);
                 offer = await _resourceDemandService.queryLink(token);
                 return (offer, token);
             });
@@ -80,9 +80,13 @@ namespace Pirat.DatabaseTests
             Assert.Null(exception);
         }
 
-        [Fact(Skip = "TODO")]
-        public async void Test_ChangeProviderInformation_Possible()
+        /// <summary>
+        /// Tests if provider information can be changed in the database
+        /// </summary>
+        [Fact]
+        public async Task Test_ChangeProviderInformation_Possible()
         {
+            //Create a provider and change attributes
             Provider provider = _captainHookGenerator.GenerateProvider();
             provider.name = "Peter Pan";
             provider.phone = "987766";
@@ -90,44 +94,55 @@ namespace Pirat.DatabaseTests
             provider.address.postalcode = "88888";
             provider.address.country = "Atlantis";
 
-            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, provider));
-            Assert.Null(exception);
+            //Update
+            var changedRows = await _resourceUpdateService.ChangeInformation(_token, provider);
+            Assert.True(changedRows == 2);
 
-            Device device = _captainHookGenerator.GenerateDevice();
-            var response = await _resourceDemandService.QueryOffers(device);
+            //We take a the token to get the offer with the updated provider
+            var response = await _resourceDemandService.queryLink(_token);
+
+            //Assert
             Assert.NotNull(response);
-            Assert.NotEmpty(response);
-            Provider providerFromDevice = response.First().provider;
-            Console.Out.WriteLine(providerFromDevice);
+            Provider providerFromOffer = response.provider;
+            Console.Out.WriteLine(providerFromOffer);
             Console.Out.WriteLine(provider);
-            Assert.True(providerFromDevice.Equals(provider));
+            Assert.True(providerFromOffer.Equals(provider));
         }
 
-        [Fact(Skip = "TODO")]
-        public async void Test_ChangeProviderMail_NotPossible()
+        /// <summary>
+        /// Tests if unchangeable provider information are indeed not changed in the database
+        /// </summary>
+        [Fact]
+        public async Task Test_ChangeProviderInformation_NotPossible()
         {
+            //Create a provider and change attributes
             Provider provider = _captainHookGenerator.GenerateProvider();
             var providerMailOriginal = provider.mail;
             var providerMailChanged = "mail.changed@gmx.de";
-
             provider.mail = providerMailChanged;
 
-            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, provider));
-            Assert.Null(exception);
+            //Try to update
+            var changedRows = await  _resourceUpdateService.ChangeInformation(_token, provider);
+            Assert.True(changedRows == 0);
 
-            Device device = _captainHookGenerator.GenerateDevice();
-            var response = await _resourceDemandService.QueryOffers(device);
+            //We take a the token to get the offer with the updated provider
+            var response = await _resourceDemandService.queryLink(_token);
+
+            //Assert
             Assert.NotNull(response);
-            Assert.NotEmpty(response);
-            Provider providerFromDevice = response.First().provider;
-            Console.Out.WriteLine(providerFromDevice);
+            Provider providerFromOffer = response.provider;
+            Console.Out.WriteLine(providerFromOffer);
             Console.Out.WriteLine(provider);
-            Assert.True(providerMailOriginal.Equals(providerFromDevice.mail, StringComparison.Ordinal));
+            Assert.True(providerMailOriginal.Equals(providerFromOffer.mail, StringComparison.Ordinal));
         }
 
-        [Fact(Skip = "TODO")]
-        public async void Test_ChangeConsumableInformation_Possible()
+        /// <summary>
+        /// Tests if consumable information can be changed in the database
+        /// </summary>
+        [Fact]
+        public async Task Test_ChangeConsumableInformation_Possible()
         {
+            //Take the consumable from the inserted offer and change attributes
             Consumable consumable = _offer.consumables[0];
             consumable.name = "New name";
             consumable.unit = "Kilogramm";
@@ -135,13 +150,25 @@ namespace Pirat.DatabaseTests
             consumable.manufacturer = "Doch wer anders";
             consumable.ordernumber = "8877766";
             consumable.address.postalcode = "85521";
-            consumable.address.country = "Seeland";
+            consumable.address.country = "Deutschland";
 
-            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, consumable));
-            Assert.Null(exception);
+            //Update
+            var changedRows = await _resourceUpdateService.ChangeInformation(_token, consumable);
+            Assert.True(changedRows == 2);
 
-            Consumable queryConsumable = _captainHookGenerator.GenerateConsumable();
+            //Generate a consumable with the necessary attributes to find the updated consumable
+            Consumable queryConsumable = new Consumable()
+            {
+                category = consumable.category,
+                address = new Address()
+                {
+                    postalcode = "85521",
+                    country = "Deutschland"
+                }
+            };
             var response = await _resourceDemandService.QueryOffers(queryConsumable);
+
+            //Assert
             Assert.NotNull(response);
             Assert.NotEmpty(response);
             Consumable consumableFromQuery = response.First().resource;
@@ -150,70 +177,99 @@ namespace Pirat.DatabaseTests
             Assert.True(consumableFromQuery.Equals(consumable));
         }
 
-        [Fact(Skip = "TODO")]
-        public async void Test_ChangeConsumableInformation_NotPossible()
+        /// <summary>
+        /// Tests if unchangeable consumable information are indeed not changed in the database
+        /// </summary>
+        [Fact]
+        public async Task Test_ChangeConsumableInformation_NotPossible()
         {
+            //Take the consumable from the inserted offer and change attributes that cannot be updated
             Consumable consumable = _offer.consumables[0];
             var categoryOriginal = consumable.category;
-            consumable.category = "Doch was anderes";
             var idOriginal = consumable.id;
+            consumable.category = "Doch was anderes";
             consumable.id = 999999;
 
-            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, consumable));
-            Assert.Null(exception);
+            //Try to update
+            var changedRows = await _resourceUpdateService.ChangeInformation(_token, consumable);
+            Assert.True(changedRows == 0);
 
+            //Generate the consumable for the query that should still be findable 
             Consumable queryConsumable = _captainHookGenerator.GenerateConsumable();
             var response = await _resourceDemandService.QueryOffers(queryConsumable);
+
+            //Assert
             Assert.NotNull(response);
             Assert.NotEmpty(response);
-
             Consumable consumableFromQuery = response.First().resource;
             Assert.True(consumableFromQuery.category.Equals(categoryOriginal));
             Assert.True(consumableFromQuery.id == idOriginal);
         }
 
-
-        [Fact(Skip = "TODO")]
-        public async void Test_ChangeDeviceInformation_Possible()
+        /// <summary>
+        /// Tests if device information can be changed in the database
+        /// </summary>
+        [Fact]
+        public async Task Test_ChangeDeviceInformation_Possible()
         {
+            //Take the device from the inserted offer and change attributes
             Device device = _offer.devices[0];
             device.name = "New name";
             device.annotation = "Geändert";
             device.manufacturer = "Doch wer anders";
             device.ordernumber = "8877766";
             device.address.postalcode = "85521";
-            device.address.country = "Seeland";
+            device.address.country = "Deutschland";
 
-            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, device));
-            Assert.Null(exception);
+            //Update
+            var changedRows = await _resourceUpdateService.ChangeInformation(_token, device);
+            Assert.True(changedRows == 2);
 
-            Device queryDevice = _captainHookGenerator.GenerateDevice();
+            //Generate a device with the necessary attributes to find the updated device
+            Device queryDevice = new Device()
+            {
+                address = new Address()
+                {
+                    postalcode = "85521",
+                    country = "Deutschland"
+                },
+                category = device.category
+            };
             var response = await _resourceDemandService.QueryOffers(queryDevice);
+
+            //Assert
             Assert.NotNull(response);
             Assert.NotEmpty(response);
-            Device consumableFromDevice = response.First().resource;
-            Console.Out.WriteLine(consumableFromDevice);
+            Device deviceFromQuery = response.First().resource;
+            Console.Out.WriteLine(deviceFromQuery);
             Console.Out.WriteLine(device);
-            Assert.True(consumableFromDevice.Equals(device));
+            Assert.True(deviceFromQuery.Equals(device));
         }
 
-        [Fact(Skip = "TODO")]
-        public async void Test_ChangeDeviceInformation_NotPossible()
+        /// <summary>
+        /// Tests if unchangeable device information are indeed not changed in the database
+        /// </summary>
+        [Fact]
+        public async Task Test_ChangeDeviceInformation_NotPossible()
         {
+            //Take the device from the inserted offer and change attributes that cannot be updated
             Device device = _offer.devices[0];
             var categoryOriginal = device.category;
-            device.category = "Doch was anderes";
             var idOriginal = device.id;
+            device.category = "Doch was anderes";
             device.id = 999999;
 
-            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, device));
-            Assert.Null(exception);
+            //Try to update
+            var changedRows = await _resourceUpdateService.ChangeInformation(_token, device);
+            Assert.True(changedRows == 0);
 
+            //The original device should still be findable
             Device queryDevice = _captainHookGenerator.GenerateDevice();
             var response = await _resourceDemandService.QueryOffers(queryDevice);
+
+            //Assert
             Assert.NotNull(response);
             Assert.NotEmpty(response);
-
             var deviceFromQuery = response.First().resource;
             Assert.True(deviceFromQuery.category.Equals(categoryOriginal));
             Assert.True(deviceFromQuery.id == idOriginal);
@@ -221,23 +277,27 @@ namespace Pirat.DatabaseTests
 
 
         /// <summary>
-        /// Tests that requests for allowed changes for attributes of personal are made
+        /// Tests if personal information can be changed in the database
         /// </summary>
-        [Fact(Skip = "TODO")]
-        public async void Test_ChangePersonalInformation_Possible()
+        [Fact]
+        public async Task Test_ChangePersonalInformation_Possible()
         {
+            //Take the personal from the inserted offer and change attributes
             Personal personal = _offer.personals[0];
             personal.qualification = "Kapitän";
             personal.area = "Piratenforschung";
             personal.annotation = "Hier ein neuer Text";
             personal.experience_rt_pcr = false;
             personal.address.postalcode = "85521";
-            personal.address.country = "England";
+            personal.address.country = "Deutschland";
             personal.researchgroup = "Akademische Piraten";
+            personal.institution = "TU Pirates";
 
-            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, personal));
-            Assert.Null(exception);
+            //Update
+            var changedRows = await _resourceUpdateService.ChangeInformation(_token, personal);
+            Assert.True(changedRows == 2);
 
+            //Create manpower to find the updated personal
             Manpower queryManpower = new Manpower()
             {
                 qualification = new List<string>(){ "Kapitän" },
@@ -245,10 +305,12 @@ namespace Pirat.DatabaseTests
                 address = new Address()
                 {
                     postalcode = "85521",
-                    country = "England",
+                    country = "Deutschland",
                 }
             };
             var response = await _resourceDemandService.QueryOffers(queryManpower);
+
+            //Assert
             Assert.NotNull(response);
             Assert.NotEmpty(response);
             Personal personalFromQuery = response.First().resource;
@@ -258,26 +320,100 @@ namespace Pirat.DatabaseTests
         }
 
         /// <summary>
-        /// Tests that requests for changes of non-changeable attributes in personal are not made 
+        /// Tests if unchangeable personal information are indeed not changed in the database
         /// </summary>
-        [Fact(Skip = "TODO")]
-        public async void Test_ChangePersonalInformation_NotPossible()
+        [Fact]
+        public async Task Test_ChangePersonalInformation_NotPossible()
         {
+            //Take the personal from the inserted offer and change attributes that cannot be updated
             Personal personal = _offer.personals[0];
             var idOriginal = personal.id;
             personal.id = 999999;
 
-            Exception exception = await Record.ExceptionAsync(() => _resourceUpdateService.ChangeInformation(_token, personal));
-            Assert.Null(exception);
+            //Try to update
+            var changedRows = await _resourceUpdateService.ChangeInformation(_token, personal);
+            Assert.True(changedRows == 0);
 
+            //The personal in the original manpower should still be findable
             Manpower queryManpower = _captainHookGenerator.GenerateManpower();
-
             var response = await _resourceDemandService.QueryOffers(queryManpower);
+
+            //Assert
             Assert.NotNull(response);
             Assert.NotEmpty(response);
-
             var personalFromQuery = response.First().resource;
             Assert.True(personalFromQuery.id == idOriginal);
+        }
+
+        //Tests for provider, device, consumable and personal that include changes only in address information 
+        [Fact]
+        public async Task Test_ChangeInformation_OnlyAddress_Possible()
+        {
+            //Change
+            Provider provider = _offer.provider;
+            provider.address.postalcode = "85521";
+            provider.address.country = "Deutschland";
+            //Update
+            var changedRows = await _resourceUpdateService.ChangeInformation(_token, provider);
+            Assert.True(changedRows == 1);
+            
+            //Change
+            Consumable consumable = _offer.consumables[0];
+            consumable.address.postalcode = "85521";
+            consumable.address.country = "Deutschland";
+            //Update
+            changedRows = await _resourceUpdateService.ChangeInformation(_token, consumable);
+            Assert.True(changedRows == 1);
+            
+            //Change
+            Device device = _offer.devices[0];
+            device.address.postalcode = "85521";
+            device.address.country = "Deutschland";
+            //Update
+            changedRows = await _resourceUpdateService.ChangeInformation(_token, device);
+            Assert.True(changedRows == 1);
+            
+            //Change
+            Personal personal = _offer.personals[0];
+            personal.address.postalcode = "85521";
+            personal.address.country = "Deutschland";
+            //Update
+            changedRows = await _resourceUpdateService.ChangeInformation(_token, personal);
+            Assert.True(changedRows == 1);
+            
+        }
+
+        //Tests for provider, device, consumable and personal that include only changes in non-address information 
+        [Fact]
+        public async Task Test_ChangeInformation_AddressUnchanged_Possible()
+        {
+            //Change
+            Provider provider = _offer.provider;
+            provider.name = "Awesome provider";
+            //Update
+            var changedRows = await _resourceUpdateService.ChangeInformation(_token, provider);
+            Assert.True(changedRows == 1);
+            
+            //Change
+            Consumable consumable = _offer.consumables[0];
+            consumable.manufacturer = "A new manufacturer";
+            //Update
+            changedRows = await _resourceUpdateService.ChangeInformation(_token, consumable);
+            Assert.True(changedRows == 1);
+            
+            //Change
+            Device device = _offer.devices[0];
+            device.manufacturer = "New manufacturer";
+            //Update
+            changedRows = await _resourceUpdateService.ChangeInformation(_token, device);
+            Assert.True(changedRows == 1);
+            
+            //Change
+            Personal personal = _offer.personals[0];
+            personal.institution = "Super Powerful Pirates";
+            //Update
+            changedRows = await _resourceUpdateService.ChangeInformation(_token, personal);
+            Assert.True(changedRows == 1);
         }
 
         /// <summary>

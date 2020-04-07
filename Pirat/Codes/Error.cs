@@ -15,6 +15,12 @@
             public const string INVALID_CATEGORY_DEVICE = "1006:InvalidCategoryDevice";
             public const string INVALID_REASON = "1007:InvalidReason";
 
+            public const string INVALID_CHANGE_ADDRESS = "1100:InvalidChangeAddress";
+            public const string INVALID_CHANGE_PROVIDER = "1102:InvalidChangeProvider";
+            public const string INVALID_CHANGE_CONSUMABLE = "1103:InvalidChangeConsumable";
+            public const string INVALID_CHANGE_DEVICE = "1104:InvalidChangeDevice";
+            public const string INVALID_CHANGE_PERSONAL = "1105:InvalidChangePersonal";
+
             public const string INCOMPLETE_ADDRESS = "2000:IncompleteAddress";
             public const string INCOMPLETE_OFFER = "2001:IncompleteOffer";
             public const string INCOMPLETE_PROVIDER = "2002:IncompleteProvider";
@@ -29,13 +35,23 @@
             public const string NOTFOUND_DEVICE = "3004:NotFoundDevice";
             public const string NOTFOUND_PERSONAL = "3005:NotFoundPersonal";
 
+            public const string NOTFOUND_CHANGE_ADDRESS = "3100:NotFoundChangeAddress";
+            public const string NOTFOUND_CHANGE_PROVIDER_IN_OFFER = "3102:NotFoundChangeProviderInOffer";
+            public const string NOTFOUND_CHANGE_CONSUMABLE = "3103:NotFoundChangeConsumable";
+            public const string NOTFOUND_CHANGE_DEVICE = "3104:NotFoundChangeDevice";
+            public const string NOTFOUND_CHANGE_PERSONAL = "3105:NotFoundChangePersonal";
+
         }
 
+        /// <summary>
+        /// Use these codes when the server or the database reach a state that should never be reached
+        /// </summary>
         public static class FatalCodes
         {
 
             public const string MORE_THAN_ONE_OFFER_FROM_TOKEN = "9000:MoreThanOneOfferFromToken";
-    
+            public const string UPDATES_MADE_IN_TOO_MANY_ROWS = "9001:UpdatesMadeInTooManyRows";
+
         }
     }
 }

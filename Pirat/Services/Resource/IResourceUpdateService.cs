@@ -16,13 +16,41 @@ namespace Pirat.Services.Resource
 
         public Task delete(string link);
 
-        public Task ChangeInformation(string token, Provider provider);
+        /// <summary>
+        /// Overwrites the present provider with the given provider.
+        /// The corresponding provider in the database is determined by the token.
+        /// </summary>
+        /// <param name="token">The token to get the corresponding offer in the database</param>
+        /// <param name="provider">The provider with the information that will overwrite the present provider information</param>
+        /// <returns>The amount of changed rows</returns>
+        public Task<int> ChangeInformation(string token, Provider provider);
 
-        public Task ChangeInformation(string token, Consumable consumable);
+        /// <summary>
+        /// Overwrites the present consumable with the given consumable.
+        /// The corresponding consumable in the database is determined by the token and the id in the given consumable.
+        /// </summary>
+        /// <param name="token">The token to get the corresponding offer in the database</param>
+        /// <param name="consumable">The consumable with the information that will overwrite the present consumable information</param>
+        /// <returns>The amount of changed rows</returns>
+        public Task<int> ChangeInformation(string token, Consumable consumable);
 
-        public Task ChangeInformation(string token, Device device);
+        /// <summary>
+        /// Overwrites the present device with the given device.
+        /// The corresponding device in the database is determined by the token and the id in the given device.
+        /// </summary>
+        /// <param name="token">The token to get the corresponding offer in the database</param>
+        /// <param name="device">The device with the information that will overwrite the present device information</param>
+        /// <returns>The amount of changed rows</returns>
+        public Task<int> ChangeInformation(string token, Device device);
 
-        public Task ChangeInformation(string token, Personal personal);
+        /// <summary>
+        /// Overwrites the present personal with the given personal.
+        /// The corresponding personal in the database is determined by the token and the id in the given personal.
+        /// </summary>
+        /// <param name="token">The token to get the corresponding offer in the database</param>
+        /// <param name="personal">The personal with the information that will overwrite the present personal information</param>
+        /// <returns>The amount of changed rows</returns>
+        public Task<int> ChangeInformation(string token, Personal personal);
 
         public Task ChangeConsumableAmount(string token, int consumableId, int newAmount);
         
