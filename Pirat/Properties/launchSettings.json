@@ -5,7 +5,16 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-	      "ASPNETCORE_ENVIRONMENT": "Development"
+        "PIRAT_GOOGLE_API_KEY": "AIzaSyAVb6pRAs5xaFlad3PjVq1W8YQBZBpRMRI",
+        "PIRAT_INTERNAL_RECEIVER_MAIL": "pirat.hilfsmittel@gmail.com",
+        "PIRAT_SENDER_MAIL_ADDRESS": "pirat.hilfsmittel@gmail.com",
+        "PIRAT_HOST": "localhost:5000",
+        "PIRAT_SENDER_MAIL_PASSWORD": "22QLyPq2eWTtYFf",
+        "PIRAT_SENDER_MAIL_SMTP_HOST": "smtp.gmail.com",
+        "PIRAT_CONNECTION": "Server=95.216.196.169;Port=5432;Database=pirat;User ID=postgres;Password=nKfMJgyUYdrwwaKv8bs5",
+        "PIRAT_GOOGLE_RECAPTCHA_SECRET": "6Lc7y-MUAAAAAM9YnkgMWV-ZbwLuNE8XTDL442xp",
+        "ASPNETCORE_ENVIRONMENT": "development",
+        "PIRAT_SENDER_MAIL_USERNAME": "pirat.hilfsmittel"
       },
       "applicationUrl": "http://localhost:5000"
     }
