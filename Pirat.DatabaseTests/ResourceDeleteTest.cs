@@ -8,6 +8,7 @@ using Moq;
 using Pirat.DatabaseContext;
 using Pirat.DatabaseTests.Examples;
 using Pirat.Examples.TestExamples;
+using Pirat.Exceptions;
 using Pirat.Model;
 using Pirat.Model.Entity;
 using Pirat.Services;
@@ -96,20 +97,48 @@ namespace Pirat.DatabaseTests
             Assert.Null(exception);
         }
 
-        public async void Test_DeleteDevice()
+        public async void Test_DeleteConsumable()
         {
-            var deviceCh = _offerCaptainHook.devices[0];
-            var deviceAb = _offerAnneBonny.devices[0];
+            var consumableCh = _offerCaptainHook.consumables[0];
 
-            //Devices should be findable
+            //Consumables should be findable
 
             var foundOfferCh = await _resourceDemandService.queryLink(_tokenCaptainHook);
-            Assert.NotNull(foundOfferCh.devices);
+            Assert.NotNull(foundOfferCh);
             Assert.NotEmpty(foundOfferCh.consumables);
 
             var foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
             Assert.NotNull(foundOfferAb);
             Assert.NotEmpty(foundOfferAb.consumables);
+
+
+            //Mark as deleted
+            await _resourceUpdateService.MarkConsumableAsDeleted(_tokenCaptainHook, consumableCh.id, "A reason");
+
+            //Finding consumable of captain hook not possible anymore
+            foundOfferCh = await _resourceDemandService.queryLink(_tokenCaptainHook);
+            Assert.NotNull(foundOfferCh);
+            Assert.Empty(foundOfferCh.consumables);
+
+            //Finding consumable of anne bonny still possible
+            foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
+            Assert.NotNull(foundOfferAb);
+            Assert.NotEmpty(foundOfferAb.consumables);
+        }
+
+        public async void Test_DeleteDevice()
+        {
+            var deviceCh = _offerCaptainHook.devices[0];
+
+            //Devices should be findable
+
+            var foundOfferCh = await _resourceDemandService.queryLink(_tokenCaptainHook);
+            Assert.NotNull(foundOfferCh);
+            Assert.NotEmpty(foundOfferCh.devices);
+
+            var foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
+            Assert.NotNull(foundOfferAb);
+            Assert.NotEmpty(foundOfferAb.devices);
 
 
             //Mark as deleted
@@ -124,6 +153,35 @@ namespace Pirat.DatabaseTests
             foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
             Assert.NotNull(foundOfferAb);
             Assert.NotEmpty(foundOfferAb.devices);
+        }
+
+        public async void Test_DeletePersonal()
+        {
+            var personalCh = _offerCaptainHook.personals[0];
+
+            //Personal should be findable
+
+            var foundOfferCh = await _resourceDemandService.queryLink(_tokenCaptainHook);
+            Assert.NotNull(foundOfferCh);
+            Assert.NotEmpty(foundOfferCh.personals);
+
+            var foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
+            Assert.NotNull(foundOfferAb);
+            Assert.NotEmpty(foundOfferAb.personals);
+
+
+            //Mark as deleted
+            await _resourceUpdateService.MarkPersonalAsDeleted(_tokenCaptainHook, personalCh.id, "A reason");
+
+            //Finding personal of captain hook not possible anymore
+            foundOfferCh = await _resourceDemandService.queryLink(_tokenCaptainHook);
+            Assert.NotNull(foundOfferCh);
+            Assert.Empty(foundOfferCh.personals);
+
+            //Finding personal of anne bonny still possible
+            foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
+            Assert.NotNull(foundOfferAb);
+            Assert.NotEmpty(foundOfferAb.personals);
         }
 
         public async void Test_DeleteDevice_CompareQueryMethods()
@@ -147,6 +205,24 @@ namespace Pirat.DatabaseTests
             //Find method should return the device nevertheless
             var foundDevice = await _resourceDemandService.Find(new DeviceEntity(), device.id);
             Assert.NotNull(foundDevice);
+        }
+
+        public async void Test_DeleteResourceWithoutReason_NotPossible()
+        {
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.MarkConsumableAsDeleted(_tokenAnneBonny, _offerAnneBonny.consumables[0].id, ""));
+
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.MarkDeviceAsDeleted(_tokenAnneBonny, _offerAnneBonny.devices[0].id, ""));
+
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.MarkPersonalAsDeleted(_tokenAnneBonny, _offerAnneBonny.personals[0].id, ""));
+        }
+
+        public async void Test_DeleteNonExistingResource_NotPossible()
+        {
+            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkConsumableAsDeleted(_tokenAnneBonny, 999999, ""));
+
+            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkDeviceAsDeleted(_tokenAnneBonny, 999999, ""));
+
+            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkPersonalAsDeleted(_tokenAnneBonny, 999999, ""));
         }
     }
 }
