@@ -60,7 +60,7 @@ namespace Pirat.DatabaseTests.Examples
                 name = "RumObsctacle3000",
                 manufacturer = "Sober Inc",
                 amount = 20,
-                unit = "Bottles spilt",
+                unit = "Stück",
                 address = generateAddress()
             };
         }

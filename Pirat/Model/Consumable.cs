@@ -67,6 +67,28 @@ namespace Pirat.Model
             }
         }
 
+        public string GetUnitLocalizedName(string locale)
+        {
+            if (locale == "de")
+            {
+                return new Dictionary<string, string>()
+                {
+                    { "Stück", "Stück" },
+                    { "Packung", "Packung" },
+                    { "Sonstiges", "Sonstiges" },
+                }[unit];
+            }
+            else
+            {
+                return new Dictionary<string, string>()
+                {
+                    { "Stück", "Piece" },
+                    { "Packung", "Pack" },
+                    { "Sonstiges", "Others" },
+                }[unit];
+            }
+        }
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;

@@ -64,7 +64,7 @@ namespace Pirat.Examples.TestExamples
                 name = "Hook3000",
                 manufacturer = "HookInc",
                 amount = 40,
-                unit = "Kugel",
+                unit = "Packung",
                 address = generateAddress()
             };
         }

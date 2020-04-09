@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -274,10 +275,8 @@ mail@pirat-tool.com
         public async Task sendNotificationAboutNewOffers(RegionSubscription regionSubscription,
             SubscriptionService.ResourceList resourceList)
         {
-            //TODO Add details about what was added. However, this is currently difficult because the backend does not know the readable names.
-            //TODO add these two strings to mail content at appropriate position
-            string offersDE = SummarizeResourcesToFormattedString(resourceList, Language.DE);
-            string offersEN = SummarizeResourcesToFormattedString(resourceList, Language.EN);
+            string offersDE = SummarizeResourcesToFormattedString(resourceList, "de");
+            string offersEN = SummarizeResourcesToFormattedString(resourceList, "en");
 
             await Task.Run(() =>
             {
@@ -367,110 +366,83 @@ mail@pirat-tool.com
             // TODO put disconnect into finally?
         }
 
-        public enum Language
-        {
-            DE,
-            EN
-        }
-
         //TODO refactor this monstrosity of a method
-        public string SummarizeResourcesToFormattedString(SubscriptionService.ResourceList resourceList,
-            Language language)
+        public static string SummarizeResourcesToFormattedString(SubscriptionService.ResourceList resourceList,
+            string language)
         {
             var devices = resourceList.devices
-                .GroupBy(device => device.GetCategoryLocalizedName(language.ToString().ToLower()))
+                .GroupBy(device => device.GetCategoryLocalizedName(language))
                 .OrderBy(k=> k.Key)
-                .ToDictionary(c => c.Key, c => c.ToList().Count);
+                .ToDictionary(
+                    entry => entry.Key,
+                    entry => entry.ToList().Sum(d => d.amount)
+                    );
 
             var consumables = resourceList.consumables
-                .GroupBy(consumable => consumable.GetCategoryLocalizedName(language.ToString().ToLower()))
+                .GroupBy(consumable => consumable.GetCategoryLocalizedName(language))
                 .OrderBy(key => key.Key)
-                .ToDictionary(entry => entry.Key, entry => entry.ToList().Count);
-
-            var personals = resourceList.personals
-                .GroupBy(personal => personal.qualification)
-                .OrderBy(key => key.Key)
-                .ToDictionary(entry => entry.Key, entry => entry.ToList().Count);
-
-            StringBuilder newOffers = new StringBuilder();
-            if (!personals.Any() && !devices.Any() && !consumables.Any())
+                .ToDictionary(
+                    entry => entry.Key,
+                    entry => entry
+                        .GroupBy(consumable => consumable.GetUnitLocalizedName(language))
+                        .ToDictionary(entry2 => entry2.Key, entry2 => entry2.ToList().Sum(c => c.amount))
+                    );
+            
+            if (!devices.Any() && !consumables.Any())
             {
-                if (language == Language.EN)
-                {
-                    newOffers.AppendLine("No new resources available.");
-                }
-                else if (language == Language.DE)
-                {
-                    newOffers.AppendLine("Keine neuen Ressourcen gefunden.");
-                }
+                throw new ArgumentException("Empty resource list");
+            }
+            
+            StringBuilder newOffers = new StringBuilder();
+            
+            var newOfferEntryCount = resourceList.personals.Count + resourceList.devices.Count + resourceList.consumables.Count;
+            if (language == "de")
+            {
+                newOffers.AppendLine(newOfferEntryCount +
+                                     (newOfferEntryCount == 1 ? " neues Angebot gefunden:" : " neue Angebote gefunden:"));
             }
             else
             {
-                int newItemAmount = resourceList.personals.Count + resourceList.devices.Count + resourceList.consumables.Count;
-                if (language == Language.EN)
+                newOffers.AppendLine(newOfferEntryCount + (newOfferEntryCount == 1 ? " new offer found:" : " new offers found:"));
+            }
+
+            if (resourceList.personals.Any())
+            {
+                newOffers.AppendLine("Personal:");
+                newOffers.AppendLine("+ " + resourceList.personals.Count + " " + (
+                    resourceList.personals.Count == 1 ?
+                        (language == "de" ? "Helfer" : "volunteer") :
+                        (language == "de" ? "Helfer" : "volunteers")
+                    ));
+            }
+
+            if (devices.Any())
+            {
+                newOffers.AppendLine(language == "de" ? "Geräte:" : "Devices:");
+                foreach (var d in devices)
                 {
-                    if (newItemAmount == 1)
-                    {
-                        newOffers.AppendLine(newItemAmount + " New offer found:");
-                    }
-                    else
-                    {
-                        newOffers.AppendLine(newItemAmount + " New offers found:");
-                    }
+                    newOffers.AppendLine("+ " + d.Value + " " + d.Key);
                 }
-                else if (language == Language.DE)
+            }
+            
+            if (consumables.Any())
+            {
+                newOffers.AppendLine(language == "de" ? "Verbrauchsmaterial:" : "Consumables:");
+                foreach (var c in consumables)
                 {
-                    if (newItemAmount == 1)
+                    var line = $"+ {c.Key}: ";
+                    var i = 0;
+                    foreach (var unitAmount in c.Value)
                     {
-                        newOffers.AppendLine(newItemAmount + " Neues Angebot gefunden:");
-                    }
-                    else
-                    {
-                        newOffers.AppendLine(newItemAmount + " Neue Angebote gefunden:");
-                    }
-                }
+                        if (i > 0)
+                        {
+                            line += ", ";
+                        }
 
-                if (personals.Any())
-                {
-                    newOffers.AppendLine("Personal:");
-                    foreach (var p in personals)
-                    {
-                        newOffers.AppendLine("+ " + p.Value + " " + p.Key); //TODO refactoring switch key with value
+                        line += unitAmount.Value + " " + unitAmount.Key;
+                        i++;
                     }
-                }
-
-                if (devices.Any())
-                {
-                    if (language == Language.EN)
-                    {
-                        newOffers.AppendLine("Devices:");
-                    }
-                    else if (language == Language.DE)
-                    {
-                        newOffers.AppendLine("Geräte:");
-                    }
-
-                    foreach (var d in devices)
-                    {
-                        newOffers.AppendLine("+ " + d.Value + " " + d.Key);
-                    }
-                }
-
-                if (consumables.Any())
-                {
-                    if (language == Language.EN)
-                    {
-                        newOffers.AppendLine("Consumables:");
-                    }
-                    else if (language == Language.DE)
-                    {
-                        newOffers.AppendLine("Verbrauchsmaterial:");
-                    }
-
-                    foreach (var c in consumables)
-                    {
-                        newOffers.AppendLine("+ " + c.Value + " " + c.Key);
-                    }
+                    newOffers.AppendLine(line);
                 }
             }
 
