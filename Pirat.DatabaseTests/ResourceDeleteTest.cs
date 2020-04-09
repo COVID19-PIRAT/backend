@@ -97,6 +97,9 @@ namespace Pirat.DatabaseTests
             Assert.Null(exception);
         }
 
+        /// <summary>
+        /// Tests marking of a consumable as deleted and tests that this personal is not retrieved anymore
+        /// </summary>
         public async void Test_DeleteConsumable()
         {
             var consumableCh = _offerCaptainHook.consumables[0];
@@ -126,6 +129,9 @@ namespace Pirat.DatabaseTests
             Assert.NotEmpty(foundOfferAb.consumables);
         }
 
+        /// <summary>
+        /// Tests marking of a device as deleted and tests that this device is not retrieved anymore
+        /// </summary>
         public async void Test_DeleteDevice()
         {
             var deviceCh = _offerCaptainHook.devices[0];
@@ -155,6 +161,9 @@ namespace Pirat.DatabaseTests
             Assert.NotEmpty(foundOfferAb.devices);
         }
 
+        /// <summary>
+        /// Tests marking of a personal as deleted and tests that this personal is not retrieved anymore
+        /// </summary>
         public async void Test_DeletePersonal()
         {
             var personalCh = _offerCaptainHook.personals[0];
@@ -184,6 +193,9 @@ namespace Pirat.DatabaseTests
             Assert.NotEmpty(foundOfferAb.personals);
         }
 
+        /// <summary>
+        /// Tests and compare the different behaviour of query methods in <see cref="ResourceDemandService"/>
+        /// </summary>
         public async void Test_DeleteDevice_CompareQueryMethods()
         {
             var device = _offerCaptainHook.devices[0];
@@ -207,6 +219,9 @@ namespace Pirat.DatabaseTests
             Assert.NotNull(foundDevice);
         }
 
+        /// <summary>
+        /// Tests that deleting resources without a reason is not possible
+        /// </summary>
         public async void Test_DeleteResourceWithoutReason_NotPossible()
         {
             await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.MarkConsumableAsDeleted(_tokenAnneBonny, _offerAnneBonny.consumables[0].id, ""));
@@ -216,6 +231,9 @@ namespace Pirat.DatabaseTests
             await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.MarkPersonalAsDeleted(_tokenAnneBonny, _offerAnneBonny.personals[0].id, ""));
         }
 
+        /// <summary>
+        /// Tests that deleting of non-existing resources throws an exception when try to delete them
+        /// </summary>
         public async void Test_DeleteNonExistingResource_NotPossible()
         {
             await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkConsumableAsDeleted(_tokenAnneBonny, 999999, ""));
