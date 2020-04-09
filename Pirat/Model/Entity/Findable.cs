@@ -11,6 +11,6 @@ namespace Pirat.Model.Entity
      */
     public interface Findable
     {
-        public Findable Find(DemandContext context, int id);
+        Task<Findable> Find(DemandContext context, int id);
     }
 }

@@ -5,7 +5,7 @@ namespace Pirat.Services.Mail
 {
     public interface ISubscriptionService
     {
-        public void SubscribeRegion(RegionSubscription subscription);
+        public Task SubscribeRegion(RegionSubscription subscription);
 
         /**
          * This function sends out emails to all subscribers if there are new relevant offers.

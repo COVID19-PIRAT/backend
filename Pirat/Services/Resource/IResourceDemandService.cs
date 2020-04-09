@@ -9,11 +9,11 @@ namespace Pirat.Services.Resource
 {
     public interface IResourceDemandService
     {
-        public Task<List<OfferResource<Consumable>>> QueryOffers(Consumable consumable);
+        IAsyncEnumerable<OfferResource<Consumable>> QueryOffers(Consumable consumable);
 
-        public Task<List<OfferResource<Device>>> QueryOffers(Device device);
+        IAsyncEnumerable<OfferResource<Device>> QueryOffers(Device device);
 
-        public Task<List<OfferResource<Personal>>> QueryOffers(Manpower manpower);
+        IAsyncEnumerable<OfferResource<Personal>> QueryOffers(Manpower manpower);
 
         /// <summary>
         /// Finds an entity that implements <see cref="Findable"/> by the given ID. Calling this method during runtime, findable is always an entity object implementing
@@ -24,8 +24,8 @@ namespace Pirat.Services.Resource
         /// <param name="findable"></param>
         /// <param name="id">The id to find the entity in the database</param>
         /// <returns>The found entity as Findable</returns>
-        public Task<Findable> Find(Findable findable, int id);
+        Task<Findable> Find(Findable findable, int id);
 
-        public Task<Offer> queryLink(string token);
+        Task<Offer> queryLink(string token);
     }
 }

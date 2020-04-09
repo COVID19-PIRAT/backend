@@ -8,6 +8,6 @@ namespace Pirat.Model.Entity
 {
     public interface Deletable
     {
-        public void Delete(DemandContext context);
+        Task Delete(DemandContext context);
     }
 }
