@@ -118,12 +118,35 @@ namespace Pirat.DatabaseTests
             //Finding the device of captain hook not possible anymore
             foundOfferCh = await _resourceDemandService.queryLink(_tokenCaptainHook);
             Assert.NotNull(foundOfferCh);
-            Assert.Empty(foundOfferCh.consumables);
+            Assert.Empty(foundOfferCh.devices);
 
             //Finding device of anne bonny still possible
             foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
             Assert.NotNull(foundOfferAb);
-            Assert.NotEmpty(foundOfferAb.consumables);
+            Assert.NotEmpty(foundOfferAb.devices);
+        }
+
+        public async void Test_DeleteDevice_CompareQueryMethods()
+        {
+            var device = _offerCaptainHook.devices[0];
+
+            //Mark as deleted
+            await _resourceUpdateService.MarkDeviceAsDeleted(_tokenCaptainHook, device.id, "A reason");
+
+            //Device should not be retrieved by querying the link
+            var foundOffer = await _resourceDemandService.queryLink(_tokenCaptainHook);
+            Assert.NotNull(foundOffer);
+            Assert.Empty(foundOffer.devices);
+
+            //Device should not be retrieved by querying with a device object
+            var deviceForQuery = _captainHookGenerator.GenerateDevice();
+            var foundDevices = await _resourceDemandService.QueryOffers(deviceForQuery);
+            Assert.NotNull(foundDevices);
+            Assert.Empty(foundDevices);
+
+            //Find method should return the device nevertheless
+            var foundDevice = await _resourceDemandService.Find(new DeviceEntity(), device.id);
+            Assert.NotNull(foundDevice);
         }
     }
 }
