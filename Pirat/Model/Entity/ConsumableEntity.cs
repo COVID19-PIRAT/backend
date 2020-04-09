@@ -31,27 +31,27 @@ namespace Pirat.Model.Entity
         }
 
         
-        public Findable Find(DemandContext context, int id)
+        public async Task<Findable> Find(DemandContext context, int id)
         {
-            return context.consumable.Find(id);
+            return await context.consumable.FindAsync(id);
         }
 
-        public void Delete(DemandContext context)
+        public async Task Delete(DemandContext context)
         {
             context.consumable.Remove(this);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
 
-        public void Update(DemandContext context)
+        public async Task Update(DemandContext context)
         {
             context.consumable.Update(this);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
 
-        public Insertable Insert(DemandContext context)
+        public async Task<Insertable> Insert(DemandContext context)
         {
             context.consumable.Add(this);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
             return this;
         }
     }
