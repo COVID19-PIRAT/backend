@@ -391,12 +391,13 @@ namespace Pirat.Controllers
         //***************PUT REQUESTS
 
 
-        [HttpPut("offers/{token:string}/provider")]
+        [HttpPut("offers/{token}/provider")]
         [Consumes("application/json")]
         [Produces("application/json")]
+        // There seems to be a bug in the used swagger library. The following line fixes the shown example.
+        [SwaggerRequestExample(typeof(string), typeof(ProviderRequestExample))]
         [SwaggerRequestExample(typeof(Provider), typeof(ProviderRequestExample))]
-        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
-        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(void))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
@@ -408,8 +409,8 @@ namespace Pirat.Controllers
             try
             {
                 _resourceInputValidatorService.validateForChangeInformation(token, provider);
-                int changedRows = await _resourceUpdateService.ChangeInformation(token, provider);
-                return Ok(changedRows);
+                await _resourceUpdateService.ChangeInformation(token, provider);
+                return Ok();
             }
             catch (ArgumentException e)
             {
@@ -426,9 +427,11 @@ namespace Pirat.Controllers
         }
 
 
-        [HttpPut("offers/{token:string}/consumable/{id:int}")]
+        [HttpPut("offers/{token}/consumable/{id:int}")]
         [Consumes("application/json")]
         [Produces("application/json")]
+        // There seems to be a bug in the used swagger library. The following line fixes the shown example.
+        [SwaggerRequestExample(typeof(string), typeof(ConsumableRequestExample))]
         [SwaggerRequestExample(typeof(Consumable), typeof(ConsumableRequestExample))]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
@@ -461,9 +464,11 @@ namespace Pirat.Controllers
             }
         }
 
-        [HttpPut("offers/{token:string}/device/{id:int}")]
+        [HttpPut("offers/{token}/device/{id:int}")]
         [Consumes("application/json")]
         [Produces("application/json")]
+        // There seems to be a bug in the used swagger library. The following line fixes the shown example.
+        [SwaggerRequestExample(typeof(string), typeof(DeviceRequestExample))]
         [SwaggerRequestExample(typeof(Device), typeof(DeviceRequestExample))]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
@@ -496,9 +501,11 @@ namespace Pirat.Controllers
             }
         }
 
-        [HttpPut("offers/{token:string}/personal/{id:int}")]
+        [HttpPut("offers/{token}/personal/{id:int}")]
         [Consumes("application/json")]
         [Produces("application/json")]
+        // There seems to be a bug in the used swagger library. The following line fixes the shown example.
+        [SwaggerRequestExample(typeof(string), typeof(PersonalRequestExample))]
         [SwaggerRequestExample(typeof(Personal), typeof(PersonalRequestExample))]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
@@ -531,9 +538,11 @@ namespace Pirat.Controllers
             }
         }
 
-        [HttpPut("offers/{token:string}/consumable/{id:int}/amount")]
+        [HttpPut("offers/{token}/consumable/{id:int}/amount")]
         [Consumes("application/json")]
         [Produces("application/json")]
+        // There seems to be a bug in the used swagger library. The following line fixes the shown example.
+        [SwaggerRequestExample(typeof(string), typeof(AmountChangeRequestExample))]
         [SwaggerRequestExample(typeof(AmountChange), typeof(AmountChangeRequestExample))]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
@@ -564,9 +573,12 @@ namespace Pirat.Controllers
             }
         }
 
-        [HttpPut("offers/{token:string}/device/{id:int}/amount")]
+        [HttpPut("offers/{token}/device/{id:int}/amount")]
         [Consumes("application/json")]
         [Produces("application/json")]
+        // There seems to be a bug in the used swagger library. The following line fixes the shown example.
+        [SwaggerRequestExample(typeof(string), typeof(AmountChangeRequestExample))]
+        [SwaggerRequestExample(typeof(AmountChange), typeof(AmountChangeRequestExample))]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]

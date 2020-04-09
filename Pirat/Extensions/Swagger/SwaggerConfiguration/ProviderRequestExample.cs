@@ -7,9 +7,9 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace Pirat.Extensions.Swagger.SwaggerConfiguration
 {
-    public class ProviderRequestExample : IExamplesProvider<object>
+    public class ProviderRequestExample : IExamplesProvider<Provider>
     {
-        public object GetExamples()
+        public Provider GetExamples()
         {
             return new Provider()
             {
