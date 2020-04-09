@@ -611,11 +611,11 @@ namespace Pirat.Controllers
         [HttpDelete("offers/{token}/consumable/{id:int}")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> DeleteConsumable(string token, int id, [FromBody] string reason)
+        public async Task<IActionResult> MarkConsumableAsDeleted(string token, int id, [FromBody] string reason)
         {
             try
             {
-                await _resourceUpdateService.DeleteConsumable(token, id, reason);
+                await _resourceUpdateService.MarkConsumableAsDeleted(token, id, reason);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -635,11 +635,11 @@ namespace Pirat.Controllers
         [HttpDelete("offers/{token}/device/{id:int}")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> DeleteDevice(string token, int id, [FromBody] string reason)
+        public async Task<IActionResult> MarkDeviceAsDeleted(string token, int id, [FromBody] string reason)
         {
             try
             {
-                await _resourceUpdateService.DeleteDevice(token, id, reason);
+                await _resourceUpdateService.MarkDeviceAsDeleted(token, id, reason);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -659,11 +659,11 @@ namespace Pirat.Controllers
         [HttpDelete("offers/{token}/personal/{id:int}")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> DeletePersonal(string token, int id, [FromBody] string reason)
+        public async Task<IActionResult> MarkPersonalAsDeleted(string token, int id, [FromBody] string reason)
         {
             try
             {
-                await _resourceUpdateService.DeletePersonal(token, id, reason);
+                await _resourceUpdateService.MarkPersonalAsDeleted(token, id, reason);
                 return Ok();
             }
             catch (ArgumentException e)

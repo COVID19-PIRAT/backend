@@ -405,7 +405,7 @@ namespace Pirat.Services.Resource
             throw new NotImplementedException();
         }
 
-        public async Task DeleteConsumable(string token, int consumableId, string reason)
+        public async Task MarkConsumableAsDeleted(string token, int consumableId, string reason)
         {
             if (reason.Trim().Length == 0)
             {
@@ -441,7 +441,7 @@ namespace Pirat.Services.Resource
             }.Insert(_context);
         }
 
-        public async Task DeleteDevice(string token, int deviceId, string reason)
+        public async Task MarkDeviceAsDeleted(string token, int deviceId, string reason)
         {
             if (reason.Trim().Length == 0)
             {
@@ -476,7 +476,7 @@ namespace Pirat.Services.Resource
             }.Insert(_context);
         }
 
-        public async Task DeletePersonal(string token, int personalId, string reason)
+        public async Task MarkPersonalAsDeleted(string token, int personalId, string reason)
         {
             if (reason.Trim().Length == 0)
             {

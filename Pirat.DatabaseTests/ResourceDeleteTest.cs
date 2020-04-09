@@ -9,12 +9,14 @@ using Pirat.DatabaseContext;
 using Pirat.DatabaseTests.Examples;
 using Pirat.Examples.TestExamples;
 using Pirat.Model;
+using Pirat.Model.Entity;
 using Pirat.Services;
 using Pirat.Services.Resource;
+using Xunit;
 
 namespace Pirat.DatabaseTests
 {
-    public class ResourceDeleteTest
+    public class ResourceDeleteTest : IDisposable
     {
 
         private const string connectionString =
@@ -77,6 +79,51 @@ namespace Pirat.DatabaseTests
             });
             task.Wait();
             (_offerAnneBonny, _tokenAnneBonny) = task.Result;
+        }
+
+        /// <summary>
+        /// Called after each test
+        /// </summary>
+        public void Dispose()
+        {
+            var exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE offer CASCADE"));
+            Assert.Null(exception);
+
+            exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE address CASCADE"));
+            Assert.Null(exception);
+
+            exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE region_subscription CASCADE"));
+            Assert.Null(exception);
+        }
+
+        public async void Test_DeleteDevice()
+        {
+            var deviceCh = _offerCaptainHook.devices[0];
+            var deviceAb = _offerAnneBonny.devices[0];
+
+            //Devices should be findable
+
+            var foundOfferCh = await _resourceDemandService.queryLink(_tokenCaptainHook);
+            Assert.NotNull(foundOfferCh.devices);
+            Assert.NotEmpty(foundOfferCh.consumables);
+
+            var foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
+            Assert.NotNull(foundOfferAb);
+            Assert.NotEmpty(foundOfferAb.consumables);
+
+
+            //Mark as deleted
+            await _resourceUpdateService.MarkDeviceAsDeleted(_tokenCaptainHook, deviceCh.id, "A reason");
+
+            //Finding the device of captain hook not possible anymore
+            foundOfferCh = await _resourceDemandService.queryLink(_tokenCaptainHook);
+            Assert.NotNull(foundOfferCh);
+            Assert.Empty(foundOfferCh.consumables);
+
+            //Finding device of anne bonny still possible
+            foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
+            Assert.NotNull(foundOfferAb);
+            Assert.NotEmpty(foundOfferAb.consumables);
         }
     }
 }
