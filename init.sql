@@ -10,7 +10,8 @@ create table address
 	hascoordinates boolean default false not null,
 	latitude numeric,
 	longitude numeric,
-	street text
+	street text,
+	is_deleted boolean default false not null
 );
 
 alter table address owner to postgres;
@@ -59,7 +60,8 @@ create table consumable
 			references address
 				on update cascade on delete cascade,
 	unit text,
-	annotation text
+	annotation text,
+	is_deleted boolean default false not null
 );
 
 alter table consumable owner to postgres;
@@ -86,7 +88,8 @@ create table device
 		constraint device_address_id_fk
 			references address
 				on update cascade on delete cascade,
-	annotation text
+	annotation text,
+	is_deleted boolean default false not null
 );
 
 alter table device owner to postgres;
@@ -113,7 +116,8 @@ create table personal
 	address_id integer
 		constraint personal_address_id_fk
 			references address
-				on update cascade on delete cascade
+				on update cascade on delete cascade,
+	is_deleted boolean default false not null
 );
 
 alter table personal owner to postgres;

@@ -11,6 +11,8 @@ namespace Pirat.Model.Entity
         public int offer_id { get; set; }
 
         public int address_id { get; set; }
+
+        public bool is_deleted { get; set; }
     }
 
 }

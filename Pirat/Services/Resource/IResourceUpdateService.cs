@@ -66,5 +66,11 @@ namespace Pirat.Services.Resource
         public Task AddResource(string token, Device device);
         
         public Task AddResource(string token, Personal personal);
+
+        public Task DeleteConsumable(string token, int consumableId, string reason);
+
+        public Task DeleteDevice(string token, int deviceId, string reason);
+
+        public Task DeletePersonal(string token,int personalId, string reason);
     }
 }

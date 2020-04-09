@@ -608,5 +608,73 @@ namespace Pirat.Controllers
             }
         }
 
+        [HttpDelete("offers/{token}/consumable/{id:int}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> DeleteConsumable(string token, int id, [FromBody] string reason)
+        {
+            try
+            {
+                await _resourceUpdateService.DeleteConsumable(token, id, reason);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+        [HttpDelete("offers/{token}/device/{id:int}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> DeleteDevice(string token, int id, [FromBody] string reason)
+        {
+            try
+            {
+                await _resourceUpdateService.DeleteDevice(token, id, reason);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+        [HttpDelete("offers/{token}/personal/{id:int}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> DeletePersonal(string token, int id, [FromBody] string reason)
+        {
+            try
+            {
+                await _resourceUpdateService.DeletePersonal(token, id, reason);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
     }
 }
