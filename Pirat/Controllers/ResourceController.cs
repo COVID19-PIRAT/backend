@@ -87,7 +87,7 @@ namespace Pirat.Controllers
             {
                 consumable.address = address;
                 _resourceInputValidatorService.validateForQuery(consumable);
-                return Ok(await _resourceDemandService.QueryOffers(consumable));
+                return Ok(await _resourceDemandService.QueryOffers(consumable).ToListAsync());
             }
             catch (ArgumentException e)
             {
@@ -121,7 +121,7 @@ namespace Pirat.Controllers
             {
                 device.address = address;
                 _resourceInputValidatorService.validateForQuery(device);
-                return Ok(await _resourceDemandService.QueryOffers(device));
+                return Ok(await _resourceDemandService.QueryOffers(device).ToListAsync());
             }
             catch (ArgumentException e)
             {
@@ -154,7 +154,7 @@ namespace Pirat.Controllers
             {
                 manpower.address = address;
                 _resourceInputValidatorService.validateForQuery(manpower);
-                return Ok(await _resourceDemandService.QueryOffers(manpower));
+                return Ok(await _resourceDemandService.QueryOffers(manpower).ToListAsync());
             }
             catch (ArgumentException e)
             {

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Pirat.DatabaseContext;
 using Pirat.Model.Entity;
 
 namespace Pirat.Model
 {
-    public class RegionSubscription: Insertable
+    public class RegionSubscription : Insertable
     {
         public int id { get; set; }
 
@@ -34,10 +35,10 @@ namespace Pirat.Model
 
         public bool active { get; set; }
 
-        public Insertable Insert(DemandContext context)
+        public async Task<Insertable> Insert(DemandContext context)
         {
             context.region_subscription.Add(this);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
             return this;
         }
     }

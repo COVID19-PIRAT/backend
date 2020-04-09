@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -71,22 +72,23 @@ namespace Pirat.DatabaseTests
 
 
         [Fact]
-        public async void InsertOffer_QueryOfferElements_DeleteOffer()
+        public async Task InsertOffer_QueryOfferElements_DeleteOffer()
         {
             //Insert the offer
             var offer = _captainHookGenerator.generateOffer();
-            var token = _resourceUpdateService.insert(offer).Result;
+            var token = await _resourceUpdateService.insert(offer);
             Assert.True(token.Length == 30);
 
             //Query the link
-            var entity = _resourceDemandService.queryLink(token).Result;
+            var entity = await _resourceDemandService.queryLink(token);
             Assert.Equal(offer.provider.name, entity.provider.name);
 
             //Now query the elements. If it is not empty we received the element back
 
             //Get device
             var queryDevice = _captainHookGenerator.GenerateDevice();
-            var resultDevices = _resourceDemandService.QueryOffers(queryDevice).Result;
+            var resultDevices = await _resourceDemandService.QueryOffers(queryDevice)
+                .ToListAsync();
             Assert.NotNull(resultDevices);
             Assert.NotEmpty(resultDevices);
             var deviceFromQuery = resultDevices.First().resource;
@@ -106,7 +108,8 @@ namespace Pirat.DatabaseTests
 
             //Get consumable
             var queryConsumable = _captainHookGenerator.GenerateConsumable();
-            var resultConsumables = _resourceDemandService.QueryOffers(queryConsumable).Result;
+            var resultConsumables = await _resourceDemandService.QueryOffers(queryConsumable)
+                .ToListAsync();
             Assert.NotNull(resultConsumables);
             Assert.NotEmpty(resultDevices);
             var consumableFromQuery = resultConsumables.First().resource;
@@ -117,7 +120,8 @@ namespace Pirat.DatabaseTests
 
             //Get personal
             var manpowerQuery = _captainHookGenerator.GenerateManpower();
-            var resultPersonal = _resourceDemandService.QueryOffers(manpowerQuery).Result;
+            var resultPersonal = await _resourceDemandService.QueryOffers(manpowerQuery)
+                .ToListAsync();
             Assert.NotNull(resultPersonal);
             Assert.NotEmpty(resultPersonal);
             var personal = resultPersonal.First();
@@ -129,18 +133,19 @@ namespace Pirat.DatabaseTests
             Assert.Null(exception);
 
             //Offer should be not available anymore
-            Assert.Throws<DataNotFoundException>(() => _resourceDemandService.queryLink(token).Result);
+            await Assert.ThrowsAsync<DataNotFoundException>(async () => await _resourceDemandService.queryLink(token));
         }
 
         [Fact]
-        public async void InsertPrivateOffer_QueryNoProvider()
+        public async Task InsertPrivateOffer_QueryNoProvider()
         {
             var offer = _shyPirateGenerator.generateOffer();
-            var token = _resourceUpdateService.insert(offer).Result;
+            var token = await _resourceUpdateService.insert(offer);
 
             //Get device
             var queryDevice = _shyPirateGenerator.GenerateDevice();
-            var resultDevices = _resourceDemandService.QueryOffers(queryDevice).Result;
+            var resultDevices = await _resourceDemandService.QueryOffers(queryDevice)
+                .ToListAsync();
             Assert.NotNull(resultDevices);
             Assert.NotEmpty(resultDevices);
             var deviceFromQuery = resultDevices.First().resource;
@@ -161,15 +166,15 @@ namespace Pirat.DatabaseTests
             Assert.Null(exception);
 
             //Offer should be not available anymore
-            Assert.Throws<DataNotFoundException>(() => _resourceDemandService.queryLink(token).Result);
+            await Assert.ThrowsAsync<DataNotFoundException>(async () => await _resourceDemandService.queryLink(token));
         }
 
 
         [Fact]
-        public void QueryLink_NotExist()
+        public async Task QueryLink_NotExist()
         {
             var token = "oooooWoooooWoooooWoooooWoooooW";
-            Assert.Throws<DataNotFoundException>(() => _resourceDemandService.queryLink(token).Result);
+            await Assert.ThrowsAsync<DataNotFoundException>(async () => await _resourceDemandService.queryLink(token));
         }
 
 

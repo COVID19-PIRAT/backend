@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Pirat.DatabaseContext;
 using Pirat.Model.Entity;
 
 namespace Pirat.Model
 {
-    public class ChangeEntity: Insertable
+    public class ChangeEntity : Insertable
     {
         public int id { get; set; }
         
@@ -18,10 +19,10 @@ namespace Pirat.Model
         
         public DateTime timestamp { get; set; } = DateTime.Now;
 
-        public Insertable Insert(DemandContext context)
+        public async Task<Insertable> Insert(DemandContext context)
         {
             context.change.Add(this);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
             return this;
         }
 

@@ -35,10 +35,11 @@ namespace Pirat.Services.Mail
             _internalArchiveAddress = Environment.GetEnvironmentVariable("PIRAT_INTERNAL_RECEIVER_MAIL");
         }
 
-        public async void sendDemandMailToProvider(ContactInformationDemand demandInformation,
+
+        public async Task sendDemandMailToProvider(ContactInformationDemand demandInformation, 
             string mailAddressReceiver, string receiverMailUserName)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 var subject = "PIRAT: Ihre Ressource wurde angefragt / Your resource was requested";
 
@@ -103,14 +104,14 @@ pirat-tool.com
 mail@pirat-tool.com
 ";
                 content = content.Trim();
-                sendMail(mailAddressReceiver, subject, content);
+                await sendMail(mailAddressReceiver, subject, content);
             });
         }
 
 
-        public async void sendDemandConformationMailToDemander(ContactInformationDemand demandInformation)
+        public async Task sendDemandConformationMailToDemander(ContactInformationDemand demandInformation)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 var subject = "PIRAT: Danke für Ihre Anfrage / Thank you for your request";
 
@@ -150,14 +151,15 @@ pirat-tool.com
 mail@pirat-tool.com
 ";
                 content = content.Trim();
-                sendMail(demandInformation.senderEmail, subject, content);
+                await sendMail(demandInformation.senderEmail, subject, content);
             });
         }
 
-        public async void sendNewOfferConfirmationMail(string token, string receiverMailAddress,
-            string receiverMailUserName)
+        public async Task sendNewOfferConfirmationMail(string token, 
+            string receiverMailAddress, string receiverMailUserName)
         {
-            await Task.Run(() =>
+
+            await Task.Run(async () =>
             {
                 var piratHostServer = Environment.GetEnvironmentVariable("PIRAT_HOST");
 
@@ -202,13 +204,13 @@ pirat-tool.com
 mail@pirat-tool.com
 ";
                 content = content.Trim();
-                sendMail(receiverMailAddress, subject, content);
+                await sendMail(receiverMailAddress, subject, content);
             });
         }
 
-        public async void sendTelephoneCallbackMail(TelephoneCallbackRequest telephoneCallbackRequest)
+        public async Task sendTelephoneCallbackMail(TelephoneCallbackRequest telephoneCallbackRequest)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 var mailInternalReceiverMail = Environment.GetEnvironmentVariable("PIRAT_INTERNAL_RECEIVER_MAIL");
 
@@ -224,14 +226,14 @@ mail@pirat-tool.com
                                  $"Kommentar: {telephoneCallbackRequest.notes}\n\n\n" +
                                  $"Liebe Grüße\nDein Backend-Server";
 
-                sendMail(this._defaultMailSender.mailSenderAddress, subject, content);
+                await sendMail(this._defaultMailSender.mailSenderAddress, subject, content);
             });
         }
 
 
-        public async void sendRegionSubscriptionConformationMail(RegionSubscription regionSubscription)
+        public async Task sendRegionSubscriptionConformationMail(RegionSubscription regionSubscription)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 var subject = "PIRAT: Danke für Ihr Interesse / Thank you for your interest";
 
@@ -268,7 +270,7 @@ pirat-tool.com
 mail@pirat-tool.com
 ";
                 content = content.Trim();
-                sendMail(regionSubscription.email, subject, content);
+                await sendMail(regionSubscription.email, subject, content);
             });
         }
 
@@ -278,7 +280,7 @@ mail@pirat-tool.com
             string offersDE = SummarizeResourcesToFormattedString(resourceList, "de");
             string offersEN = SummarizeResourcesToFormattedString(resourceList, "en");
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 var subject = "PIRAT: Neue Angebote / New Offers";
 
@@ -319,17 +321,17 @@ pirat-tool.com
 mail@pirat-tool.com
 ";
                 content = content.Trim();
-                sendMail(regionSubscription.email, subject, content);
+                await sendMail(regionSubscription.email, subject, content);
             });
         }
 
 
-        private void sendMail(string mailReceiverAddress, string subject, string content)
+        private async Task sendMail(string mailReceiverAddress, string subject, string content)
         {
-            this.sendMail(this._defaultMailSender, mailReceiverAddress, subject, content);
+            await this.sendMail(this._defaultMailSender, mailReceiverAddress, subject, content);
         }
 
-        private void sendMail(MailSender sender, string mailReceiverAddress, string subject, string content)
+        private async Task sendMail(MailSender sender, string mailReceiverAddress, string subject, string content)
         {
             MimeMessage message = new MimeMessage();
 
@@ -344,26 +346,23 @@ mail@pirat-tool.com
 
             message.Subject = subject;
 
-            BodyBuilder arnold = new BodyBuilder {TextBody = content};
+            BodyBuilder arnold = new BodyBuilder { TextBody = content };
             message.Body = arnold.ToMessageBody();
-
-            SmtpClient client = new SmtpClient();
-            client.Connect(sender.mailSenderSmtpHost, sender.mailSenderSmtpPort, sender.mailSenderSmtpUseSsl);
-            client.Authenticate(sender.mailSenderUserName, sender.mailSenderPassword);
 
             try
             {
-                client.Send(message);
-                client.Disconnect(true);
-                client.Dispose();
+                using var client = new SmtpClient(); // Ensures that Dispose is called by the end of scope (even in case of an exception)
+                await client.ConnectAsync(sender.mailSenderSmtpHost, sender.mailSenderSmtpPort, sender.mailSenderSmtpUseSsl);
+                await client.AuthenticateAsync(sender.mailSenderUserName, sender.mailSenderPassword);
+
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
             }
             catch (SmtpCommandException exception)
             {
                 // TODO Analyze which different reasons there could be for an exception
                 // TODO Do something...
             }
-
-            // TODO put disconnect into finally?
         }
 
         //TODO refactor this monstrosity of a method

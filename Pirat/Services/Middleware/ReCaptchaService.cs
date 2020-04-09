@@ -23,10 +23,10 @@ namespace Pirat.Services.Middleware
                 new KeyValuePair<string, string>("secret", this._secret),
                 new KeyValuePair<string, string>("response", response)
             };
-            HttpClient client = new HttpClient();
-            HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Post, url) { Content = new FormUrlEncodedContent(body) };
-            HttpResponseMessage res = await client.SendAsync(req);
-            string content = await res.Content.ReadAsStringAsync();
+            using var client = new HttpClient();
+            using var req = new HttpRequestMessage(HttpMethod.Post, url) { Content = new FormUrlEncodedContent(body) };
+            var res = await client.SendAsync(req);
+            var content = await res.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<ReCaptchaVerification>(content).success;
         }

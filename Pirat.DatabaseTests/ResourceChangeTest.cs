@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Pirat.DatabaseTests
 {
-    public class ResourceChangeTest : IDisposable
+    public class ResourceChangeTest : IDisposable, IAsyncLifetime
     {
         private const string connectionString =
             "Server=localhost;Port=5432;Database=postgres;User ID=postgres;Password=postgres";
@@ -33,9 +33,9 @@ namespace Pirat.DatabaseTests
 
         private readonly ShyPirateGenerator _shyPirateGenerator;
 
-        private readonly Offer _offer;
+        private Offer _offer;
         
-        private readonly string _token;
+        private string _token;
 
         public ResourceChangeTest()
         {
@@ -53,17 +53,17 @@ namespace Pirat.DatabaseTests
             _resourceUpdateService = new ResourceUpdateService(loggerUpdate.Object, DemandContext, addressMaker.Object);
             _captainHookGenerator = new CaptainHookGenerator();
             _shyPirateGenerator = new ShyPirateGenerator();
-            
-            var task = Task.Run(async () =>
-            {
-                Offer offer = _captainHookGenerator.generateOffer();
-                var token = await _resourceUpdateService.insert(offer);
-                offer = await _resourceDemandService.queryLink(token);
-                return (offer, token);
-            });
-            task.Wait();
-            (_offer, _token) = task.Result;
         }
+
+        public async Task InitializeAsync()
+        {
+            var offer = _captainHookGenerator.generateOffer();
+            var token = await _resourceUpdateService.insert(offer);
+            offer = await _resourceDemandService.queryLink(token);
+            (_offer, _token) = (offer, token);
+        }
+
+
 
         /// <summary>
         /// Called after each test
@@ -79,6 +79,9 @@ namespace Pirat.DatabaseTests
             exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE region_subscription CASCADE"));
             Assert.Null(exception);
         }
+
+        public Task DisposeAsync() 
+            => Task.CompletedTask;
 
         /// <summary>
         /// Tests if provider information can be changed in the database
@@ -166,7 +169,8 @@ namespace Pirat.DatabaseTests
                     country = "Deutschland"
                 }
             };
-            var response = await _resourceDemandService.QueryOffers(queryConsumable);
+            var response = await _resourceDemandService.QueryOffers(queryConsumable)
+                .ToListAsync();
 
             //Assert
             Assert.NotNull(response);
@@ -196,7 +200,8 @@ namespace Pirat.DatabaseTests
 
             //Generate the consumable for the query that should still be findable 
             Consumable queryConsumable = _captainHookGenerator.GenerateConsumable();
-            var response = await _resourceDemandService.QueryOffers(queryConsumable);
+            var response = await _resourceDemandService.QueryOffers(queryConsumable)
+                .ToListAsync();
 
             //Assert
             Assert.NotNull(response);
@@ -235,7 +240,8 @@ namespace Pirat.DatabaseTests
                 },
                 category = device.category
             };
-            var response = await _resourceDemandService.QueryOffers(queryDevice);
+            var response = await _resourceDemandService.QueryOffers(queryDevice)
+                .ToListAsync();
 
             //Assert
             Assert.NotNull(response);
@@ -265,7 +271,8 @@ namespace Pirat.DatabaseTests
 
             //The original device should still be findable
             Device queryDevice = _captainHookGenerator.GenerateDevice();
-            var response = await _resourceDemandService.QueryOffers(queryDevice);
+            var response = await _resourceDemandService.QueryOffers(queryDevice)
+                .ToListAsync();
 
             //Assert
             Assert.NotNull(response);
@@ -308,7 +315,8 @@ namespace Pirat.DatabaseTests
                     country = "Deutschland",
                 }
             };
-            var response = await _resourceDemandService.QueryOffers(queryManpower);
+            var response = await _resourceDemandService.QueryOffers(queryManpower)
+                .ToListAsync();
 
             //Assert
             Assert.NotNull(response);
@@ -336,7 +344,8 @@ namespace Pirat.DatabaseTests
 
             //The personal in the original manpower should still be findable
             Manpower queryManpower = _captainHookGenerator.GenerateManpower();
-            var response = await _resourceDemandService.QueryOffers(queryManpower);
+            var response = await _resourceDemandService.QueryOffers(queryManpower)
+                .ToListAsync();
 
             //Assert
             Assert.NotNull(response);
@@ -421,7 +430,7 @@ namespace Pirat.DatabaseTests
         /// This test does not check the impact on the "change" table!
         /// </summary>
         [Fact]
-        public async void Test_IncreaseDeviceOrConsumableAmount_Possible()
+        public async Task Test_IncreaseDeviceOrConsumableAmount_Possible()
         {
             Device device = _offer.devices[0];
             Consumable consumable = _offer.consumables[0];
@@ -528,7 +537,7 @@ namespace Pirat.DatabaseTests
         /// Tests if valid devices, consumables, and personals can be added.
         /// </summary>
         [Fact(Skip = "TODO")]
-        public async void Test_AddResource_Possible()
+        public async Task Test_AddResource_Possible()
         {
             Offer oldOffer = _offer;
             Device newDevice = _captainHookGenerator.GenerateDevice();
@@ -561,7 +570,7 @@ namespace Pirat.DatabaseTests
         /// Tests a little if invalid values are blocked. This is not a comprehensive test of the validation!
         /// </summary>
         [Fact(Skip = "TODO")]
-        public async void Test_AddResource_InvalidValues_Error()
+        public async Task Test_AddResource_InvalidValues_Error()
         {
             Offer oldOffer = _offer;
             Device newDevice = _captainHookGenerator.GenerateDevice();
