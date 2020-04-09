@@ -13,8 +13,9 @@ namespace Pirat.Services.Resource
     {
 
         public Task<string> insert(Offer offer);
-
+        
         public Task delete(string link);
+
 
         /// <summary>
         /// Overwrites the present provider with the given provider.

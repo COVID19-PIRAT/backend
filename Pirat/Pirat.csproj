@@ -28,10 +28,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="5.0.2" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.2.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.2.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.2.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="5.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.3.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.3.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.3.1" />
   </ItemGroup>
 
   <ItemGroup>

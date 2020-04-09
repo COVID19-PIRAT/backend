@@ -63,7 +63,7 @@ namespace Pirat.Controllers
             _mailInputValidatorService = mailInputValidatorService;
             _reCaptchaService = reCaptchaService;
         }
-
+        
         //***********GET REQUESTS
 
         /// <summary>
@@ -388,19 +388,51 @@ namespace Pirat.Controllers
         }
 
 
-        //***********DELETE REQUESTS
-        /// <summary>
-        /// Deletes the Offer that is assigned to the token.
-        /// </summary>
-        /// <param name="token">The token</param>
-        /// <returns>String</returns>
-        /// <response code="200">Empty - Offer deleted</response>
-        /// <response code="404">Offer to token does not exist</response>
-        /// <response code="400">Invalid token</response>
-        /// <response code="500">Invalid data state</response>
-        [HttpDelete("offers/{token}")]
+        //***************PUT REQUESTS
+
+
+        [HttpPut("offers/{token}/provider")]
         [Consumes("application/json")]
         [Produces("application/json")]
+        // There seems to be a bug in the used swagger library. The following line fixes the shown example.
+        [SwaggerRequestExample(typeof(string), typeof(ProviderRequestExample))]
+        [SwaggerRequestExample(typeof(Provider), typeof(ProviderRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(void))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> ChangeProvider(string token, [FromBody] Provider provider)
+        {
+            try
+            {
+                _resourceInputValidatorService.validateForChangeInformation(token, provider);
+                await _resourceUpdateService.ChangeInformation(token, provider);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+
+        [HttpPut("offers/{token}/consumable/{id:int}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        // There seems to be a bug in the used swagger library. The following line fixes the shown example.
+        [SwaggerRequestExample(typeof(string), typeof(ConsumableRequestExample))]
+        [SwaggerRequestExample(typeof(Consumable), typeof(ConsumableRequestExample))]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
@@ -409,12 +441,157 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> Delete(string token)
+        public async Task<IActionResult> ChangeResource(string token, int id, [FromBody] Consumable consumable)
         {
             try
             {
-                _resourceInputValidatorService.validateToken(token);
-                await _resourceUpdateService.delete(token);
+                consumable.id = id;
+                _resourceInputValidatorService.validateForChangeInformation(token, consumable);
+                int changedRows = await _resourceUpdateService.ChangeInformation(token, consumable);
+                return Ok(changedRows);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+        [HttpPut("offers/{token}/device/{id:int}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        // There seems to be a bug in the used swagger library. The following line fixes the shown example.
+        [SwaggerRequestExample(typeof(string), typeof(DeviceRequestExample))]
+        [SwaggerRequestExample(typeof(Device), typeof(DeviceRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> ChangeResource(string token, int id, [FromBody] Device device)
+        {
+            try
+            {
+                device.id = id;
+                _resourceInputValidatorService.validateForChangeInformation(token, device);
+                int changedRows = await _resourceUpdateService.ChangeInformation(token, device);
+                return Ok(changedRows);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+        [HttpPut("offers/{token}/personal/{id:int}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        // There seems to be a bug in the used swagger library. The following line fixes the shown example.
+        [SwaggerRequestExample(typeof(string), typeof(PersonalRequestExample))]
+        [SwaggerRequestExample(typeof(Personal), typeof(PersonalRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> ChangeResource(string token, int id, [FromBody] Personal personal)
+        {
+            try
+            {
+                personal.id = id;
+                _resourceInputValidatorService.validateForChangeInformation(token, personal);
+                int changedRows = await _resourceUpdateService.ChangeInformation(token, personal);
+                return Ok(changedRows);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+        [HttpPut("offers/{token}/consumable/{id:int}/amount")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        // There seems to be a bug in the used swagger library. The following line fixes the shown example.
+        [SwaggerRequestExample(typeof(string), typeof(AmountChangeRequestExample))]
+        [SwaggerRequestExample(typeof(AmountChange), typeof(AmountChangeRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> ChangeAmountConsumable(string token, int id, [FromBody] AmountChange amountChange)
+        {
+            try
+            {
+                await _resourceUpdateService.ChangeConsumableAmount(token, id, amountChange.amount, amountChange.reason);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+        [HttpPut("offers/{token}/device/{id:int}/amount")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        // There seems to be a bug in the used swagger library. The following line fixes the shown example.
+        [SwaggerRequestExample(typeof(string), typeof(AmountChangeRequestExample))]
+        [SwaggerRequestExample(typeof(AmountChange), typeof(AmountChangeRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> ChangeAmountDevice(string token, int id, [FromBody] AmountChange amountChange)
+        {
+            try
+            {
+                await _resourceUpdateService.ChangeDeviceAmount(token, id, amountChange.amount, amountChange.reason);
                 return Ok();
             }
             catch (ArgumentException e)
