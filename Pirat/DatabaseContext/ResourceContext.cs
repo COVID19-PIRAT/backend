@@ -29,9 +29,9 @@ namespace Pirat.DatabaseContext
 
         public DbSet<DemandEntity> demand { get; set; }
 
-        public DbSet<DemandConsumableEntity> demand_consumable { get; set; }
+        public DbSet<ConsumableDemandEntity> demand_consumable { get; set; }
 
-        public DbSet<DemandDeviceEntity> demand_device { get; set; }
+        public DbSet<DeviceDemandEntity> demand_device { get; set; }
 
         public ResourceContext(DbContextOptions<ResourceContext> options) : base(options)
         {
