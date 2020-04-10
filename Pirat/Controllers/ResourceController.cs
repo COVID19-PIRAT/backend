@@ -226,7 +226,7 @@ namespace Pirat.Controllers
                 _mailInputValidatorService.validateMail(offer.provider.mail);
                 _resourceInputValidatorService.validateForDatabaseInsertion(offer);
                 var token = await _resourceUpdateService.insert(offer);
-                _mailService.sendNewOfferConfirmationMail(token, offer.provider.mail, offer.provider.name);
+                await _mailService.sendNewOfferConfirmationMail(token, offer.provider.mail, offer.provider.name);
                 return Ok(token);
             }
             catch (UnknownAdressException e)
@@ -278,9 +278,9 @@ namespace Pirat.Controllers
 
                 var mailAddressReceiver = offer.mail;
                 var mailUserNameReceiver = offer.name;
-                _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
+                await _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
                     mailUserNameReceiver);
-                _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
+                await _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -327,9 +327,9 @@ namespace Pirat.Controllers
 
                 var mailAddressReceiver = offer.mail;
                 var mailUserNameReceiver = offer.name;
-                _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
+                await _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
                     mailUserNameReceiver);
-                _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
+                await _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -376,9 +376,9 @@ namespace Pirat.Controllers
 
                 var mailAddressReceiver = offer.mail;
                 var mailUserNameReceiver = offer.name;
-                _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
+                await _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
                     mailUserNameReceiver);
-                _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
+                await _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
                 return Ok();
             }
             catch (ArgumentException e)
