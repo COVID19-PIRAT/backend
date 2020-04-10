@@ -78,6 +78,21 @@ namespace Pirat.DatabaseTests
 
             exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE region_subscription CASCADE"));
             Assert.Null(exception);
+
+            exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE change CASCADE"));
+            Assert.Null(exception);
+        }
+
+        /// <summary>
+        /// Call this method to verify the change table has a certain amount of entries and verify that an entry has always a diff amount greater than zero.
+        /// </summary>
+        /// <param name="numberOfRows">The amount of entries the table should have</param>
+        public void VerifyChangeTable(int numberOfRows)
+        {
+            var changes = DemandContext.change.Select(ch => ch).ToList();
+            Assert.NotNull(changes);
+            Assert.Equal(numberOfRows, changes.Count);
+            Assert.All(changes, change => Assert.True(0 < change.diff_amount));
         }
 
         public Task DisposeAsync() 
@@ -460,6 +475,9 @@ namespace Pirat.DatabaseTests
                 "This is an unnecessary reason.");
             changedConsumable = (await _resourceDemandService.QueryLinkAsync(_token)).consumables[0];
             Assert.Equal(newAmount, changedConsumable.amount);
+
+            // Verify change table
+            VerifyChangeTable(4);
         }
 
         /// <summary>
@@ -483,6 +501,9 @@ namespace Pirat.DatabaseTests
             await _resourceUpdateService.ChangeConsumableAmountAsync(_token, consumable.id, newAmount, "Eaten by a shark");
             Consumable changedConsumable = (await _resourceDemandService.QueryLinkAsync(_token)).consumables[0];
             Assert.Equal(newAmount, changedConsumable.amount);
+
+            // Verify change table
+            VerifyChangeTable(2);
         }
 
         /// <summary>
@@ -507,6 +528,9 @@ namespace Pirat.DatabaseTests
                 .ChangeConsumableAmountAsync(_token, consumable.id, newAmount));
             Assert.Equal(consumable.amount,
                 (await _resourceDemandService.QueryLinkAsync(_token)).consumables[0].amount);
+
+            // Verify change table
+            VerifyChangeTable(0);
         }
 
         /// <summary>
@@ -531,13 +555,15 @@ namespace Pirat.DatabaseTests
                 .ChangeConsumableAmountAsync(_token, consumable.id, newAmount, "I forgot the reason"));
             Assert.Equal(consumable.amount,
                 (await _resourceDemandService.QueryLinkAsync(_token)).consumables[0].amount);
+            // Verify change table
+            VerifyChangeTable(0);
         }
 
         /// <summary>
         /// Tests if valid devices, consumables, and personals can be added.
         /// </summary>
-        [Fact(Skip = "TODO")]
-        public async Task Test_AddResource_Possible()
+        [Fact]
+        public async void Test_AddResource_Possible()
         {
             Offer oldOffer = _offer;
             Device newDevice = _captainHookGenerator.GenerateDevice();
@@ -564,36 +590,6 @@ namespace Pirat.DatabaseTests
             newOffer = await _resourceDemandService.QueryLinkAsync(_token);
             Assert.Equal(oldOffer.personals.Count + 1, newOffer.personals.Count);
             Assert.Equal(newPersonal, newOffer.personals.Find(x => x.id == newPersonal.id));
-        }
-
-        /// <summary>
-        /// Tests a little if invalid values are blocked. This is not a comprehensive test of the validation!
-        /// </summary>
-        [Fact(Skip = "TODO")]
-        public async Task Test_AddResource_InvalidValues_Error()
-        {
-            Offer oldOffer = _offer;
-            Device newDevice = _captainHookGenerator.GenerateDevice();
-            newDevice.name = ""; // Invalid!
-            newDevice.annotation = "Brand new";
-            Consumable newConsumable = _captainHookGenerator.GenerateConsumable();
-            newConsumable.amount = 0; // Invalid!
-            newConsumable.category = "PIPETTENSPITZEN";
-            Personal newPersonal = _captainHookGenerator.GeneratePersonal();
-            newPersonal.address.postalcode = "22459";
-            newPersonal.qualification = null; // Invalid!
-            
-            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService.AddResourceAsync(_token, newDevice));
-            Offer newOffer = await _resourceDemandService.QueryLinkAsync(_token);
-            Assert.Equal(oldOffer.devices.Count, newOffer.devices.Count);
-            
-            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService.AddResourceAsync(_token, newConsumable));
-            newOffer = await _resourceDemandService.QueryLinkAsync(_token);
-            Assert.Equal(oldOffer.consumables.Count, newOffer.consumables.Count);
-            
-            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService.AddResourceAsync(_token, newPersonal));
-            newOffer = await _resourceDemandService.QueryLinkAsync(_token);
-            Assert.Equal(oldOffer.personals.Count, newOffer.personals.Count);
         }
     }
 }

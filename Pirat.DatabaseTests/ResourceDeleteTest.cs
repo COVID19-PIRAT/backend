@@ -96,6 +96,21 @@ namespace Pirat.DatabaseTests
 
             exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE region_subscription CASCADE"));
             Assert.Null(exception);
+
+            exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE change CASCADE"));
+            Assert.Null(exception);
+        }
+
+        /// <summary>
+        /// Call this method to verify the change table has a certain amount of entries and verify that an entry has always a diff amount greater than zero.
+        /// </summary>
+        /// <param name="numberOfRows">The amount of entries the table should have</param>
+        public void VerifyChangeTable(int numberOfRows)
+        {
+            var changes = DemandContext.change.Select(ch => ch).ToList();
+            Assert.NotNull(changes);
+            Assert.True(changes.Count == numberOfRows);
+            Assert.All(changes, change => Assert.True(0 < change.diff_amount));
         }
 
         /// <summary>
@@ -128,6 +143,9 @@ namespace Pirat.DatabaseTests
             foundOfferAb = await _resourceDemandService.QueryLinkAsync(_tokenAnneBonny);
             Assert.NotNull(foundOfferAb);
             Assert.NotEmpty(foundOfferAb.consumables);
+
+            // Verify change table
+            VerifyChangeTable(1);
         }
 
         /// <summary>
@@ -160,6 +178,9 @@ namespace Pirat.DatabaseTests
             foundOfferAb = await _resourceDemandService.QueryLinkAsync(_tokenAnneBonny);
             Assert.NotNull(foundOfferAb);
             Assert.NotEmpty(foundOfferAb.devices);
+
+            // Verify change table
+            VerifyChangeTable(1);
         }
 
         /// <summary>
@@ -192,6 +213,9 @@ namespace Pirat.DatabaseTests
             foundOfferAb = await _resourceDemandService.QueryLinkAsync(_tokenAnneBonny);
             Assert.NotNull(foundOfferAb);
             Assert.NotEmpty(foundOfferAb.personals);
+
+            // Verify change table
+            VerifyChangeTable(1);
         }
 
         /// <summary>
