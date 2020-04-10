@@ -421,8 +421,8 @@ namespace Pirat.Services.Resource
                 throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
             }
 
-            ConsumableEntity consumableEntity = (ConsumableEntity) new ConsumableEntity().Find(_context, consumableId);
-            AddressEntity addressEntity = (AddressEntity)new AddressEntity().Find(_context, consumableEntity.address_id);
+            ConsumableEntity consumableEntity = (ConsumableEntity) await new ConsumableEntity().Find(_context, consumableId);
+            AddressEntity addressEntity = (AddressEntity) await new AddressEntity().Find(_context, consumableEntity.address_id);
 
 
             if (consumableEntity is null)
@@ -435,12 +435,12 @@ namespace Pirat.Services.Resource
             }
 
             consumableEntity.is_deleted = true;
-            consumableEntity.Update(_context);
+            await consumableEntity.Update(_context);
 
             addressEntity.is_deleted = true;
-            addressEntity.Update(_context);
+            await addressEntity.Update(_context);
 
-            new ChangeEntity()
+            await new ChangeEntity()
             {
                 change_type = ChangeEntity.ChangeType.DeleteResource,
                 element_id = consumableEntity.id,
@@ -457,8 +457,8 @@ namespace Pirat.Services.Resource
                 throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
             }
 
-            DeviceEntity deviceEntity = (DeviceEntity)new DeviceEntity().Find(_context, deviceId);
-            AddressEntity addressEntity = (AddressEntity)new AddressEntity().Find(_context, deviceEntity.address_id);
+            DeviceEntity deviceEntity = (DeviceEntity) await new DeviceEntity().Find(_context, deviceId);
+            AddressEntity addressEntity = (AddressEntity) await new AddressEntity().Find(_context, deviceEntity.address_id);
 
             if (deviceEntity is null)
             {
@@ -470,12 +470,12 @@ namespace Pirat.Services.Resource
             }
 
             deviceEntity.is_deleted = true;
-            deviceEntity.Update(_context);
+            await deviceEntity.Update(_context);
 
             addressEntity.is_deleted = true;
-            addressEntity.Update(_context);
+            await addressEntity.Update(_context);
 
-            new ChangeEntity()
+            await new ChangeEntity()
             {
                 change_type = ChangeEntity.ChangeType.DeleteResource,
                 element_id = deviceEntity.id,
@@ -492,8 +492,8 @@ namespace Pirat.Services.Resource
                 throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
             }
 
-            PersonalEntity personalEntity = (PersonalEntity)new PersonalEntity().Find(_context, personalId);
-            AddressEntity addressEntity = (AddressEntity) new AddressEntity().Find(_context, personalEntity.address_id);
+            PersonalEntity personalEntity = (PersonalEntity)await new PersonalEntity().Find(_context, personalId);
+            AddressEntity addressEntity = (AddressEntity)await new AddressEntity().Find(_context, personalEntity.address_id);
 
             if (personalEntity is null)
             {
@@ -506,12 +506,12 @@ namespace Pirat.Services.Resource
             }
 
             personalEntity.is_deleted = true;
-            personalEntity.Update(_context);
+            await personalEntity.Update(_context);
 
             addressEntity.is_deleted = true;
-            addressEntity.Update(_context);
+            await addressEntity.Update(_context);
 
-            new ChangeEntity()
+            await new ChangeEntity()
             {
                 change_type = ChangeEntity.ChangeType.DeleteResource,
                 element_id = personalEntity.id,
