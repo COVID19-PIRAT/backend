@@ -674,7 +674,117 @@ namespace Pirat.Controllers
             {
                 return NotFound(e.Message);
             }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
         }
+
+        [HttpPost("offers/{token}/consumable")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [SwaggerRequestExample(typeof(string), typeof(ConsumableRequestExample))]
+        [SwaggerRequestExample(typeof(Consumable), typeof(ConsumableRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> AddResource(string token, [FromBody] Consumable consumable)
+        {
+            try
+            {
+                _resourceInputValidatorService.validateForDatabaseInsertion(consumable);
+                await _resourceUpdateService.AddResource(token, consumable);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+        [HttpPost("offers/{token}/device")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [SwaggerRequestExample(typeof(string), typeof(DeviceRequestExample))]
+        [SwaggerRequestExample(typeof(Device), typeof(DeviceRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> AddResource(string token, [FromBody] Device device)
+        {
+            try
+            {
+                _resourceInputValidatorService.validateForDatabaseInsertion(device);
+                await _resourceUpdateService.AddResource(token, device);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+        [HttpPost("offers/{token}/manpower")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [SwaggerRequestExample(typeof(string), typeof(PersonalRequestExample))]
+        [SwaggerRequestExample(typeof(Personal), typeof(PersonalRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> AddResource(string token, [FromBody] Personal personal)
+        {
+            try
+            {
+                _resourceInputValidatorService.validateForDatabaseInsertion(personal);
+                await _resourceUpdateService.AddResource(token, personal);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
 
     }
 }

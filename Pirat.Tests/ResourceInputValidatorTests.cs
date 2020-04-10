@@ -22,6 +22,9 @@ namespace Pirat.Tests
             _dummyToken = "VDVZymVwZjedg3PBsStV6KhZ6FAFSP";
         }
 
+        /// <summary>
+        /// Tests if offer with invalid values gets blocked when the offer is requested to get inserted.
+        /// </summary>
         [Fact]
         public void InsertOffer_BadInputs()
         {
@@ -45,6 +48,30 @@ namespace Pirat.Tests
             offer.personals.First().area = "";
             Assert.Throws<ArgumentException>(() => _service.validateForDatabaseInsertion(offer));
         }
+
+        /// <summary>
+        /// Tests if invalid values for individual resources are blocked when they are requested to get inserted.
+        /// </summary>
+        [Fact]
+        public async void Test_AddResource_InvalidValues_Error()
+        {
+            Device newDevice = _captainHookGenerator.GenerateDevice();
+            newDevice.name = ""; // Invalid!
+            newDevice.annotation = "Brand new";
+            Consumable newConsumable = _captainHookGenerator.GenerateConsumable();
+            newConsumable.amount = 0; // Invalid!
+            newConsumable.category = "PIPETTENSPITZEN";
+            Personal newPersonal = _captainHookGenerator.GeneratePersonal();
+            newPersonal.address.postalcode = "22459";
+            newPersonal.qualification = null; // Invalid!
+
+            Assert.Throws<ArgumentException>(() => _service.validateForDatabaseInsertion(newDevice));
+
+            Assert.Throws<ArgumentException>(() => _service.validateForDatabaseInsertion(newConsumable));
+
+            Assert.Throws<ArgumentException>(() => _service.validateForDatabaseInsertion(newPersonal));
+        }
+
 
         [Fact]
         public void QueryConsumable_BadInputs()
@@ -178,6 +205,7 @@ namespace Pirat.Tests
             consumable.address.country = "";
             Assert.Throws<ArgumentException>(() => _service.validateForChangeInformation(_dummyToken, consumable));
         }
+
 
         public void Dispose()
         {
