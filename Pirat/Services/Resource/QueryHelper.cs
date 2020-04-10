@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Pirat.Codes;
@@ -8,11 +6,14 @@ using Pirat.DatabaseContext;
 using Pirat.Exceptions;
 using Pirat.Model;
 using Pirat.Model.Api.Resource;
-using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Demand;
 using Pirat.Model.Entity.Resource.Stock;
 
 namespace Pirat.Services.Resource
 {
+    /// <summary>
+    /// Helper class for often used queries on the database
+    /// </summary>
     internal class QueryHelper
     {
         private ResourceContext _context;
@@ -44,6 +45,24 @@ namespace Pirat.Services.Resource
                 throw new InvalidDataStateException(Error.FatalCodes.MORE_THAN_ONE_OFFER_FROM_TOKEN);
             }
             return offers.First();
+        }
+
+        internal async Task<DemandEntity> RetrieveDemandFromTokenAsync(string token)
+        {
+            var query = from o in _context.demand as IQueryable<DemandEntity>
+                where o.token.Equals(token)
+                select o;
+            var demands = await query.Select(o => o).ToListAsync();
+
+            if (!demands.Any())
+            {
+                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_DEMAND);
+            }
+            if (1 < demands.Count)
+            {
+                throw new InvalidDataStateException(Error.FatalCodes.MORE_THAN_ONE_DEMAND_FROM_TOKEN);
+            }
+            return demands.First();
         }
     }
 }

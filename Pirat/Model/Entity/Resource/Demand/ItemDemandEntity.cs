@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Pirat.Model.Entity.Resource.Demand
 {
-    public abstract class DemandItemEntity : ResourceBase
+    public abstract class ItemDemandEntity : ResourceBase
     {
         public int demand_id { get; set; }
 

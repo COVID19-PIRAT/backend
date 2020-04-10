@@ -4,51 +4,52 @@ using Pirat.Model.Api.Resource;
 
 namespace Pirat.Model.Entity.Resource.Demand
 {
-
-    public class DemandDeviceEntity : DemandItemEntity, IFindable, IDeletable, IUpdatable, IInsertable
+    public class ConsumableDemandEntity : ItemDemandEntity, IFindable, IDeletable, IUpdatable, IInsertable
     {
+        public string unit { get; set; }
 
-        public DemandDeviceEntity Build(Device d)
+
+        public ConsumableDemandEntity Build(Consumable c)
         {
-            category = d.category;
-            name = d.name;
-            manufacturer = d.manufacturer;
-            //ordernumber = d.ordernumber;
-            amount = d.amount;
-            annotation = d.annotation;
+            category = c.category;
+            name = c.name;
+            manufacturer = c.manufacturer;
+            //ordernumber = c.ordernumber;
+            amount = c.amount;
+            unit = c.unit;
+            annotation = c.annotation;
             return this;
         }
 
-        public DemandDeviceEntity Build(AddressEntity a)
+        public ConsumableDemandEntity Build(AddressEntity a)
         {
             address_id = a.id;
             return this;
         }
 
+
         public async Task<IFindable> FindAsync(ResourceContext context, int id)
         {
-            return await context.demand_device.FindAsync(id);
+            return await context.demand_consumable.FindAsync(id);
         }
 
         public async Task DeleteAsync(ResourceContext context)
         {
-            context.demand_device.Remove(this);
+            context.demand_consumable.Remove(this);
             await context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(ResourceContext context)
         {
-            context.demand_device.Update(this);
+            context.demand_consumable.Update(this);
             await context.SaveChangesAsync();
         }
 
         public async Task<IInsertable> InsertAsync(ResourceContext context)
         {
-            context.demand_device.Add(this);
+            context.demand_consumable.Add(this);
             await context.SaveChangesAsync();
             return this;
         }
-
     }
-
 }

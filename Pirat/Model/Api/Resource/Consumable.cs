@@ -26,7 +26,7 @@ namespace Pirat.Model.Api.Resource
             return this;
         }
 
-        public Consumable build(DemandConsumableEntity c)
+        public Consumable build(ConsumableDemandEntity c)
         {
             id = c.id;
             category = c.category;

@@ -20,7 +20,7 @@ namespace Pirat.Model.Api.Resource
             return this;
         }
 
-        public Device build(DemandDeviceEntity d)
+        public Device build(DeviceDemandEntity d)
         {
             id = d.id;
             category = d.category;
