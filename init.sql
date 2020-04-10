@@ -153,7 +153,8 @@ create table change
 	element_id integer not null,
 	change_type text not null,
 	timestamp timestamp not null,
-	reason text
+	reason text,
+	diff_amount integer default 0 not null
 );
 
 alter table change owner to postgres;

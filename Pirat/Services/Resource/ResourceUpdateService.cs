@@ -279,6 +279,8 @@ namespace Pirat.Services.Resource
             {
                 return;
             }
+
+            int diffAmount = Math.Abs(newAmount - consumable.amount);
             
             // If amount has increased: no reason required
             if (consumable.amount < newAmount)
@@ -292,6 +294,7 @@ namespace Pirat.Services.Resource
                     change_type = "INCREASE_AMOUNT",
                     element_id = consumable.id,
                     element_type = "consumable",
+                    diff_amount = diffAmount,
                     reason = reason,
                     timestamp = DateTime.Now
                 }.Insert(_context);
@@ -317,6 +320,7 @@ namespace Pirat.Services.Resource
                 change_type = "DECREASE_AMOUNT",
                 element_id = consumable.id,
                 element_type = "consumable",
+                diff_amount = diffAmount,
                 reason = reason,
                 timestamp = DateTime.Now
             }.Insert(_context);
@@ -347,7 +351,9 @@ namespace Pirat.Services.Resource
             {
                 return;
             }
-            
+
+            int diffAmount = Math.Abs(newAmount - device.amount);
+
             // If amount has increased: no reason required
             if (device.amount < newAmount)
             {
@@ -360,6 +366,7 @@ namespace Pirat.Services.Resource
                     change_type = "INCREASE_AMOUNT",
                     element_id = device.id,
                     element_type = "device",
+                    diff_amount = diffAmount,
                     reason = reason,
                     timestamp = DateTime.Now
                 }.Insert(_context);
@@ -385,6 +392,7 @@ namespace Pirat.Services.Resource
                 change_type = "DECREASE_AMOUNT",
                 element_id = device.id,
                 element_type = "device",
+                diff_amount = diffAmount,
                 reason = reason,
                 timestamp = DateTime.Now
             }.Insert(_context);
@@ -436,6 +444,7 @@ namespace Pirat.Services.Resource
                 change_type = ChangeEntity.ChangeType.DeleteResource,
                 element_id = consumableEntity.id,
                 element_type = ChangeEntity.ElementType.Consumable,
+                diff_amount = consumableEntity.amount,
                 reason = reason,
                 timestamp = DateTime.Now
             }.Insert(_context);
@@ -471,6 +480,7 @@ namespace Pirat.Services.Resource
                 change_type = ChangeEntity.ChangeType.DeleteResource,
                 element_id = deviceEntity.id,
                 element_type = ChangeEntity.ElementType.Device,
+                diff_amount = deviceEntity.amount,
                 reason = reason,
                 timestamp = DateTime.Now
             }.Insert(_context);
@@ -507,6 +517,7 @@ namespace Pirat.Services.Resource
                 change_type = ChangeEntity.ChangeType.DeleteResource,
                 element_id = personalEntity.id,
                 element_type = ChangeEntity.ElementType.Personal,
+                diff_amount = 1,
                 reason = reason,
                 timestamp = DateTime.Now
             }.Insert(_context);
