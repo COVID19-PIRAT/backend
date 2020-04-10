@@ -554,7 +554,7 @@ namespace Pirat.DatabaseTests
         /// <summary>
         /// Tests if valid devices, consumables, and personals can be added.
         /// </summary>
-        [Fact(Skip = "TODO")]
+        [Fact]
         public async void Test_AddResource_Possible()
         {
             Offer oldOffer = _offer;
@@ -590,7 +590,7 @@ namespace Pirat.DatabaseTests
         /// <summary>
         /// Tests a little if invalid values are blocked. This is not a comprehensive test of the validation!
         /// </summary>
-        [Fact(Skip = "TODO")]
+        [Fact]
         public async void Test_AddResource_InvalidValues_Error()
         {
             Offer oldOffer = _offer;

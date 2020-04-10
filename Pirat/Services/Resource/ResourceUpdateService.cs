@@ -34,6 +34,75 @@ namespace Pirat.Services.Resource
 
         }
 
+        /// <summary>
+        /// Inserts a consumable entity into the database which gets <c>offerId</c> as foreign key for the offer entity it relates to.
+        /// In addition, an address entity is created based on the address information in <c>consumable</c> and is inserted into the
+        /// database with relation to the new consumable entity.
+        /// </summary>
+        /// <param name="offerId">The unique id of the offer</param>
+        /// <param name="consumable">The consumable from which the entity is created</param>
+        /// <returns></returns>
+        private async Task Insert(int offerId, Consumable consumable)
+        {
+            var consumableEntity = new ConsumableEntity().build(consumable);
+            var addressEntity = new AddressEntity().build(consumable.address);
+
+            _addressMaker.SetCoordinates(addressEntity);
+            addressEntity.Insert(_context);
+
+            consumableEntity.offer_id = offerId;
+            consumableEntity.address_id = addressEntity.id;
+            consumableEntity.Insert(_context);
+
+            consumable.id = consumableEntity.id;
+        }
+
+        /// <summary>
+        /// Inserts a device entity into the database which gets <c>offerId</c> as foreign key for the offer entity it relates to.
+        /// In addition, an address entity is created based on the address information in <c>device</c> and is inserted into the
+        /// database with relation to the new device entity.
+        /// </summary>
+        /// <param name="offerId">The unique id of the offer</param>
+        /// <param name="device">The device from which the entity is created</param>
+        /// <returns></returns>
+        private async Task Insert(int offerId, Device device)
+        {
+            var deviceEntity = new DeviceEntity().build(device);
+            var addressEntity = new AddressEntity().build(device.address);
+
+            _addressMaker.SetCoordinates(addressEntity);
+            addressEntity.Insert(_context);
+
+            deviceEntity.offer_id = offerId;
+            deviceEntity.address_id = addressEntity.id;
+            deviceEntity.Insert(_context);
+
+            device.id = deviceEntity.id;
+        }
+
+        /// <summary>
+        /// Inserts a personal entity into the database which gets <c>offerId</c> as foreign key for the personal entity it relates to.
+        /// In addition, an address entity is created based on the address information in <c>personal</c> and is inserted into the
+        /// database with relation to the new personal entity.
+        /// </summary>
+        /// <param name="offerId">The unique id of the offer</param>
+        /// <param name="personal">The personal from which the entity is created</param>
+        /// <returns></returns>
+        private async Task Insert(int offerId, Personal personal)
+        {
+            var personEntity = new PersonalEntity().build(personal);
+            var addressEntity = new AddressEntity().build(personal.address);
+
+            _addressMaker.SetCoordinates(addressEntity);
+            addressEntity.Insert(_context);
+
+            personEntity.offer_id = offerId;
+            personEntity.address_id = addressEntity.id;
+            personEntity.Insert(_context);
+
+            personal.id = personEntity.id;
+        }
+
 
         public Task<string> insert(Offer offer)
         {
@@ -65,51 +134,21 @@ namespace Pirat.Services.Resource
             {
                 foreach (var c in offer.consumables)
                 {
-                    var consumableEntity = new ConsumableEntity().build(c);
-                    var addressEntity = new AddressEntity().build(c.address);
-
-                    _addressMaker.SetCoordinates(addressEntity);
-                    addressEntity.Insert(_context);
-
-                    consumableEntity.offer_id = offer_id;
-                    consumableEntity.address_id = addressEntity.id;
-                    consumableEntity.Insert(_context);
-
-                    c.id = consumableEntity.id;
+                    Insert(offer_id, c);
                 }
             }
             if (!(offer.personals is null))
             {
                 foreach (var p in offer.personals)
                 {
-                    var personalEntity = new PersonalEntity().build(p);
-                    var addressEntity = new AddressEntity().build(p.address);
-
-                    _addressMaker.SetCoordinates(addressEntity);
-                    addressEntity.Insert(_context);
-
-                    personalEntity.offer_id = offer_id;
-                    personalEntity.address_id = addressEntity.id;
-                    personalEntity.Insert(_context);
-
-                    p.id = personalEntity.id;
+                    Insert(offer_id, p);
                 }
             }
             if (!(offer.devices is null))
             {
                 foreach (var d in offer.devices)
                 {
-                    var deviceEntity = new DeviceEntity().build(d);
-                    var addressEntity = new AddressEntity().build(d.address);
-
-                    _addressMaker.SetCoordinates(addressEntity);
-                    addressEntity.Insert(_context);
-
-                    deviceEntity.offer_id = offer_id;
-                    deviceEntity.address_id = addressEntity.id;
-                    deviceEntity.Insert(_context);
-
-                    d.id = deviceEntity.id;
+                    Insert(offer_id, d);
                 }
             }
 
@@ -398,19 +437,25 @@ namespace Pirat.Services.Resource
             }.Insert(_context);
         }
 
-        public Task AddResource(string token, Consumable consumable)
+        public async Task AddResource(string token, Consumable consumable)
         {
-            throw new NotImplementedException();
+            OfferEntity offerEntity = _queryHelper.retrieveOfferFromToken(token);
+
+            await Insert(offerEntity.id, consumable);
         }
 
-        public Task AddResource(string token, Device device)
+        public async Task AddResource(string token, Device device)
         {
-            throw new NotImplementedException();
+            OfferEntity offerEntity = _queryHelper.retrieveOfferFromToken(token);
+
+            await Insert(offerEntity.id, device);
         }
 
-        public Task AddResource(string token, Personal personal)
+        public async Task AddResource(string token, Personal personal)
         {
-            throw new NotImplementedException();
+            OfferEntity offerEntity = _queryHelper.retrieveOfferFromToken(token);
+
+            await Insert(offerEntity.id, personal);
         }
 
         public async Task MarkConsumableAsDeleted(string token, int consumableId, string reason)
