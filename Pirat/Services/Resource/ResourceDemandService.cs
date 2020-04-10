@@ -34,7 +34,7 @@ namespace Pirat.Services.Resource
             _queryHelper = new QueryHelper(context);
 
         }
-        public async IAsyncEnumerable<OfferResource<Consumable>> QueryOffers(Consumable con)
+        public async IAsyncEnumerable<OfferResource<Consumable>> QueryOffersAsync(Consumable con)
         {
             var consumable = new ConsumableEntity().build(con);
             var maxDistance = con.kilometer;
@@ -104,7 +104,7 @@ namespace Pirat.Services.Resource
             }
         }
 
-        public async IAsyncEnumerable<OfferResource<Device>> QueryOffers(Device dev)
+        public async IAsyncEnumerable<OfferResource<Device>> QueryOffersAsync(Device dev)
         {
             var device = new DeviceEntity().build(dev);
             var maxDistance = dev.kilometer;
@@ -173,7 +173,7 @@ namespace Pirat.Services.Resource
             }
         }
 
-        public async IAsyncEnumerable<OfferResource<Personal>> QueryOffers(Manpower manpower)
+        public async IAsyncEnumerable<OfferResource<Personal>> QueryOffersAsync(Manpower manpower)
         {
             var maxDistance = manpower.kilometer;
             var manpowerAddress = manpower.address;
@@ -251,19 +251,19 @@ namespace Pirat.Services.Resource
             }
         }
 
-        public Task<Findable> Find(Findable findable, int id)
+        public Task<IFindable> FindAsync(IFindable findable, int id)
         {
-            return findable.Find(_context, id);
+            return findable.FindAsync(_context, id);
         }
 
-        public async Task<Offer> queryLink(string token)
+        public async Task<Offer> QueryLinkAsync(string token)
         {
-            var offerEntity = await _queryHelper.retrieveOfferFromToken(token);
+            var offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
             var offerKey = offerEntity.id;
 
             //Build the provider from the offerEntity and the address we retrieve from the address id
 
-            var provider = new Provider().build(offerEntity).build(await _queryHelper.queryAddress(offerEntity.address_id));
+            var provider = new Provider().build(offerEntity).build(await _queryHelper.QueryAddressAsync(offerEntity.address_id));
 
             //Create the offer we will send back and retrieve all associated resources
 
@@ -274,7 +274,7 @@ namespace Pirat.Services.Resource
             foreach (var c in consumableEntities)
             {
                 if (c.is_deleted) continue;
-                offer.consumables.Add(new Consumable().build(c).build(await _queryHelper.queryAddress(c.address_id)));
+                offer.consumables.Add(new Consumable().build(c).build(await _queryHelper.QueryAddressAsync(c.address_id)));
             }
 
             var queD = from d in _context.device as IQueryable<DeviceEntity> where d.offer_id == offerKey select d;
@@ -282,7 +282,7 @@ namespace Pirat.Services.Resource
             foreach (var d in deviceEntities)
             {
                 if(d.is_deleted) continue;
-                offer.devices.Add(new Device().build(d).build(await _queryHelper.queryAddress(d.address_id)));
+                offer.devices.Add(new Device().build(d).build(await _queryHelper.QueryAddressAsync(d.address_id)));
             }
 
             var queP = from p in _context.personal as IQueryable<PersonalEntity> where p.offer_id == offerKey select p;
@@ -290,7 +290,7 @@ namespace Pirat.Services.Resource
             foreach (var p in personalEntities)
             {
                 if(p.is_deleted) continue;
-                offer.personals.Add(new Personal().build(p).build(await _queryHelper.queryAddress(p.address_id)));
+                offer.personals.Add(new Personal().build(p).build(await _queryHelper.QueryAddressAsync(p.address_id)));
             }
 
             return offer;

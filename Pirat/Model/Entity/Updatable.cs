@@ -6,8 +6,8 @@ using Pirat.DatabaseContext;
 
 namespace Pirat.Model.Entity
 {
-    public interface Updatable
+    public interface IUpdatable
     {
-        Task Update(DemandContext context);
+        Task UpdateAsync(DemandContext context);
     }
 }

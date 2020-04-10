@@ -6,8 +6,8 @@ using Pirat.DatabaseContext;
 
 namespace Pirat.Model.Entity
 {
-    public interface Deletable
+    public interface IDeletable
     {
-        Task Delete(DemandContext context);
+        Task DeleteAsync(DemandContext context);
     }
 }

@@ -6,7 +6,7 @@ using Pirat.DatabaseContext;
 
 namespace Pirat.Model.Entity
 {
-    public class DeviceEntity : ItemEntity, Findable, Deletable, Updatable, Insertable
+    public class DeviceEntity : ItemEntity, IFindable, IDeletable, IUpdatable, IInsertable
     {
         public DeviceEntity build(Device d)
         {
@@ -25,24 +25,24 @@ namespace Pirat.Model.Entity
             return this;
         }
 
-        public async Task<Findable> Find(DemandContext context, int id)
+        public async Task<IFindable> FindAsync(DemandContext context, int id)
         {
             return await context.device.FindAsync(id);
         }
 
-        public async Task Delete(DemandContext context)
+        public async Task DeleteAsync(DemandContext context)
         {
             context.device.Remove(this);
             await context.SaveChangesAsync();
         }
 
-        public async Task Update(DemandContext context)
+        public async Task UpdateAsync(DemandContext context)
         {
             context.device.Update(this);
             await context.SaveChangesAsync();
         }
 
-        public async Task<Insertable> Insert(DemandContext context)
+        public async Task<IInsertable> InsertAsync(DemandContext context)
         {
             context.device.Add(this);
             await context.SaveChangesAsync();

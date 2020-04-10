@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Pirat.Model
 {
 
-	public class AddressEntity : Address, Findable, Deletable, Updatable, Insertable
+	public class AddressEntity : Address, IFindable, IDeletable, IUpdatable, IInsertable
 	{
 
 		public int id { get; set; }
@@ -72,25 +72,25 @@ namespace Pirat.Model
 			return builder.ToString();
 		}
 
-        public async Task<Insertable> Insert(DemandContext context)
+        public async Task<IInsertable> InsertAsync(DemandContext context)
         {
             context.address.Add(this);
 			await context.SaveChangesAsync();
             return this;
         }
 
-        public async Task<Findable> Find(DemandContext context, int id)
+        public async Task<IFindable> FindAsync(DemandContext context, int id)
         {
             return await context.address.FindAsync(id);
         }
 
-        public async Task Update(DemandContext context)
+        public async Task UpdateAsync(DemandContext context)
         {
             context.address.Update(this);
             await context.SaveChangesAsync();
         }
 
-        public async Task Delete(DemandContext context)
+        public async Task DeleteAsync(DemandContext context)
         {
             context.address.Remove(this);
             await context.SaveChangesAsync();

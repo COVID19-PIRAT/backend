@@ -40,7 +40,7 @@ namespace Pirat.Services.Schedule
                         {
                             ISubscriptionService subscriptionService =
                                 scope.ServiceProvider.GetRequiredService<ISubscriptionService>();
-                            await subscriptionService.SendEmails();
+                            await subscriptionService.SendEmailsAsync();
                         }
                     }
 

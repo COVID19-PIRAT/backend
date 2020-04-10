@@ -45,7 +45,7 @@ namespace Pirat.Extensions
             _captchaService = service;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             var path = context.Request.Path.ToString();
             var method = context.Request.Method;
@@ -59,7 +59,7 @@ namespace Pirat.Extensions
                     await context.Response.WriteAsync("Missing ReCaptcha");
                     return;
                 }
-                if (await _captchaService.ValidateResponse(headerValue))
+                if (await _captchaService.ValidateResponseAsync(headerValue))
                 {
                     await _next(context);
                     return;

@@ -44,8 +44,8 @@ namespace Pirat.Controllers
             try
             {
                 _mailInputValidatorService.validateMail(regionsubscription.email);
-                this._subscriptionService.SubscribeRegion(regionsubscription);
-                this._mailService.sendRegionSubscriptionConformationMail(regionsubscription);
+                this._subscriptionService.SubscribeRegionAsync(regionsubscription);
+                this._mailService.SendRegionSubscriptionConformationMailAsync(regionsubscription);
             }
             catch (ArgumentException e)
             {

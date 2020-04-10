@@ -9,7 +9,7 @@ using Pirat.Model.Entity;
 
 namespace Pirat.Model
 {
-    public class RegionSubscription : Insertable
+    public class RegionSubscription : IInsertable
     {
         public int id { get; set; }
 
@@ -35,7 +35,7 @@ namespace Pirat.Model
 
         public bool active { get; set; }
 
-        public async Task<Insertable> Insert(DemandContext context)
+        public async Task<IInsertable> InsertAsync(DemandContext context)
         {
             context.region_subscription.Add(this);
             await context.SaveChangesAsync();

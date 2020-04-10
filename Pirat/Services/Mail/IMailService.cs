@@ -5,16 +5,16 @@ namespace Pirat.Services.Mail
 {
     public interface IMailService
     {
-        public Task sendNewOfferConfirmationMail(string confirmationLink, string receiverMailAddress, string receiverMailUserName);
+        public Task SendNewOfferConfirmationMailAsync(string confirmationLink, string receiverMailAddress, string receiverMailUserName);
 
-        public Task sendTelephoneCallbackMail(TelephoneCallbackRequest telephoneCallbackRequest);
+        public Task SendTelephoneCallbackMailAsync(TelephoneCallbackRequest telephoneCallbackRequest);
 
-        public Task sendDemandMailToProvider(ContactInformationDemand demandInformation, string mailAddressReceiver, string receiverMailUserName);
+        public Task SendDemandMailToProviderAsync(ContactInformationDemand demandInformation, string mailAddressReceiver, string receiverMailUserName);
 
-        public Task sendDemandConformationMailToDemander(ContactInformationDemand demandInformation);
+        public Task SendDemandConformationMailToDemanderAsync(ContactInformationDemand demandInformation);
 
-        public Task sendRegionSubscriptionConformationMail(RegionSubscription regionSubscription);
+        public Task SendRegionSubscriptionConformationMailAsync(RegionSubscription regionSubscription);
 
-        public Task sendNotificationAboutNewOffers(RegionSubscription regionSubscription, SubscriptionService.ResourceList resourceList);
+        public Task SendNotificationAboutNewOffersAsync(RegionSubscription regionSubscription, SubscriptionService.ResourceList resourceList);
     }
 }

@@ -15,7 +15,7 @@ namespace Pirat.Services.Middleware
             _secret = secret;
         }
 
-        public async Task<bool> ValidateResponse(string response)
+        public async Task<bool> ValidateResponseAsync(string response)
         {
             const string url = "https://www.google.com/recaptcha/api/siteverify";
             var body = new List<KeyValuePair<string, string>>

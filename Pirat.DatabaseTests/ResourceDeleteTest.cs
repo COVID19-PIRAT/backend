@@ -65,8 +65,8 @@ namespace Pirat.DatabaseTests
             var task = Task.Run(async () =>
             {
                 Offer offer = _captainHookGenerator.generateOffer();
-                var token = await _resourceUpdateService.insert(offer);
-                offer = await _resourceDemandService.queryLink(token);
+                var token = await _resourceUpdateService.InsertAsync(offer);
+                offer = await _resourceDemandService.QueryLinkAsync(token);
                 return (offer, token);
             });
             task.Wait();
@@ -75,8 +75,8 @@ namespace Pirat.DatabaseTests
             task = Task.Run(async () =>
             {
                 Offer offer = _anneBonnyGenerator.generateOffer();
-                var token = await _resourceUpdateService.insert(offer);
-                offer = await _resourceDemandService.queryLink(token);
+                var token = await _resourceUpdateService.InsertAsync(offer);
+                offer = await _resourceDemandService.QueryLinkAsync(token);
                 return (offer, token);
             });
             task.Wait();
@@ -107,25 +107,25 @@ namespace Pirat.DatabaseTests
 
             //Consumables should be findable
 
-            var foundOfferCh = await _resourceDemandService.queryLink(_tokenCaptainHook);
+            var foundOfferCh = await _resourceDemandService.QueryLinkAsync(_tokenCaptainHook);
             Assert.NotNull(foundOfferCh);
             Assert.NotEmpty(foundOfferCh.consumables);
 
-            var foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
+            var foundOfferAb = await _resourceDemandService.QueryLinkAsync(_tokenAnneBonny);
             Assert.NotNull(foundOfferAb);
             Assert.NotEmpty(foundOfferAb.consumables);
 
 
             //Mark as deleted
-            await _resourceUpdateService.MarkConsumableAsDeleted(_tokenCaptainHook, consumableCh.id, "A reason");
+            await _resourceUpdateService.MarkConsumableAsDeletedAsync(_tokenCaptainHook, consumableCh.id, "A reason");
 
             //Finding consumable of captain hook not possible anymore
-            foundOfferCh = await _resourceDemandService.queryLink(_tokenCaptainHook);
+            foundOfferCh = await _resourceDemandService.QueryLinkAsync(_tokenCaptainHook);
             Assert.NotNull(foundOfferCh);
             Assert.Empty(foundOfferCh.consumables);
 
             //Finding consumable of anne bonny still possible
-            foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
+            foundOfferAb = await _resourceDemandService.QueryLinkAsync(_tokenAnneBonny);
             Assert.NotNull(foundOfferAb);
             Assert.NotEmpty(foundOfferAb.consumables);
         }
@@ -139,25 +139,25 @@ namespace Pirat.DatabaseTests
 
             //Devices should be findable
 
-            var foundOfferCh = await _resourceDemandService.queryLink(_tokenCaptainHook);
+            var foundOfferCh = await _resourceDemandService.QueryLinkAsync(_tokenCaptainHook);
             Assert.NotNull(foundOfferCh);
             Assert.NotEmpty(foundOfferCh.devices);
 
-            var foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
+            var foundOfferAb = await _resourceDemandService.QueryLinkAsync(_tokenAnneBonny);
             Assert.NotNull(foundOfferAb);
             Assert.NotEmpty(foundOfferAb.devices);
 
 
             //Mark as deleted
-            await _resourceUpdateService.MarkDeviceAsDeleted(_tokenCaptainHook, deviceCh.id, "A reason");
+            await _resourceUpdateService.MarkDeviceAsDeletedAsync(_tokenCaptainHook, deviceCh.id, "A reason");
 
             //Finding the device of captain hook not possible anymore
-            foundOfferCh = await _resourceDemandService.queryLink(_tokenCaptainHook);
+            foundOfferCh = await _resourceDemandService.QueryLinkAsync(_tokenCaptainHook);
             Assert.NotNull(foundOfferCh);
             Assert.Empty(foundOfferCh.devices);
 
             //Finding device of anne bonny still possible
-            foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
+            foundOfferAb = await _resourceDemandService.QueryLinkAsync(_tokenAnneBonny);
             Assert.NotNull(foundOfferAb);
             Assert.NotEmpty(foundOfferAb.devices);
         }
@@ -171,25 +171,25 @@ namespace Pirat.DatabaseTests
 
             //Personal should be findable
 
-            var foundOfferCh = await _resourceDemandService.queryLink(_tokenCaptainHook);
+            var foundOfferCh = await _resourceDemandService.QueryLinkAsync(_tokenCaptainHook);
             Assert.NotNull(foundOfferCh);
             Assert.NotEmpty(foundOfferCh.personals);
 
-            var foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
+            var foundOfferAb = await _resourceDemandService.QueryLinkAsync(_tokenAnneBonny);
             Assert.NotNull(foundOfferAb);
             Assert.NotEmpty(foundOfferAb.personals);
 
 
             //Mark as deleted
-            await _resourceUpdateService.MarkPersonalAsDeleted(_tokenCaptainHook, personalCh.id, "A reason");
+            await _resourceUpdateService.MarkPersonalAsDeletedAsync(_tokenCaptainHook, personalCh.id, "A reason");
 
             //Finding personal of captain hook not possible anymore
-            foundOfferCh = await _resourceDemandService.queryLink(_tokenCaptainHook);
+            foundOfferCh = await _resourceDemandService.QueryLinkAsync(_tokenCaptainHook);
             Assert.NotNull(foundOfferCh);
             Assert.Empty(foundOfferCh.personals);
 
             //Finding personal of anne bonny still possible
-            foundOfferAb = await _resourceDemandService.queryLink(_tokenAnneBonny);
+            foundOfferAb = await _resourceDemandService.QueryLinkAsync(_tokenAnneBonny);
             Assert.NotNull(foundOfferAb);
             Assert.NotEmpty(foundOfferAb.personals);
         }
@@ -202,21 +202,21 @@ namespace Pirat.DatabaseTests
             var device = _offerCaptainHook.devices[0];
 
             //Mark as deleted
-            await _resourceUpdateService.MarkDeviceAsDeleted(_tokenCaptainHook, device.id, "A reason");
+            await _resourceUpdateService.MarkDeviceAsDeletedAsync(_tokenCaptainHook, device.id, "A reason");
 
             //Device should not be retrieved by querying the link
-            var foundOffer = await _resourceDemandService.queryLink(_tokenCaptainHook);
+            var foundOffer = await _resourceDemandService.QueryLinkAsync(_tokenCaptainHook);
             Assert.NotNull(foundOffer);
             Assert.Empty(foundOffer.devices);
 
             //Device should not be retrieved by querying with a device object
             var deviceForQuery = _captainHookGenerator.GenerateDevice();
-            var foundDevices = await _resourceDemandService.QueryOffers(deviceForQuery).ToListAsync();
+            var foundDevices = await _resourceDemandService.QueryOffersAsync(deviceForQuery).ToListAsync();
             Assert.NotNull(foundDevices);
             Assert.Empty(foundDevices);
 
             //Find method should return the device nevertheless
-            var foundDevice = await _resourceDemandService.Find(new DeviceEntity(), device.id);
+            var foundDevice = await _resourceDemandService.FindAsync(new DeviceEntity(), device.id);
             Assert.NotNull(foundDevice);
         }
 
@@ -225,11 +225,11 @@ namespace Pirat.DatabaseTests
         /// </summary>
         public async void Test_DeleteResourceWithoutReason_NotPossible()
         {
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.MarkConsumableAsDeleted(_tokenAnneBonny, _offerAnneBonny.consumables[0].id, ""));
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.MarkConsumableAsDeletedAsync(_tokenAnneBonny, _offerAnneBonny.consumables[0].id, ""));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.MarkDeviceAsDeleted(_tokenAnneBonny, _offerAnneBonny.devices[0].id, ""));
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.MarkDeviceAsDeletedAsync(_tokenAnneBonny, _offerAnneBonny.devices[0].id, ""));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.MarkPersonalAsDeleted(_tokenAnneBonny, _offerAnneBonny.personals[0].id, ""));
+            await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.MarkPersonalAsDeletedAsync(_tokenAnneBonny, _offerAnneBonny.personals[0].id, ""));
         }
 
         /// <summary>
@@ -237,11 +237,11 @@ namespace Pirat.DatabaseTests
         /// </summary>
         public async void Test_DeleteNonExistingResource_NotPossible()
         {
-            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkConsumableAsDeleted(_tokenAnneBonny, 999999, ""));
+            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkConsumableAsDeletedAsync(_tokenAnneBonny, 999999, ""));
 
-            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkDeviceAsDeleted(_tokenAnneBonny, 999999, ""));
+            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkDeviceAsDeletedAsync(_tokenAnneBonny, 999999, ""));
 
-            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkPersonalAsDeleted(_tokenAnneBonny, 999999, ""));
+            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkPersonalAsDeletedAsync(_tokenAnneBonny, 999999, ""));
         }
     }
 }

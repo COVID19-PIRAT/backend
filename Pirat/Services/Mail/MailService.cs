@@ -36,7 +36,7 @@ namespace Pirat.Services.Mail
         }
 
 
-        public async Task sendDemandMailToProvider(ContactInformationDemand demandInformation, 
+        public async Task SendDemandMailToProviderAsync(ContactInformationDemand demandInformation, 
             string mailAddressReceiver, string receiverMailUserName)
         {
             await Task.Run(async () =>
@@ -104,12 +104,12 @@ pirat-tool.com
 mail@pirat-tool.com
 ";
                 content = content.Trim();
-                await sendMail(mailAddressReceiver, subject, content);
+                await SendMailAsync(mailAddressReceiver, subject, content);
             });
         }
 
 
-        public async Task sendDemandConformationMailToDemander(ContactInformationDemand demandInformation)
+        public async Task SendDemandConformationMailToDemanderAsync(ContactInformationDemand demandInformation)
         {
             await Task.Run(async () =>
             {
@@ -151,11 +151,11 @@ pirat-tool.com
 mail@pirat-tool.com
 ";
                 content = content.Trim();
-                await sendMail(demandInformation.senderEmail, subject, content);
+                await SendMailAsync(demandInformation.senderEmail, subject, content);
             });
         }
 
-        public async Task sendNewOfferConfirmationMail(string token, 
+        public async Task SendNewOfferConfirmationMailAsync(string token, 
             string receiverMailAddress, string receiverMailUserName)
         {
 
@@ -204,11 +204,11 @@ pirat-tool.com
 mail@pirat-tool.com
 ";
                 content = content.Trim();
-                await sendMail(receiverMailAddress, subject, content);
+                await SendMailAsync(receiverMailAddress, subject, content);
             });
         }
 
-        public async Task sendTelephoneCallbackMail(TelephoneCallbackRequest telephoneCallbackRequest)
+        public async Task SendTelephoneCallbackMailAsync(TelephoneCallbackRequest telephoneCallbackRequest)
         {
             await Task.Run(async () =>
             {
@@ -226,12 +226,12 @@ mail@pirat-tool.com
                                  $"Kommentar: {telephoneCallbackRequest.notes}\n\n\n" +
                                  $"Liebe Grüße\nDein Backend-Server";
 
-                await sendMail(this._defaultMailSender.mailSenderAddress, subject, content);
+                await SendMailAsync(this._defaultMailSender.mailSenderAddress, subject, content);
             });
         }
 
 
-        public async Task sendRegionSubscriptionConformationMail(RegionSubscription regionSubscription)
+        public async Task SendRegionSubscriptionConformationMailAsync(RegionSubscription regionSubscription)
         {
             await Task.Run(async () =>
             {
@@ -270,11 +270,11 @@ pirat-tool.com
 mail@pirat-tool.com
 ";
                 content = content.Trim();
-                await sendMail(regionSubscription.email, subject, content);
+                await SendMailAsync(regionSubscription.email, subject, content);
             });
         }
 
-        public async Task sendNotificationAboutNewOffers(RegionSubscription regionSubscription,
+        public async Task SendNotificationAboutNewOffersAsync(RegionSubscription regionSubscription,
             SubscriptionService.ResourceList resourceList)
         {
             string offersDE = SummarizeResourcesToFormattedString(resourceList, "de");
@@ -321,17 +321,17 @@ pirat-tool.com
 mail@pirat-tool.com
 ";
                 content = content.Trim();
-                await sendMail(regionSubscription.email, subject, content);
+                await SendMailAsync(regionSubscription.email, subject, content);
             });
         }
 
 
-        private async Task sendMail(string mailReceiverAddress, string subject, string content)
+        private async Task SendMailAsync(string mailReceiverAddress, string subject, string content)
         {
-            await this.sendMail(this._defaultMailSender, mailReceiverAddress, subject, content);
+            await this.SendMailAsync(this._defaultMailSender, mailReceiverAddress, subject, content);
         }
 
-        private async Task sendMail(MailSender sender, string mailReceiverAddress, string subject, string content)
+        private async Task SendMailAsync(MailSender sender, string mailReceiverAddress, string subject, string content)
         {
             MimeMessage message = new MimeMessage();
 

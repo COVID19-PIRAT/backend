@@ -9,7 +9,7 @@ namespace Pirat.Model.Entity
     /// <summary>
     /// An offer made by the user. Data is stored in table offer on the database.
     /// </summary>
-    public class OfferEntity : ProviderBase, Findable, Deletable, Updatable, Insertable
+    public class OfferEntity : ProviderBase, IFindable, IDeletable, IUpdatable, IInsertable
     {
         //***Key
         public int id { get; set; }
@@ -36,24 +36,24 @@ namespace Pirat.Model.Entity
             return this;
         }
 
-        public async Task<Findable> Find(DemandContext context, int id)
+        public async Task<IFindable> FindAsync(DemandContext context, int id)
         {
             return await context.offer.FindAsync(id);
         }
 
-        public async Task Delete(DemandContext context)
+        public async Task DeleteAsync(DemandContext context)
         {
             context.offer.Remove(this);
             await context.SaveChangesAsync();
         }
 
-        public async Task Update(DemandContext context)
+        public async Task UpdateAsync(DemandContext context)
         {
             context.offer.Update(this);
             await context.SaveChangesAsync();
         }
 
-        public async Task<Insertable> Insert(DemandContext context)
+        public async Task<IInsertable> InsertAsync(DemandContext context)
         {
             context.offer.Add(this);
             await context.SaveChangesAsync();

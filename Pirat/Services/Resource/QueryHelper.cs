@@ -20,13 +20,13 @@ namespace Pirat.Services.Resource
             _context = context;
         }
 
-        internal async Task<Address> queryAddress(int addressKey)
+        internal async Task<Address> QueryAddressAsync(int addressKey)
         {
-            var a = (AddressEntity) await new AddressEntity().Find(_context, addressKey);
+            var a = (AddressEntity) await new AddressEntity().FindAsync(_context, addressKey);
             return new Address().build(a);
         }
 
-        internal async Task<OfferEntity> retrieveOfferFromToken(string token)
+        internal async Task<OfferEntity> RetrieveOfferFromTokenAsync(string token)
         {
             var query = from o in _context.offer as IQueryable<OfferEntity>
                         where o.token.Equals(token)

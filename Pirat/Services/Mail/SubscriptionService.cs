@@ -25,7 +25,7 @@ namespace Pirat.Services.Mail
             _addressMaker = addressMaker;
         }
 
-        public async Task SubscribeRegion(RegionSubscription subscription)
+        public async Task SubscribeRegionAsync(RegionSubscription subscription)
         {
             AddressEntity addressEntity = new AddressEntity()
             {
@@ -36,10 +36,10 @@ namespace Pirat.Services.Mail
             subscription.latitude = addressEntity.latitude;
             subscription.longitude = addressEntity.longitude;
             subscription.active = true;
-            await subscription.Insert(_context);
+            await subscription.InsertAsync(_context);
         }
 
-        public async Task SendEmails()
+        public async Task SendEmailsAsync()
         {
             const int MAX_DISTANCE = 50;
 
@@ -136,7 +136,7 @@ namespace Pirat.Services.Mail
                 ResourceList resources = postalCodeToResources[subscription.postalcode];
                 if (!resources.isEmpty())
                 {
-                    await this._mailService.sendNotificationAboutNewOffers(subscription, postalCodeToResources[subscription.postalcode]);
+                    await this._mailService.SendNotificationAboutNewOffersAsync(subscription, postalCodeToResources[subscription.postalcode]);
                 }
             }
         }
