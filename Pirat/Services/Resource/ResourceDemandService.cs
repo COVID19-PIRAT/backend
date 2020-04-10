@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Pirat.Codes;
 using Pirat.DatabaseContext;
@@ -32,7 +34,7 @@ namespace Pirat.Services.Resource
             _queryHelper = new QueryHelper(context);
 
         }
-        public Task<List<OfferResource<Consumable>>> QueryOffers(Consumable con)
+        public async IAsyncEnumerable<OfferResource<Consumable>> QueryOffersAsync(Consumable con)
         {
             var consumable = new ConsumableEntity().build(con);
             var maxDistance = con.kilometer;
@@ -40,7 +42,7 @@ namespace Pirat.Services.Resource
             var location = new AddressEntity().build(consumableAddress);
             _addressMaker.SetCoordinates(location);
 
-            var query = from o in _context.offer
+            var query = from o in _context.offer as IQueryable<OfferEntity>
                         join c in _context.consumable on o.id equals c.offer_id
                         join ap in _context.address on o.address_id equals ap.id
                         join ac in _context.address on c.address_id equals ac.id
@@ -61,14 +63,14 @@ namespace Pirat.Services.Resource
             }
 
             List<OfferResource<Consumable>> resources = new List<OfferResource<Consumable>>();
-            var results = query.Select(x => x).ToList();
-            foreach (var x in results)
+            var results = await query.ToListAsync();
+            foreach (var data in results)
             {
 
-                var resource = new Consumable().build(x.c);
+                var resource = new Consumable().build(data.c);
 
-                var yLatitude = x.ac.latitude;
-                var yLongitude = x.ac.longitude;
+                var yLatitude = data.ac.latitude;
+                var yLongitude = data.ac.longitude;
                 var distance = DistanceCalculator.computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
                 if (distance > maxDistance && maxDistance != 0)
                 {
@@ -76,14 +78,14 @@ namespace Pirat.Services.Resource
                 }
                 resource.kilometer = (int)Math.Round(distance);
 
-                var provider = new Provider().build(x.o);
-                var providerAddress = new Address().build(x.ap);
-                var resourceAddress = new Address().build(x.ac);
+                var provider = new Provider().build(data.o);
+                var providerAddress = new Address().build(data.ap);
+                var resourceAddress = new Address().build(data.ac);
 
                 provider.address = providerAddress;
                 resource.address = resourceAddress;
 
-                var o = new OfferResource<Consumable>()
+                var offer = new OfferResource<Consumable>()
                 {
                     resource = resource
                 };
@@ -95,15 +97,14 @@ namespace Pirat.Services.Resource
 
                 if (provider.ispublic)
                 {
-                    o.provider = provider;
+                    offer.provider = provider;
                 }
-                resources.Add(o);
-            }
 
-            return Task.FromResult(resources);
+                yield return offer;
+            }
         }
 
-        public Task<List<OfferResource<Device>>> QueryOffers(Device dev)
+        public async IAsyncEnumerable<OfferResource<Device>> QueryOffersAsync(Device dev)
         {
             var device = new DeviceEntity().build(dev);
             var maxDistance = dev.kilometer;
@@ -111,7 +112,7 @@ namespace Pirat.Services.Resource
             var location = new AddressEntity().build(deviceAddress);
             _addressMaker.SetCoordinates(location);
 
-            var query = from o in _context.offer
+            var query = from o in _context.offer as IQueryable<OfferEntity>
                         join d in _context.device on o.id equals d.offer_id
                         join ap in _context.address on o.address_id equals ap.id
                         join ac in _context.address on d.address_id equals ac.id
@@ -132,13 +133,13 @@ namespace Pirat.Services.Resource
             }
 
             List<OfferResource<Device>> resources = new List<OfferResource<Device>>();
-            var results = query.Select(x => x).ToList();
-            foreach (var x in results)
+            var results = await query.ToListAsync();
+            foreach (var data in results)
             {
-                var resource = new Device().build(x.d);
+                var resource = new Device().build(data.d);
 
-                var yLatitude = x.ac.latitude;
-                var yLongitude = x.ac.longitude;
+                var yLatitude = data.ac.latitude;
+                var yLongitude = data.ac.longitude;
                 var distance = DistanceCalculator.computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
 
                 if (distance > maxDistance && maxDistance != 0)
@@ -147,13 +148,13 @@ namespace Pirat.Services.Resource
                 }
                 resource.kilometer = (int)Math.Round(distance);
 
-                var provider = new Provider().build(x.o);
-                var providerAddress = new Address().build(x.ap);
-                var resourceAddress = new Address().build(x.ac);
+                var provider = new Provider().build(data.o);
+                var providerAddress = new Address().build(data.ap);
+                var resourceAddress = new Address().build(data.ac);
 
                 provider.address = providerAddress;
                 resource.address = resourceAddress;
-                var o = new OfferResource<Device>()
+                var offer = new OfferResource<Device>()
                 {
                     resource = resource
                 };
@@ -165,22 +166,21 @@ namespace Pirat.Services.Resource
 
                 if (provider.ispublic)
                 {
-                    o.provider = provider;
+                    offer.provider = provider;
                 }
-                resources.Add(o);
-            }
 
-            return Task.FromResult(resources);
+                yield return offer;
+            }
         }
 
-        public Task<List<OfferResource<Personal>>> QueryOffers(Manpower manpower)
+        public async IAsyncEnumerable<OfferResource<Personal>> QueryOffersAsync(Manpower manpower)
         {
             var maxDistance = manpower.kilometer;
             var manpowerAddress = manpower.address;
             var location = new AddressEntity().build(manpowerAddress);
             _addressMaker.SetCoordinates(location);
 
-            var query = from o in _context.offer
+            var query = from o in _context.offer as IQueryable<OfferEntity>
                         join personal in _context.personal on o.id equals personal.offer_id
                         join ap in _context.address on o.address_id equals ap.id
                         join ac in _context.address on personal.address_id equals ac.id
@@ -211,13 +211,13 @@ namespace Pirat.Services.Resource
             }
 
             List<OfferResource<Personal>> resources = new List<OfferResource<Personal>>();
-            var results = query.Select(x => x).ToList();
-            foreach (var x in results)
+            var results = await query.ToListAsync();
+            foreach (var data in results)
             {
-                var resource = new Personal().build(x.personal);
+                var resource = new Personal().build(data.personal);
 
-                var yLatitude = x.ac.latitude;
-                var yLongitude = x.ac.longitude;
+                var yLatitude = data.ac.latitude;
+                var yLongitude = data.ac.longitude;
                 var distance = DistanceCalculator.computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
                 if (distance > maxDistance && maxDistance != 0)
                 {
@@ -225,14 +225,14 @@ namespace Pirat.Services.Resource
                 }
                 resource.kilometer = (int)Math.Round(distance);
 
-                var provider = new Provider().build(x.o);
-                var providerAddress = new Address().build(x.ap);
-                var resourceAddress = new Address().build(x.ac);
+                var provider = new Provider().build(data.o);
+                var providerAddress = new Address().build(data.ap);
+                var resourceAddress = new Address().build(data.ac);
 
                 provider.address = providerAddress;
                 resource.address = resourceAddress;
 
-                var o = new OfferResource<Personal>()
+                var offer = new OfferResource<Personal>()
                 {
                     resource = resource
                 };
@@ -244,57 +244,56 @@ namespace Pirat.Services.Resource
 
                 if (provider.ispublic)
                 {
-                    o.provider = provider;
+                    offer.provider = provider;
                 }
-                resources.Add(o);
+
+                yield return offer;
             }
-
-            return Task.FromResult(resources);
         }
 
-        public Task<Findable> Find(Findable findable, int id)
+        public Task<IFindable> FindAsync(IFindable findable, int id)
         {
-            return Task.FromResult(findable.Find(_context, id));
+            return findable.FindAsync(_context, id);
         }
 
-        public Task<Offer> queryLink(string token)
+        public async Task<Offer> QueryLinkAsync(string token)
         {
-            var offerEntity = _queryHelper.retrieveOfferFromToken(token);
+            var offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
             var offerKey = offerEntity.id;
 
             //Build the provider from the offerEntity and the address we retrieve from the address id
 
-            var provider = new Provider().build(offerEntity).build(_queryHelper.queryAddress(offerEntity.address_id));
+            var provider = new Provider().build(offerEntity).build(await _queryHelper.QueryAddressAsync(offerEntity.address_id));
 
             //Create the offer we will send back and retrieve all associated resources
 
             var offer = new Offer() { provider = provider, consumables = new List<Consumable>(), devices = new List<Device>(), personals = new List<Personal>() };
 
-            var queC = from c in _context.consumable where c.offer_id == offerKey select c;
-            List<ConsumableEntity> consumableEntities = queC.Select(c => c).ToList();
-            foreach (ConsumableEntity c in consumableEntities)
+            var queC = from c in _context.consumable as IQueryable<ConsumableEntity> where c.offer_id == offerKey select c;
+            var consumableEntities = await queC.ToListAsync();
+            foreach (var c in consumableEntities)
             {
                 if (c.is_deleted) continue;
-                offer.consumables.Add(new Consumable().build(c).build(_queryHelper.queryAddress(c.address_id)));
+                offer.consumables.Add(new Consumable().build(c).build(await _queryHelper.QueryAddressAsync(c.address_id)));
             }
 
-            var queD = from d in _context.device where d.offer_id == offerKey select d;
-            List<DeviceEntity> deviceEntities = queD.Select(d => d).ToList();
-            foreach (DeviceEntity d in deviceEntities)
+            var queD = from d in _context.device as IQueryable<DeviceEntity> where d.offer_id == offerKey select d;
+            var deviceEntities = await queD.ToListAsync();
+            foreach (var d in deviceEntities)
             {
                 if(d.is_deleted) continue;
-                offer.devices.Add(new Device().build(d).build(_queryHelper.queryAddress(d.address_id)));
+                offer.devices.Add(new Device().build(d).build(await _queryHelper.QueryAddressAsync(d.address_id)));
             }
 
-            var queP = from p in _context.personal where p.offer_id == offerKey select p;
-            List<PersonalEntity> personalEntities = queP.Select(p => p).ToList();
-            foreach (PersonalEntity p in personalEntities)
+            var queP = from p in _context.personal as IQueryable<PersonalEntity> where p.offer_id == offerKey select p;
+            var personalEntities = await queP.ToListAsync();
+            foreach (var p in personalEntities)
             {
                 if(p.is_deleted) continue;
-                offer.personals.Add(new Personal().build(p).build(_queryHelper.queryAddress(p.address_id)));
+                offer.personals.Add(new Personal().build(p).build(await _queryHelper.QueryAddressAsync(p.address_id)));
             }
 
-            return Task.FromResult(offer);
+            return offer;
         }
 
 

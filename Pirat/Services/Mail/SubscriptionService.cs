@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Pirat.DatabaseContext;
 using Pirat.Model;
+using Pirat.Model.Entity;
 
 namespace Pirat.Services.Mail
 {
@@ -23,7 +25,7 @@ namespace Pirat.Services.Mail
             _addressMaker = addressMaker;
         }
 
-        public void SubscribeRegion(RegionSubscription subscription)
+        public async Task SubscribeRegionAsync(RegionSubscription subscription)
         {
             AddressEntity addressEntity = new AddressEntity()
             {
@@ -34,36 +36,42 @@ namespace Pirat.Services.Mail
             subscription.latitude = addressEntity.latitude;
             subscription.longitude = addressEntity.longitude;
             subscription.active = true;
-            subscription.Insert(_context);
+            await subscription.InsertAsync(_context);
         }
 
-        public async Task SendEmails()
+        public async Task SendEmailsAsync()
         {
             const int MAX_DISTANCE = 50;
 
-            var queryAllSubscriptions = from rs in _context.region_subscription
+            var queryAllSubscriptions = 
+                from rs in _context.region_subscription as IQueryable<RegionSubscription>
                 where rs.active
-                select new {rs};
-            var allSubscriptions = queryAllSubscriptions.Select(x => x.rs).ToList();
+                select rs;
+            var allSubscriptions = await queryAllSubscriptions.ToListAsync();
 
-            var queryAllRecentDevices = from o in _context.offer
+            var queryAllRecentDevices = 
+                from o in _context.offer as IQueryable<OfferEntity>
                 join d in _context.device on o.id equals d.offer_id
                 join a in _context.address on d.address_id equals a.id
                 where (o.timestamp > DateTime.Now.AddDays(-1))
                 select new { device = d, address = a };
-            var allRecentDevices = queryAllRecentDevices.ToList();
-            var queryAllRecentConsumables = from o in _context.offer
+            var allRecentDevices = await queryAllRecentDevices.ToListAsync();
+
+            var queryAllRecentConsumables = 
+                from o in _context.offer as IQueryable<OfferEntity>
                 join c in _context.consumable on o.id equals c.offer_id
                 join a in _context.address on c.address_id equals a.id
                 where (o.timestamp > DateTime.Now.AddDays(-1))
                 select new { consumable = c, address = a };
-            var allRecentConsumables = queryAllRecentConsumables.ToList();
-            var queryAllRecentPersonnel = from o in _context.offer
+            var allRecentConsumables = await queryAllRecentConsumables.ToListAsync();
+
+            var queryAllRecentPersonnel = 
+                from o in _context.offer as IQueryable<OfferEntity>
                 join p in _context.personal on o.id equals p.offer_id
                 join a in _context.address on p.address_id equals a.id
                 where (o.timestamp > DateTime.Now.AddDays(-1))
                 select new { personnel = p, address = a };
-            var allRecentPersonnel = queryAllRecentPersonnel.ToList();
+            var allRecentPersonnel = await queryAllRecentPersonnel.ToListAsync();
 
             var postalCodeToSubscriptionsDictionary = new Dictionary<string, List<RegionSubscription>>();
             var postalCodeToResources = new Dictionary<string, ResourceList>();
@@ -128,10 +136,9 @@ namespace Pirat.Services.Mail
                 ResourceList resources = postalCodeToResources[subscription.postalcode];
                 if (!resources.isEmpty())
                 {
-                    await this._mailService.sendNotificationAboutNewOffers(subscription, postalCodeToResources[subscription.postalcode]);
+                    await this._mailService.SendNotificationAboutNewOffersAsync(subscription, postalCodeToResources[subscription.postalcode]);
                 }
             }
-            await Task.CompletedTask;
         }
 
 

@@ -81,13 +81,13 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OfferConsumableResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> Get([FromQuery] Consumable consumable, [FromQuery] Address address)
+        public async Task<IActionResult> GetAsync([FromQuery] Consumable consumable, [FromQuery] Address address)
         {
             try
             {
                 consumable.address = address;
-                _resourceInputValidatorService.validateForQuery(consumable);
-                return Ok(await _resourceDemandService.QueryOffers(consumable));
+                _resourceInputValidatorService.ValidateForQuery(consumable);
+                return Ok(await _resourceDemandService.QueryOffersAsync(consumable).ToListAsync());
             }
             catch (ArgumentException e)
             {
@@ -115,13 +115,13 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OfferDeviceResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> Get([FromQuery] Device device, [FromQuery] Address address)
+        public async Task<IActionResult> GetAsync([FromQuery] Device device, [FromQuery] Address address)
         {
             try
             {
                 device.address = address;
-                _resourceInputValidatorService.validateForQuery(device);
-                return Ok(await _resourceDemandService.QueryOffers(device));
+                _resourceInputValidatorService.ValidateForQuery(device);
+                return Ok(await _resourceDemandService.QueryOffersAsync(device).ToListAsync());
             }
             catch (ArgumentException e)
             {
@@ -148,13 +148,13 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OfferPersonalResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> Get([FromQuery] Manpower manpower, [FromQuery] Address address)
+        public async Task<IActionResult> GetAsync([FromQuery] Manpower manpower, [FromQuery] Address address)
         {
             try
             {
                 manpower.address = address;
-                _resourceInputValidatorService.validateForQuery(manpower);
-                return Ok(await _resourceDemandService.QueryOffers(manpower));
+                _resourceInputValidatorService.ValidateForQuery(manpower);
+                return Ok(await _resourceDemandService.QueryOffersAsync(manpower).ToListAsync());
             }
             catch (ArgumentException e)
             {
@@ -184,12 +184,12 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> Get(string token)
+        public async Task<IActionResult> GetAsync(string token)
         {
             try
             {
-                _resourceInputValidatorService.validateToken(token);
-                return Ok(await _resourceDemandService.queryLink(token));
+                _resourceInputValidatorService.ValidateToken(token);
+                return Ok(await _resourceDemandService.QueryLinkAsync(token));
             }
             catch (ArgumentException e)
             {
@@ -219,14 +219,14 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OfferResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> Post([FromBody] Offer offer)
+        public async Task<IActionResult> PostAsync([FromBody] Offer offer)
         {
             try
             {
                 _mailInputValidatorService.validateMail(offer.provider.mail);
-                _resourceInputValidatorService.validateForDatabaseInsertion(offer);
-                var token = await _resourceUpdateService.insert(offer);
-                _mailService.sendNewOfferConfirmationMail(token, offer.provider.mail, offer.provider.name);
+                _resourceInputValidatorService.ValidateForDatabaseInsertion(offer);
+                var token = await _resourceUpdateService.InsertAsync(offer);
+                await _mailService.SendNewOfferConfirmationMailAsync(token, offer.provider.mail, offer.provider.name);
                 return Ok(token);
             }
             catch (UnknownAdressException e)
@@ -258,19 +258,19 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> ConsumableAnonymousContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
+        public async Task<IActionResult> ConsumableAnonymousContactAsync([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
             try
             {
                 _mailInputValidatorService.validateMail(contactInformationDemand.senderEmail);
 
-                var consumable = (ConsumableEntity) await _resourceDemandService.Find(new ConsumableEntity(), id);
+                var consumable = (ConsumableEntity) await _resourceDemandService.FindAsync(new ConsumableEntity(), id);
                 if (consumable is null)
                 {
                     return NotFound(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
                 }
 
-                var offer = (OfferEntity) await _resourceDemandService.Find(new OfferEntity(), consumable.offer_id);
+                var offer = (OfferEntity) await _resourceDemandService.FindAsync(new OfferEntity(), consumable.offer_id);
                 if (offer is null)
                 {
                     return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
@@ -278,9 +278,9 @@ namespace Pirat.Controllers
 
                 var mailAddressReceiver = offer.mail;
                 var mailUserNameReceiver = offer.name;
-                _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
+                await _mailService.SendDemandMailToProviderAsync(contactInformationDemand, mailAddressReceiver,
                     mailUserNameReceiver);
-                _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
+                await _mailService.SendDemandConformationMailToDemanderAsync(contactInformationDemand);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -308,18 +308,18 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> DeviceAnonymContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
+        public async Task<IActionResult> DeviceAnonymContactAsync([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
             try
             {
                 _mailInputValidatorService.validateMail(contactInformationDemand.senderEmail);
-                var device = (DeviceEntity) await _resourceDemandService.Find(new DeviceEntity(), id);
+                var device = (DeviceEntity) await _resourceDemandService.FindAsync(new DeviceEntity(), id);
                 if (device is null)
                 {
                     return NotFound(Error.ErrorCodes.NOTFOUND_DEVICE);
                 }
 
-                var offer = (OfferEntity) await _resourceDemandService.Find(new OfferEntity(), device.offer_id);
+                var offer = (OfferEntity) await _resourceDemandService.FindAsync(new OfferEntity(), device.offer_id);
                 if (offer is null)
                 {
                     return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
@@ -327,9 +327,9 @@ namespace Pirat.Controllers
 
                 var mailAddressReceiver = offer.mail;
                 var mailUserNameReceiver = offer.name;
-                _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
+                await _mailService.SendDemandMailToProviderAsync(contactInformationDemand, mailAddressReceiver,
                     mailUserNameReceiver);
-                _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
+                await _mailService.SendDemandConformationMailToDemanderAsync(contactInformationDemand);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -357,18 +357,18 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> PersonalAnonymContact([FromBody] ContactInformationDemand contactInformationDemand, int id)
+        public async Task<IActionResult> PersonalAnonymContactAsync([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
             try
             {
                 _mailInputValidatorService.validateMail(contactInformationDemand.senderEmail);
-                var personal = (PersonalEntity) await _resourceDemandService.Find(new PersonalEntity(), id);
+                var personal = (PersonalEntity) await _resourceDemandService.FindAsync(new PersonalEntity(), id);
                 if (personal is null)
                 {
                     return NotFound(Error.ErrorCodes.NOTFOUND_PERSONAL);
                 }
 
-                var offer = (OfferEntity) await _resourceDemandService.Find(new OfferEntity(), personal.offer_id);
+                var offer = (OfferEntity) await _resourceDemandService.FindAsync(new OfferEntity(), personal.offer_id);
                 if (offer is null)
                 {
                     return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
@@ -376,9 +376,9 @@ namespace Pirat.Controllers
 
                 var mailAddressReceiver = offer.mail;
                 var mailUserNameReceiver = offer.name;
-                _mailService.sendDemandMailToProvider(contactInformationDemand, mailAddressReceiver,
+                await _mailService.SendDemandMailToProviderAsync(contactInformationDemand, mailAddressReceiver,
                     mailUserNameReceiver);
-                _mailService.sendDemandConformationMailToDemander(contactInformationDemand);
+                await _mailService.SendDemandConformationMailToDemanderAsync(contactInformationDemand);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -404,12 +404,12 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> ChangeProvider(string token, [FromBody] Provider provider)
+        public async Task<IActionResult> ChangeProviderAsync(string token, [FromBody] Provider provider)
         {
             try
             {
-                _resourceInputValidatorService.validateForChangeInformation(token, provider);
-                await _resourceUpdateService.ChangeInformation(token, provider);
+                _resourceInputValidatorService.ValidateForChangeInformation(token, provider);
+                await _resourceUpdateService.ChangeInformationAsync(token, provider);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -441,13 +441,13 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> ChangeResource(string token, int id, [FromBody] Consumable consumable)
+        public async Task<IActionResult> ChangeResourceAsync(string token, int id, [FromBody] Consumable consumable)
         {
             try
             {
                 consumable.id = id;
-                _resourceInputValidatorService.validateForChangeInformation(token, consumable);
-                int changedRows = await _resourceUpdateService.ChangeInformation(token, consumable);
+                _resourceInputValidatorService.ValidateForChangeInformation(token, consumable);
+                int changedRows = await _resourceUpdateService.ChangeInformationAsync(token, consumable);
                 return Ok(changedRows);
             }
             catch (ArgumentException e)
@@ -478,13 +478,13 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> ChangeResource(string token, int id, [FromBody] Device device)
+        public async Task<IActionResult> ChangeResourceAsync(string token, int id, [FromBody] Device device)
         {
             try
             {
                 device.id = id;
-                _resourceInputValidatorService.validateForChangeInformation(token, device);
-                int changedRows = await _resourceUpdateService.ChangeInformation(token, device);
+                _resourceInputValidatorService.ValidateForChangeInformation(token, device);
+                int changedRows = await _resourceUpdateService.ChangeInformationAsync(token, device);
                 return Ok(changedRows);
             }
             catch (ArgumentException e)
@@ -515,13 +515,13 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> ChangeResource(string token, int id, [FromBody] Personal personal)
+        public async Task<IActionResult> ChangeResourceAsync(string token, int id, [FromBody] Personal personal)
         {
             try
             {
                 personal.id = id;
-                _resourceInputValidatorService.validateForChangeInformation(token, personal);
-                int changedRows = await _resourceUpdateService.ChangeInformation(token, personal);
+                _resourceInputValidatorService.ValidateForChangeInformation(token, personal);
+                int changedRows = await _resourceUpdateService.ChangeInformationAsync(token, personal);
                 return Ok(changedRows);
             }
             catch (ArgumentException e)
@@ -552,11 +552,11 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> ChangeAmountConsumable(string token, int id, [FromBody] AmountChange amountChange)
+        public async Task<IActionResult> ChangeAmountConsumableAsync(string token, int id, [FromBody] AmountChange amountChange)
         {
             try
             {
-                await _resourceUpdateService.ChangeConsumableAmount(token, id, amountChange.amount, amountChange.reason);
+                await _resourceUpdateService.ChangeConsumableAmountAsync(token, id, amountChange.amount, amountChange.reason);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -587,11 +587,11 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> ChangeAmountDevice(string token, int id, [FromBody] AmountChange amountChange)
+        public async Task<IActionResult> ChangeAmountDeviceAsync(string token, int id, [FromBody] AmountChange amountChange)
         {
             try
             {
-                await _resourceUpdateService.ChangeDeviceAmount(token, id, amountChange.amount, amountChange.reason);
+                await _resourceUpdateService.ChangeDeviceAmountAsync(token, id, amountChange.amount, amountChange.reason);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -611,11 +611,11 @@ namespace Pirat.Controllers
         [HttpDelete("offers/{token}/consumable/{id:int}")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> MarkConsumableAsDeleted(string token, int id, [FromBody] string reason)
+        public async Task<IActionResult> MarkConsumableAsDeletedAsync(string token, int id, [FromBody] string reason)
         {
             try
             {
-                await _resourceUpdateService.MarkConsumableAsDeleted(token, id, reason);
+                await _resourceUpdateService.MarkConsumableAsDeletedAsync(token, id, reason);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -635,11 +635,11 @@ namespace Pirat.Controllers
         [HttpDelete("offers/{token}/device/{id:int}")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> MarkDeviceAsDeleted(string token, int id, [FromBody] string reason)
+        public async Task<IActionResult> MarkDeviceAsDeletedAsync(string token, int id, [FromBody] string reason)
         {
             try
             {
-                await _resourceUpdateService.MarkDeviceAsDeleted(token, id, reason);
+                await _resourceUpdateService.MarkDeviceAsDeletedAsync(token, id, reason);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -659,11 +659,11 @@ namespace Pirat.Controllers
         [HttpDelete("offers/{token}/personal/{id:int}")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> MarkPersonalAsDeleted(string token, int id, [FromBody] string reason)
+        public async Task<IActionResult> MarkPersonalAsDeletedAsync(string token, int id, [FromBody] string reason)
         {
             try
             {
-                await _resourceUpdateService.MarkPersonalAsDeleted(token, id, reason);
+                await _resourceUpdateService.MarkPersonalAsDeletedAsync(token, id, reason);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -693,12 +693,12 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> AddResource(string token, [FromBody] Consumable consumable)
+        public async Task<IActionResult> AddResourceAsync(string token, [FromBody] Consumable consumable)
         {
             try
             {
-                _resourceInputValidatorService.validateForDatabaseInsertion(consumable);
-                await _resourceUpdateService.AddResource(token, consumable);
+                _resourceInputValidatorService.ValidateForDatabaseInsertion(consumable);
+                await _resourceUpdateService.AddResourceAsync(token, consumable);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -728,12 +728,12 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> AddResource(string token, [FromBody] Device device)
+        public async Task<IActionResult> AddResourceAsync(string token, [FromBody] Device device)
         {
             try
             {
-                _resourceInputValidatorService.validateForDatabaseInsertion(device);
-                await _resourceUpdateService.AddResource(token, device);
+                _resourceInputValidatorService.ValidateForDatabaseInsertion(device);
+                await _resourceUpdateService.AddResourceAsync(token, device);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -763,12 +763,12 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> AddResource(string token, [FromBody] Personal personal)
+        public async Task<IActionResult> AddResourceAsync(string token, [FromBody] Personal personal)
         {
             try
             {
-                _resourceInputValidatorService.validateForDatabaseInsertion(personal);
-                await _resourceUpdateService.AddResource(token, personal);
+                _resourceInputValidatorService.ValidateForDatabaseInsertion(personal);
+                await _resourceUpdateService.AddResourceAsync(token, personal);
                 return Ok();
             }
             catch (ArgumentException e)

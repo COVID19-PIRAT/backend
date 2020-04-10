@@ -9,8 +9,8 @@ namespace Pirat.Model.Entity
     /**
      * For an entity implementing Findable queries by unique id can be made to find the entry in the database 
      */
-    public interface Findable
+    public interface IFindable
     {
-        public Findable Find(DemandContext context, int id);
+        Task<IFindable> FindAsync(DemandContext context, int id);
     }
 }

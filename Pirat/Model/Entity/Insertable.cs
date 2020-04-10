@@ -6,13 +6,13 @@ using Pirat.DatabaseContext;
 
 namespace Pirat.Model.Entity
 {
-    public interface Insertable
+    public interface IInsertable
     {
         /// <summary>
         /// After calling the Add method in context with the insertable, the insertable will have an unique ID given by our database
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Insertable Insert(DemandContext context);
+        Task<IInsertable> InsertAsync(DemandContext context);
     }
 }

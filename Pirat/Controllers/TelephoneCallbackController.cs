@@ -41,7 +41,7 @@ namespace Pirat.Controllers
             try
             {
                 _mailInputValidatorService.validateMail(telephoneCallbackRequest.email);
-                this._mailService.sendTelephoneCallbackMail(telephoneCallbackRequest);
+                this._mailService.SendTelephoneCallbackMailAsync(telephoneCallbackRequest);
                 return Ok();
             }
             catch (ArgumentException e)

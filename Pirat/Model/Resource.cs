@@ -11,7 +11,7 @@ namespace Pirat.Model
     public abstract class Resource
     {
         [JsonProperty]
-        [SwaggerExcludeFilter.SwaggerExclude]
+        [SwaggerExclude]
         public int id { get; set; }
 
         public override bool Equals(object obj)

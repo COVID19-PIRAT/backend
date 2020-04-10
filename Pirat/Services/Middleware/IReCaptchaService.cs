@@ -4,7 +4,7 @@ namespace Pirat.Services.Middleware
 {
     public interface IReCaptchaService
     {
-        public Task<bool> ValidateResponse(string response);
+        public Task<bool> ValidateResponseAsync(string response);
     }
 
 }

@@ -6,11 +6,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Pirat.DatabaseContext;
 using Pirat.Model.Entity;
+using System.Threading.Tasks;
 
 namespace Pirat.Model
 {
 
-	public class AddressEntity : Address, Findable, Deletable, Updatable, Insertable
+	public class AddressEntity : Address, IFindable, IDeletable, IUpdatable, IInsertable
 	{
 
 		public int id { get; set; }
@@ -71,28 +72,28 @@ namespace Pirat.Model
 			return builder.ToString();
 		}
 
-        public Insertable Insert(DemandContext context)
+        public async Task<IInsertable> InsertAsync(DemandContext context)
         {
             context.address.Add(this);
-            context.SaveChanges();
+			await context.SaveChangesAsync();
             return this;
         }
 
-        public Findable Find(DemandContext context, int id)
+        public async Task<IFindable> FindAsync(DemandContext context, int id)
         {
-            return context.address.Find(id);
+            return await context.address.FindAsync(id);
         }
 
-        public void Update(DemandContext context)
+        public async Task UpdateAsync(DemandContext context)
         {
             context.address.Update(this);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
 
-        public void Delete(DemandContext context)
+        public async Task DeleteAsync(DemandContext context)
         {
             context.address.Remove(this);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
 	}
 

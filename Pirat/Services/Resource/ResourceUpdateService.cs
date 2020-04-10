@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.Extensions.Logging;
 using Pirat.Codes;
@@ -42,17 +43,17 @@ namespace Pirat.Services.Resource
         /// <param name="offerId">The unique id of the offer</param>
         /// <param name="consumable">The consumable from which the entity is created</param>
         /// <returns></returns>
-        private async Task Insert(int offerId, Consumable consumable)
+        private async Task InsertAsync(int offerId, Consumable consumable)
         {
             var consumableEntity = new ConsumableEntity().build(consumable);
             var addressEntity = new AddressEntity().build(consumable.address);
 
             _addressMaker.SetCoordinates(addressEntity);
-            addressEntity.Insert(_context);
+            await addressEntity.InsertAsync(_context);
 
             consumableEntity.offer_id = offerId;
             consumableEntity.address_id = addressEntity.id;
-            consumableEntity.Insert(_context);
+            await consumableEntity.InsertAsync(_context);
 
             consumable.id = consumableEntity.id;
         }
@@ -65,17 +66,17 @@ namespace Pirat.Services.Resource
         /// <param name="offerId">The unique id of the offer</param>
         /// <param name="device">The device from which the entity is created</param>
         /// <returns></returns>
-        private async Task Insert(int offerId, Device device)
+        private async Task InsertAsync(int offerId, Device device)
         {
             var deviceEntity = new DeviceEntity().build(device);
             var addressEntity = new AddressEntity().build(device.address);
 
             _addressMaker.SetCoordinates(addressEntity);
-            addressEntity.Insert(_context);
+            await addressEntity.InsertAsync(_context);
 
             deviceEntity.offer_id = offerId;
             deviceEntity.address_id = addressEntity.id;
-            deviceEntity.Insert(_context);
+            await deviceEntity.InsertAsync(_context);
 
             device.id = deviceEntity.id;
         }
@@ -88,25 +89,24 @@ namespace Pirat.Services.Resource
         /// <param name="offerId">The unique id of the offer</param>
         /// <param name="personal">The personal from which the entity is created</param>
         /// <returns></returns>
-        private async Task Insert(int offerId, Personal personal)
+        private async Task InsertAsync(int offerId, Personal personal)
         {
             var personEntity = new PersonalEntity().build(personal);
             var addressEntity = new AddressEntity().build(personal.address);
 
             _addressMaker.SetCoordinates(addressEntity);
-            addressEntity.Insert(_context);
+            await addressEntity.InsertAsync(_context);
 
             personEntity.offer_id = offerId;
             personEntity.address_id = addressEntity.id;
-            personEntity.Insert(_context);
+            await personEntity.InsertAsync(_context);
 
             personal.id = personEntity.id;
         }
 
 
-        public Task<string> insert(Offer offer)
+        public async Task<string> InsertAsync(Offer offer)
         {
-
             var provider = offer.provider;
 
             //Build as entities
@@ -117,13 +117,13 @@ namespace Pirat.Services.Resource
             //Create the coordinates and store the address of the offer
 
             _addressMaker.SetCoordinates(offerAddressEntity);
-            offerAddressEntity.Insert(_context);
+            await offerAddressEntity.InsertAsync(_context);
 
             //Store the offer including the address id as foreign key, the token and a timestamp
             offerEntity.address_id = offerAddressEntity.id;
             offerEntity.token = createToken();
             offerEntity.timestamp = DateTime.Now;
-            offerEntity.Insert(_context);
+            await offerEntity.InsertAsync(_context);
 
             //create the entities for the resources, calculate their coordinates, give them the offer foreign key and store them
             //Update the original offer with the ids from the created entities (helps us for testing and if we want to do more stuff with the offer in future features)
@@ -134,87 +134,85 @@ namespace Pirat.Services.Resource
             {
                 foreach (var c in offer.consumables)
                 {
-                    Insert(offer_id, c);
+                    await InsertAsync(offer_id, c);
                 }
             }
             if (!(offer.personals is null))
             {
                 foreach (var p in offer.personals)
                 {
-                    Insert(offer_id, p);
+                    await InsertAsync(offer_id, p);
                 }
             }
             if (!(offer.devices is null))
             {
                 foreach (var d in offer.devices)
                 {
-                    Insert(offer_id, d);
+                    await InsertAsync(offer_id, d);
                 }
             }
 
             //Give back only the token
-
-            return Task.FromResult(offerEntity.token);
+            return offerEntity.token;
         }
 
-        public Task delete(string token)
+        public async Task DeleteAsync(string token)
         {
             if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
             {
                 throw new ArgumentException(Error.ErrorCodes.INVALID_TOKEN);
             }
 
-            OfferEntity o = _queryHelper.retrieveOfferFromToken(token);
+            var offer = await _queryHelper.RetrieveOfferFromTokenAsync(token);
 
             //Delete the offer. The resources have the offer id as foreign key and get deleted as well by the db.
-
-            o.Delete(_context);
-
-            return Task.CompletedTask;
+            await offer.DeleteAsync(_context);
         }
 
-        public Task<int> ChangeInformation(string token, Provider provider)
+        public async Task<int> ChangeInformationAsync(string token, Provider provider)
         {
 
             AddressEntity location = new AddressEntity().build(provider.address);
             _addressMaker.SetCoordinates(location);
 
-            var query = from o in _context.offer
+            var query = 
+                from o in _context.offer as IQueryable<OfferEntity>
                 join ap in _context.address on o.address_id equals ap.id
                 where o.token == token
                 select new {o, ap};
 
-            query.ToList().ForEach(collection =>
+            foreach(var collection in await query.ToListAsync())
             {
                 collection.o.name = provider.name;
                 //o.ispublic = provider.ispublic; //TODO everything non public so far
                 collection.o.organisation = provider.organisation;
                 collection.o.phone = provider.phone;
                 collection.ap.OverwriteWith(location);
-            });
+            }
             
-            int changedRows = _context.SaveChanges();
+            var changedRows = await _context.SaveChangesAsync();
 
             if (2 < changedRows)
             {
                 throw new InvalidDataStateException(Error.FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
             }
 
-            return Task.FromResult(changedRows);
+            return changedRows;
         }
 
-        public Task<int> ChangeInformation(string token, Consumable consumable)
+        public async Task<int> ChangeInformationAsync(string token, Consumable consumable)
         {
             AddressEntity location = new AddressEntity().build(consumable.address);
             _addressMaker.SetCoordinates(location);
 
-            var query = from o in _context.offer
+            var query = 
+                from o in _context.offer as IQueryable<OfferEntity>
                 join c in _context.consumable on o.id equals c.offer_id
                 join ac in _context.address on c.address_id equals ac.id
                 where o.token == token && c.id == consumable.id
                 select new {o, c, ac};
 
-            query.ToList().ForEach((collection) =>
+            foreach(var collection in await query.ToListAsync())
             {
                 collection.c.annotation = consumable.annotation;
                 collection.c.unit = consumable.unit;
@@ -222,58 +220,62 @@ namespace Pirat.Services.Resource
                 collection.c.manufacturer = consumable.manufacturer;
                 collection.c.ordernumber = consumable.ordernumber;
                 collection.ac.OverwriteWith(location);
-            });
-            int changedRows = _context.SaveChanges();
+            }
+
+            var changedRows = await _context.SaveChangesAsync();
 
             if (2 < changedRows)
             {
                 throw new InvalidDataStateException(Error.FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
             }
 
-            return Task.FromResult(changedRows);
+            return changedRows;
         }
 
-        public Task<int> ChangeInformation(string token, Device device)
+        public async Task<int> ChangeInformationAsync(string token, Device device)
         {
             AddressEntity location = new AddressEntity().build(device.address);
             _addressMaker.SetCoordinates(location);
 
-            var query = from o in _context.offer
+            var query = 
+                from o in _context.offer as IQueryable<OfferEntity>
                 join d in _context.device on o.id equals d.offer_id
                 join ad in _context.address on d.address_id equals ad.id
                 where o.token == token && d.id == device.id
                 select new { o, d, ad };
 
-            query.ToList().ForEach((collection) =>
+            foreach (var collection in await query.ToListAsync())
             {
                 collection.d.annotation = device.annotation;
                 collection.d.name = device.name;
                 collection.d.manufacturer = device.manufacturer;
                 collection.d.ordernumber = device.ordernumber;
                 collection.ad.OverwriteWith(location);
-            });
-            int changedRows = _context.SaveChanges();
+            }
+
+            var changedRows = await _context.SaveChangesAsync();
 
             if (2 < changedRows)
             {
                 throw new InvalidDataStateException(Error.FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
             }
 
-            return Task.FromResult(changedRows);
+            return changedRows;
         }
 
-        public Task<int> ChangeInformation(string token, Personal personal)
+        public async Task<int> ChangeInformationAsync(string token, Personal personal)
         {
             AddressEntity location = new AddressEntity().build(personal.address);
             _addressMaker.SetCoordinates(location);
 
-            var query = from o in _context.offer
+            var query = 
+                from o in _context.offer as IQueryable<OfferEntity>
                 join p in _context.personal on o.id equals p.offer_id
                 join ap in _context.address on p.address_id equals ap.id
                 where o.token == token && p.id == personal.id
                 select new {o, p, ap};
 
-            query.ToList().ForEach((collection) =>
+            foreach (var collection in await query.ToListAsync())
             {
                 collection.p.qualification = personal.qualification;
                 collection.p.institution = personal.institution;
@@ -282,31 +284,34 @@ namespace Pirat.Services.Resource
                 collection.p.annotation = personal.annotation;
                 collection.p.experience_rt_pcr = personal.experience_rt_pcr;
                 collection.ap.OverwriteWith(location);
-            });
-            int changedRows = _context.SaveChanges();
+            }
+
+            var changedRows = await _context.SaveChangesAsync();
 
             if (2 < changedRows)
             {
                 throw new InvalidDataStateException(Error.FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
             }
 
-            return Task.FromResult(changedRows);
+            return changedRows;
         }
 
-        public Task ChangeConsumableAmount(string token, int consumableId, int newAmount)
+        public Task ChangeConsumableAmountAsync(string token, int consumableId, int newAmount)
         {
-            return ChangeConsumableAmount(token, consumableId, newAmount, "");
+            return ChangeConsumableAmountAsync(token, consumableId, newAmount, "");
         }
 
-        public async Task ChangeConsumableAmount(string token, int consumableId, int newAmount, string reason)
+        public async Task ChangeConsumableAmountAsync(string token, int consumableId, int newAmount, string reason)
         {
             // Get consumable from database
-            var query = from o in _context.offer
+            var query = 
+                from o in _context.offer as IQueryable<OfferEntity>
                 join c in _context.consumable on o.id equals c.offer_id
                 where token.Equals(o.token)
-                      && c.id == consumableId
+                        && c.id == consumableId
                 select c;
-            var foundConsumables = query.ToList();
+            var foundConsumables = await query.ToListAsync();
+
             if (foundConsumables.Count == 0)
             {
                 throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
@@ -325,10 +330,10 @@ namespace Pirat.Services.Resource
             if (consumable.amount < newAmount)
             {
                 consumable.amount = newAmount;
-                consumable.Update(_context);
+                await consumable.UpdateAsync(_context);
                 
                 // Add log
-                new ChangeEntity()
+                await new ChangeEntity()
                 {
                     change_type = "INCREASE_AMOUNT",
                     element_id = consumable.id,
@@ -336,7 +341,7 @@ namespace Pirat.Services.Resource
                     diff_amount = diffAmount,
                     reason = reason,
                     timestamp = DateTime.Now
-                }.Insert(_context);
+                }.InsertAsync(_context);
                 
                 return;
             }
@@ -351,10 +356,10 @@ namespace Pirat.Services.Resource
                 throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_CONSUMABLE);
             }
             consumable.amount = newAmount;
-            consumable.Update(_context);
+            await consumable.UpdateAsync(_context);
             
             // Add log
-            new ChangeEntity()
+            await new ChangeEntity()
             {
                 change_type = "DECREASE_AMOUNT",
                 element_id = consumable.id,
@@ -362,27 +367,31 @@ namespace Pirat.Services.Resource
                 diff_amount = diffAmount,
                 reason = reason,
                 timestamp = DateTime.Now
-            }.Insert(_context);
+            }.InsertAsync(_context);
         }
 
-        public Task ChangeDeviceAmount(string token, int deviceId, int newAmount)
+        public Task ChangeDeviceAmountAsync(string token, int deviceId, int newAmount)
         {
-            return ChangeDeviceAmount(token, deviceId, newAmount, null);
+            return ChangeDeviceAmountAsync(token, deviceId, newAmount, null);
         }
 
-        public async Task ChangeDeviceAmount(string token, int deviceId, int newAmount, string reason)
+        public async Task ChangeDeviceAmountAsync(string token, int deviceId, int newAmount, string reason)
         {
             // Get consumable from database
-            var query = from o in _context.offer
+            var query = 
+                from o in _context.offer as IQueryable<OfferEntity>
                 join d in _context.device on o.id equals d.offer_id
                 where token.Equals(o.token)
                       && d.id == deviceId
                 select d;
-            var foundDevices = query.ToList();
+
+            var foundDevices = await query.ToListAsync();
+
             if (foundDevices.Count == 0)
             {
                 throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
             }
+
             DeviceEntity device = foundDevices[0];
             
             // If amount has not changed: do nothing
@@ -397,10 +406,10 @@ namespace Pirat.Services.Resource
             if (device.amount < newAmount)
             {
                 device.amount = newAmount;
-                device.Update(_context);
+                await device.UpdateAsync(_context);
                 
                 // Add log
-                new ChangeEntity()
+                await new ChangeEntity()
                 {
                     change_type = "INCREASE_AMOUNT",
                     element_id = device.id,
@@ -408,7 +417,7 @@ namespace Pirat.Services.Resource
                     diff_amount = diffAmount,
                     reason = reason,
                     timestamp = DateTime.Now
-                }.Insert(_context);
+                }.InsertAsync(_context);
                 
                 return;
             }
@@ -423,10 +432,10 @@ namespace Pirat.Services.Resource
                 throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_DEVICE);
             }
             device.amount = newAmount;
-            device.Update(_context);
-            
+            await device.UpdateAsync(_context);
+
             // Add log
-            new ChangeEntity()
+            await new ChangeEntity()
             {
                 change_type = "DECREASE_AMOUNT",
                 element_id = device.id,
@@ -434,57 +443,58 @@ namespace Pirat.Services.Resource
                 diff_amount = diffAmount,
                 reason = reason,
                 timestamp = DateTime.Now
-            }.Insert(_context);
+            }.InsertAsync(_context);
         }
 
-        public async Task AddResource(string token, Consumable consumable)
+        public async Task AddResourceAsync(string token, Consumable consumable)
         {
-            OfferEntity offerEntity = _queryHelper.retrieveOfferFromToken(token);
+            OfferEntity offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
 
-            await Insert(offerEntity.id, consumable);
+            await InsertAsync(offerEntity.id, consumable);
         }
 
-        public async Task AddResource(string token, Device device)
+        public async Task AddResourceAsync(string token, Device device)
         {
-            OfferEntity offerEntity = _queryHelper.retrieveOfferFromToken(token);
+            OfferEntity offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
 
-            await Insert(offerEntity.id, device);
+            await InsertAsync(offerEntity.id, device);
         }
 
-        public async Task AddResource(string token, Personal personal)
+        public async Task AddResourceAsync(string token, Personal personal)
         {
-            OfferEntity offerEntity = _queryHelper.retrieveOfferFromToken(token);
+            OfferEntity offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
 
-            await Insert(offerEntity.id, personal);
+            await InsertAsync(offerEntity.id, personal);
         }
 
-        public async Task MarkConsumableAsDeleted(string token, int consumableId, string reason)
+        public async Task MarkConsumableAsDeletedAsync(string token, int consumableId, string reason)
         {
             if (reason.Trim().Length == 0)
             {
                 throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
             }
 
-            ConsumableEntity consumableEntity = (ConsumableEntity) new ConsumableEntity().Find(_context, consumableId);
-            AddressEntity addressEntity = (AddressEntity)new AddressEntity().Find(_context, consumableEntity.address_id);
-
+            ConsumableEntity consumableEntity = (ConsumableEntity) await new ConsumableEntity().FindAsync(_context, consumableId);
 
             if (consumableEntity is null)
             {
                 throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
             }
+
+            AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, consumableEntity.address_id);
+
             if (addressEntity is null)
             {
                 throw new InvalidDataStateException(Error.FatalCodes.RESOURCE_WITHOUT_RELATED_ADDRESS);
             }
 
             consumableEntity.is_deleted = true;
-            consumableEntity.Update(_context);
+            await consumableEntity.UpdateAsync(_context);
 
             addressEntity.is_deleted = true;
-            addressEntity.Update(_context);
+            await addressEntity.UpdateAsync(_context);
 
-            new ChangeEntity()
+            await new ChangeEntity()
             {
                 change_type = ChangeEntity.ChangeType.DeleteResource,
                 element_id = consumableEntity.id,
@@ -492,35 +502,37 @@ namespace Pirat.Services.Resource
                 diff_amount = consumableEntity.amount,
                 reason = reason,
                 timestamp = DateTime.Now
-            }.Insert(_context);
+            }.InsertAsync(_context);
         }
 
-        public async Task MarkDeviceAsDeleted(string token, int deviceId, string reason)
+        public async Task MarkDeviceAsDeletedAsync(string token, int deviceId, string reason)
         {
             if (reason.Trim().Length == 0)
             {
                 throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
             }
 
-            DeviceEntity deviceEntity = (DeviceEntity)new DeviceEntity().Find(_context, deviceId);
-            AddressEntity addressEntity = (AddressEntity)new AddressEntity().Find(_context, deviceEntity.address_id);
+            DeviceEntity deviceEntity = (DeviceEntity) await new DeviceEntity().FindAsync(_context, deviceId);
 
             if (deviceEntity is null)
             {
                 throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_DEVICE);
             }
+
+            AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, deviceEntity.address_id);
+            
             if (addressEntity is null)
             {
                 throw new InvalidDataStateException(Error.FatalCodes.RESOURCE_WITHOUT_RELATED_ADDRESS);
             }
 
             deviceEntity.is_deleted = true;
-            deviceEntity.Update(_context);
+            await deviceEntity.UpdateAsync(_context);
 
             addressEntity.is_deleted = true;
-            addressEntity.Update(_context);
+            await addressEntity.UpdateAsync(_context);
 
-            new ChangeEntity()
+            await new ChangeEntity()
             {
                 change_type = ChangeEntity.ChangeType.DeleteResource,
                 element_id = deviceEntity.id,
@@ -528,23 +540,25 @@ namespace Pirat.Services.Resource
                 diff_amount = deviceEntity.amount,
                 reason = reason,
                 timestamp = DateTime.Now
-            }.Insert(_context);
+            }.InsertAsync(_context);
         }
 
-        public async Task MarkPersonalAsDeleted(string token, int personalId, string reason)
+        public async Task MarkPersonalAsDeletedAsync(string token, int personalId, string reason)
         {
             if (reason.Trim().Length == 0)
             {
                 throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
             }
 
-            PersonalEntity personalEntity = (PersonalEntity)new PersonalEntity().Find(_context, personalId);
-            AddressEntity addressEntity = (AddressEntity) new AddressEntity().Find(_context, personalEntity.address_id);
+            PersonalEntity personalEntity = (PersonalEntity)await new PersonalEntity().FindAsync(_context, personalId);
 
             if (personalEntity is null)
             {
                 throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_PERSONAL);
             }
+
+            AddressEntity addressEntity = (AddressEntity)await new AddressEntity().FindAsync(_context, personalEntity.address_id);
+
 
             if (addressEntity is null)
             {
@@ -552,12 +566,12 @@ namespace Pirat.Services.Resource
             }
 
             personalEntity.is_deleted = true;
-            personalEntity.Update(_context);
+            await personalEntity.UpdateAsync(_context);
 
             addressEntity.is_deleted = true;
-            addressEntity.Update(_context);
+            await addressEntity.UpdateAsync(_context);
 
-            new ChangeEntity()
+            await new ChangeEntity()
             {
                 change_type = ChangeEntity.ChangeType.DeleteResource,
                 element_id = personalEntity.id,
@@ -565,7 +579,7 @@ namespace Pirat.Services.Resource
                 diff_amount = 1,
                 reason = reason,
                 timestamp = DateTime.Now
-            }.Insert(_context);
+            }.InsertAsync(_context);
         }
 
         private string createToken()

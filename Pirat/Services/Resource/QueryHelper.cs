@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Pirat.Codes;
 using Pirat.DatabaseContext;
 using Pirat.Exceptions;
@@ -19,24 +20,24 @@ namespace Pirat.Services.Resource
             _context = context;
         }
 
-        internal Address queryAddress(int addressKey)
+        internal async Task<Address> QueryAddressAsync(int addressKey)
         {
-            AddressEntity a = (AddressEntity)new AddressEntity().Find(_context, addressKey);
+            var a = (AddressEntity) await new AddressEntity().FindAsync(_context, addressKey);
             return new Address().build(a);
         }
 
-        internal OfferEntity retrieveOfferFromToken(string token)
+        internal async Task<OfferEntity> RetrieveOfferFromTokenAsync(string token)
         {
-            var query = from o in _context.offer
-                where o.token.Equals(token)
-                select o;
-            List<OfferEntity> offers = query.Select(o => o).ToList();
+            var query = from o in _context.offer as IQueryable<OfferEntity>
+                        where o.token.Equals(token)
+                        select o;
+            var offers = await query.Select(o => o).ToListAsync();
 
             if (!offers.Any())
             {
                 throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_OFFER);
             }
-            if (1 < offers.Count())
+            if (1 < offers.Count)
             {
                 throw new InvalidDataStateException(Error.FatalCodes.MORE_THAN_ONE_OFFER_FROM_TOKEN);
             }

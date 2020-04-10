@@ -15,7 +15,7 @@ namespace Pirat.Helper
         {
             var ignoredProperties = context.MethodInfo.GetParameters()
                 .SelectMany(p => p.ParameterType.GetProperties()
-                                 .Where(prop => prop.GetCustomAttribute<SwaggerExclude>() != null)
+                                 .Where(prop => prop.GetCustomAttribute<SwaggerExcludeAttribute>() != null)
                                  );
             if (ignoredProperties.Any())
             {
@@ -28,8 +28,8 @@ namespace Pirat.Helper
 
             }
         }
-
-        [AttributeUsage(AttributeTargets.Property)]
-        public class SwaggerExclude : Attribute { }
     }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    internal class SwaggerExcludeAttribute : Attribute { }
 }

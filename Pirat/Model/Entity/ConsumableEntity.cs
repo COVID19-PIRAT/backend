@@ -6,7 +6,7 @@ using Pirat.DatabaseContext;
 
 namespace Pirat.Model.Entity
 {
-    public class ConsumableEntity : ItemEntity, Findable, Deletable, Updatable, Insertable
+    public class ConsumableEntity : ItemEntity, IFindable, IDeletable, IUpdatable, IInsertable
     {
 
         public string unit { get; set; }
@@ -31,27 +31,27 @@ namespace Pirat.Model.Entity
         }
 
         
-        public Findable Find(DemandContext context, int id)
+        public async Task<IFindable> FindAsync(DemandContext context, int id)
         {
-            return context.consumable.Find(id);
+            return await context.consumable.FindAsync(id);
         }
 
-        public void Delete(DemandContext context)
+        public async Task DeleteAsync(DemandContext context)
         {
             context.consumable.Remove(this);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
 
-        public void Update(DemandContext context)
+        public async Task UpdateAsync(DemandContext context)
         {
             context.consumable.Update(this);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
 
-        public Insertable Insert(DemandContext context)
+        public async Task<IInsertable> InsertAsync(DemandContext context)
         {
             context.consumable.Add(this);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
             return this;
         }
     }
