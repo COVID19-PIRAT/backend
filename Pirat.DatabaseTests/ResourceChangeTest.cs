@@ -91,7 +91,6 @@ namespace Pirat.DatabaseTests
         {
             var changes = DemandContext.change.Select(ch => ch).ToList();
             Assert.NotNull(changes);
-            Assert.NotEmpty(changes);
             Assert.True(changes.Count == numberOfRows);
             Assert.All(changes, change => Assert.True(0 < change.diff_amount));
         }
