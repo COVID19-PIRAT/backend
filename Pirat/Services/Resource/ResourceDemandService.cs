@@ -44,7 +44,7 @@ namespace Pirat.Services.Resource
                         join c in _context.consumable on o.id equals c.offer_id
                         join ap in _context.address on o.address_id equals ap.id
                         join ac in _context.address on c.address_id equals ac.id
-                        where consumable.category.Equals(c.category)
+                        where consumable.category.Equals(c.category) && !c.is_deleted
                         select new { o, c, ap, ac };
 
             if (!string.IsNullOrEmpty(consumable.name))
@@ -115,7 +115,7 @@ namespace Pirat.Services.Resource
                         join d in _context.device on o.id equals d.offer_id
                         join ap in _context.address on o.address_id equals ap.id
                         join ac in _context.address on d.address_id equals ac.id
-                        where device.category.Equals(d.category)
+                        where device.category.Equals(d.category) && !d.is_deleted
                         select new { o, d, ap, ac };
 
             if (!string.IsNullOrEmpty(device.name))
@@ -184,6 +184,7 @@ namespace Pirat.Services.Resource
                         join personal in _context.personal on o.id equals personal.offer_id
                         join ap in _context.address on o.address_id equals ap.id
                         join ac in _context.address on personal.address_id equals ac.id
+                        where !personal.is_deleted
                         select new { o, personal, ap, ac };
 
             if (!string.IsNullOrEmpty(manpower.institution))
@@ -273,6 +274,7 @@ namespace Pirat.Services.Resource
             List<ConsumableEntity> consumableEntities = queC.Select(c => c).ToList();
             foreach (ConsumableEntity c in consumableEntities)
             {
+                if (c.is_deleted) continue;
                 offer.consumables.Add(new Consumable().build(c).build(_queryHelper.queryAddress(c.address_id)));
             }
 
@@ -280,6 +282,7 @@ namespace Pirat.Services.Resource
             List<DeviceEntity> deviceEntities = queD.Select(d => d).ToList();
             foreach (DeviceEntity d in deviceEntities)
             {
+                if(d.is_deleted) continue;
                 offer.devices.Add(new Device().build(d).build(_queryHelper.queryAddress(d.address_id)));
             }
 
@@ -287,6 +290,7 @@ namespace Pirat.Services.Resource
             List<PersonalEntity> personalEntities = queP.Select(p => p).ToList();
             foreach (PersonalEntity p in personalEntities)
             {
+                if(p.is_deleted) continue;
                 offer.personals.Add(new Personal().build(p).build(_queryHelper.queryAddress(p.address_id)));
             }
 

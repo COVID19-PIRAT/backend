@@ -15,7 +15,9 @@ namespace Pirat.Model
 
 		public int id { get; set; }
 
-		public bool hascoordinates { get; set; } = false;
+		public bool hascoordinates { get; set; }
+
+        public bool is_deleted { get; set; }
 
 		public AddressEntity build(Address a)
 		{
@@ -39,6 +41,7 @@ namespace Pirat.Model
             latitude = other.latitude;
             longitude = other.longitude;
             hascoordinates = other.hascoordinates;
+            is_deleted = other.is_deleted;
         }
 
 		public override string ToString()

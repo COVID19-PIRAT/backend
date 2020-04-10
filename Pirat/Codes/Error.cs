@@ -51,6 +51,7 @@
 
             public const string MORE_THAN_ONE_OFFER_FROM_TOKEN = "9000:MoreThanOneOfferFromToken";
             public const string UPDATES_MADE_IN_TOO_MANY_ROWS = "9001:UpdatesMadeInTooManyRows";
+            public const string RESOURCE_WITHOUT_RELATED_ADDRESS = "9002:ResourceWithoutRelatedAddress";
 
         }
     }

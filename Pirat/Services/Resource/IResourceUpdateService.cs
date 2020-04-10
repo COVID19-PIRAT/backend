@@ -66,5 +66,32 @@ namespace Pirat.Services.Resource
         public Task AddResource(string token, Device device);
         
         public Task AddResource(string token, Personal personal);
+
+        /// <summary>
+        /// Marks the consumable which is retrieved by the given token and consumable id as deleted.
+        /// </summary>
+        /// <param name="token">The unique token</param>
+        /// <param name="consumableId">The unique consumable id</param>
+        /// <param name="reason">The reason from the client. Must be non-empty.</param>
+        /// <returns></returns>
+        public Task MarkConsumableAsDeleted(string token, int consumableId, string reason);
+
+        /// <summary>
+        /// Marks the device which is retrieved by the given token and device id as deleted.
+        /// </summary>
+        /// <param name="token">The unique token</param>
+        /// <param name="deviceId">The unique device id</param>
+        /// <param name="reason">The reason from the client. Must be non-empty.</param>
+        /// <returns></returns>
+        public Task MarkDeviceAsDeleted(string token, int deviceId, string reason);
+
+        /// <summary>
+        /// Marks the personal which is retrieved by the given token and personal id as deleted.
+        /// </summary>
+        /// <param name="token">The unique token</param>
+        /// <param name="personalId">The unique personal id</param>
+        /// <param name="reason">The reason from the client. Must be non-empty.</param>
+        /// <returns></returns>
+        public Task MarkPersonalAsDeleted(string token,int personalId, string reason);
     }
 }

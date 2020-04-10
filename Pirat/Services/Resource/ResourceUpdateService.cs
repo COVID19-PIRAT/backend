@@ -287,7 +287,7 @@ namespace Pirat.Services.Resource
                 consumable.Update(_context);
                 
                 // Add log
-                new Change()
+                new ChangeEntity()
                 {
                     change_type = "INCREASE_AMOUNT",
                     element_id = consumable.id,
@@ -312,7 +312,7 @@ namespace Pirat.Services.Resource
             consumable.Update(_context);
             
             // Add log
-            new Change()
+            new ChangeEntity()
             {
                 change_type = "DECREASE_AMOUNT",
                 element_id = consumable.id,
@@ -355,7 +355,7 @@ namespace Pirat.Services.Resource
                 device.Update(_context);
                 
                 // Add log
-                new Change()
+                new ChangeEntity()
                 {
                     change_type = "INCREASE_AMOUNT",
                     element_id = device.id,
@@ -380,7 +380,7 @@ namespace Pirat.Services.Resource
             device.Update(_context);
             
             // Add log
-            new Change()
+            new ChangeEntity()
             {
                 change_type = "DECREASE_AMOUNT",
                 element_id = device.id,
@@ -403,6 +403,113 @@ namespace Pirat.Services.Resource
         public Task AddResource(string token, Personal personal)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task MarkConsumableAsDeleted(string token, int consumableId, string reason)
+        {
+            if (reason.Trim().Length == 0)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
+            }
+
+            ConsumableEntity consumableEntity = (ConsumableEntity) new ConsumableEntity().Find(_context, consumableId);
+            AddressEntity addressEntity = (AddressEntity)new AddressEntity().Find(_context, consumableEntity.address_id);
+
+
+            if (consumableEntity is null)
+            {
+                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
+            }
+            if (addressEntity is null)
+            {
+                throw new InvalidDataStateException(Error.FatalCodes.RESOURCE_WITHOUT_RELATED_ADDRESS);
+            }
+
+            consumableEntity.is_deleted = true;
+            consumableEntity.Update(_context);
+
+            addressEntity.is_deleted = true;
+            addressEntity.Update(_context);
+
+            new ChangeEntity()
+            {
+                change_type = ChangeEntity.ChangeType.DeleteResource,
+                element_id = consumableEntity.id,
+                element_type = ChangeEntity.ElementType.Consumable,
+                reason = reason,
+                timestamp = DateTime.Now
+            }.Insert(_context);
+        }
+
+        public async Task MarkDeviceAsDeleted(string token, int deviceId, string reason)
+        {
+            if (reason.Trim().Length == 0)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
+            }
+
+            DeviceEntity deviceEntity = (DeviceEntity)new DeviceEntity().Find(_context, deviceId);
+            AddressEntity addressEntity = (AddressEntity)new AddressEntity().Find(_context, deviceEntity.address_id);
+
+            if (deviceEntity is null)
+            {
+                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_DEVICE);
+            }
+            if (addressEntity is null)
+            {
+                throw new InvalidDataStateException(Error.FatalCodes.RESOURCE_WITHOUT_RELATED_ADDRESS);
+            }
+
+            deviceEntity.is_deleted = true;
+            deviceEntity.Update(_context);
+
+            addressEntity.is_deleted = true;
+            addressEntity.Update(_context);
+
+            new ChangeEntity()
+            {
+                change_type = ChangeEntity.ChangeType.DeleteResource,
+                element_id = deviceEntity.id,
+                element_type = ChangeEntity.ElementType.Device,
+                reason = reason,
+                timestamp = DateTime.Now
+            }.Insert(_context);
+        }
+
+        public async Task MarkPersonalAsDeleted(string token, int personalId, string reason)
+        {
+            if (reason.Trim().Length == 0)
+            {
+                throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
+            }
+
+            PersonalEntity personalEntity = (PersonalEntity)new PersonalEntity().Find(_context, personalId);
+            AddressEntity addressEntity = (AddressEntity) new AddressEntity().Find(_context, personalEntity.address_id);
+
+            if (personalEntity is null)
+            {
+                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_PERSONAL);
+            }
+
+            if (addressEntity is null)
+            {
+                throw new InvalidDataStateException(Error.FatalCodes.RESOURCE_WITHOUT_RELATED_ADDRESS);
+            }
+
+            personalEntity.is_deleted = true;
+            personalEntity.Update(_context);
+
+            addressEntity.is_deleted = true;
+            addressEntity.Update(_context);
+
+            new ChangeEntity()
+            {
+                change_type = ChangeEntity.ChangeType.DeleteResource,
+                element_id = personalEntity.id,
+                element_type = ChangeEntity.ElementType.Personal,
+                reason = reason,
+                timestamp = DateTime.Now
+            }.Insert(_context);
         }
 
         private string createToken()

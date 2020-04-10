@@ -19,6 +19,8 @@ namespace Pirat.Model.Entity
 
         public string area { get; set; }
 
+        public bool is_deleted { get; set; }
+
         public PersonalEntity build(Personal p)
         {
             institution = p.institution;

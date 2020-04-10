@@ -608,5 +608,73 @@ namespace Pirat.Controllers
             }
         }
 
+        [HttpDelete("offers/{token}/consumable/{id:int}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> MarkConsumableAsDeleted(string token, int id, [FromBody] string reason)
+        {
+            try
+            {
+                await _resourceUpdateService.MarkConsumableAsDeleted(token, id, reason);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+        [HttpDelete("offers/{token}/device/{id:int}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> MarkDeviceAsDeleted(string token, int id, [FromBody] string reason)
+        {
+            try
+            {
+                await _resourceUpdateService.MarkDeviceAsDeleted(token, id, reason);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidDataStateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
+        }
+
+        [HttpDelete("offers/{token}/personal/{id:int}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> MarkPersonalAsDeleted(string token, int id, [FromBody] string reason)
+        {
+            try
+            {
+                await _resourceUpdateService.MarkPersonalAsDeleted(token, id, reason);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
     }
 }
