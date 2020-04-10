@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -210,7 +211,7 @@ namespace Pirat.DatabaseTests
 
             //Device should not be retrieved by querying with a device object
             var deviceForQuery = _captainHookGenerator.GenerateDevice();
-            var foundDevices = await _resourceDemandService.QueryOffers(deviceForQuery);
+            var foundDevices = await _resourceDemandService.QueryOffers(deviceForQuery).ToListAsync();
             Assert.NotNull(foundDevices);
             Assert.Empty(foundDevices);
 
