@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Pirat.DatabaseContext;
 using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Common;
 
 namespace Pirat.Model
 {

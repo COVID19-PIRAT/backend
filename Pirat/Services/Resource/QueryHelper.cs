@@ -6,6 +6,7 @@ using Pirat.DatabaseContext;
 using Pirat.Exceptions;
 using Pirat.Model;
 using Pirat.Model.Api.Resource;
+using Pirat.Model.Entity.Resource.Common;
 using Pirat.Model.Entity.Resource.Demand;
 using Pirat.Model.Entity.Resource.Stock;
 

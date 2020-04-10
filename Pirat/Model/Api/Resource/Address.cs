@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Pirat.Model.Entity.Resource.Common;
 
 namespace Pirat.Model.Api.Resource
 {

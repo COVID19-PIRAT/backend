@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Pirat.DatabaseContext;
 using Pirat.Model.Api.Resource;
+using Pirat.Model.Entity.Resource.Common;
 
 namespace Pirat.Model.Entity.Resource.Stock
 {

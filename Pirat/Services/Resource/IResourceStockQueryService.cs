@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Pirat.Model;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Common;
 
 namespace Pirat.Services.Resource
 {

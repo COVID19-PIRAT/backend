@@ -1,15 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-using Pirat.DatabaseContext;
-using Pirat.Model.Entity;
+﻿using System.Text;
 using System.Threading.Tasks;
+using Pirat.DatabaseContext;
 using Pirat.Model.Api.Resource;
 
-namespace Pirat.Model
+namespace Pirat.Model.Entity.Resource.Common
 {
 
 	public class AddressEntity : Address, IFindable, IDeletable, IUpdatable, IInsertable
