@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Pirat.Model.Entity;
 
 namespace Pirat.Model
@@ -70,7 +72,7 @@ namespace Pirat.Model
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return HashCode.Combine(base.GetHashCode());
         }
 
         public override string ToString()

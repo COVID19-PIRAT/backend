@@ -9,12 +9,20 @@ namespace Pirat.Model.Entity
     /// <summary>
     /// An offer made by the user. Data is stored in table offer on the database.
     /// </summary>
-    public class OfferEntity : ProviderBase, IFindable, IDeletable, IUpdatable, IInsertable
+    public class OfferEntity : IFindable, IDeletable, IUpdatable, IInsertable
     {
         //***Key
         public int id { get; set; }
 
-        //***Provider relevant data are in ProviderBase
+        public string name { get; set; } = string.Empty;
+
+        public string organisation { get; set; } = string.Empty;
+
+        public string phone { get; set; } = string.Empty;
+
+        public string mail { get; set; } = string.Empty;
+
+        public bool ispublic { get; set; }
 
         //***Link token
         public string token { get; set; }

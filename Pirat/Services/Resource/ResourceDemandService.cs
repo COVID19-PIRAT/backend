@@ -9,6 +9,7 @@ using Pirat.Codes;
 using Pirat.DatabaseContext;
 using Pirat.Exceptions;
 using Pirat.Model;
+using Pirat.Model.Api.Resource.Stock;
 using Pirat.Model.Entity;
 using Pirat.Services.Helper;
 

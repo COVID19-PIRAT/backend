@@ -10,6 +10,7 @@ using Moq;
 using Pirat.DatabaseContext;
 using Pirat.Examples.TestExamples;
 using Pirat.Model;
+using Pirat.Model.Api.Resource.Stock;
 using Pirat.Services;
 using Pirat.Services.Resource;
 using Xunit;

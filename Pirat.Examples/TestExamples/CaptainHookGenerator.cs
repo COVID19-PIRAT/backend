@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Pirat.Model;
+using Pirat.Model.Api.Resource.Stock;
 
 namespace Pirat.Examples.TestExamples
 {

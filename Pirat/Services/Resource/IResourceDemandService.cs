@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Pirat.Model;
+using Pirat.Model.Api.Resource.Stock;
 using Pirat.Model.Entity;
 
 namespace Pirat.Services.Resource

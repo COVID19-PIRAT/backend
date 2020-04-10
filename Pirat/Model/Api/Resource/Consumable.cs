@@ -99,7 +99,7 @@ namespace Pirat.Model
         
         public bool Equals(Consumable other)
         {
-            return other != null && base.Equals(other) && unit.Equals(other.unit, StringComparison.Ordinal);
+            return other != null && base.Equals(other) && unit.Equals(other.unit, StringComparison.Ordinal) && address.Equals(other.address);
         }
 
         public override int GetHashCode()

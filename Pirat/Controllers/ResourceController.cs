@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Pirat.Codes;
 using Pirat.Extensions.Swagger.SwaggerConfiguration;
+using Pirat.Model.Api.Resource.Stock;
 using Pirat.Model.Entity;
 using Pirat.Services.Mail;
 using Pirat.Services.Middleware;

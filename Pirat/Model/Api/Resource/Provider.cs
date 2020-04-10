@@ -9,7 +9,8 @@ using Pirat.Model.Entity;
 
 namespace Pirat.Model
 {
-    public abstract class ProviderBase
+    
+    public class Provider
     {
         [JsonProperty]
         [Required]
@@ -29,39 +30,6 @@ namespace Pirat.Model
         [JsonProperty]
         [Required]
         public bool ispublic { get; set; }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals(obj as ProviderBase);
-        }
-        
-        public bool Equals(ProviderBase other)
-        {
-            return other != null
-                   && name.Equals(other.name, StringComparison.Ordinal)
-                   && organisation.Equals(other.organisation, StringComparison.Ordinal)
-                   && phone.Equals(other.phone, StringComparison.Ordinal)
-                   && mail.Equals(other.mail, StringComparison.Ordinal)
-                   && ispublic == other.ispublic;
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(name, organisation, phone, mail, ispublic);
-        }
-
-        public override string ToString()
-        {
-            return "ProviderBase={ " + $"name={name}, organisation={organisation}, phone={phone}, mail={mail}, ispublic={ispublic}" + " }";
-        }
-    }
-
-
-    public class Provider : ProviderBase
-    {
 
         [JsonProperty]
         public Address address { get; set; }
@@ -102,15 +70,28 @@ namespace Pirat.Model
 
         public bool Equals(Provider other)
         {
-            return other != null && base.Equals(other) && address.Equals(other.address) && kilometer == other.kilometer;
+            return other != null
+                   && name.Equals(other.name, StringComparison.Ordinal)
+                   && organisation.Equals(other.organisation, StringComparison.Ordinal)
+                   && phone.Equals(other.phone, StringComparison.Ordinal)
+                   && mail.Equals(other.mail, StringComparison.Ordinal)
+                   && ispublic == other.ispublic
+                   && address.Equals(other.address) 
+                   && kilometer == other.kilometer;
         }
 
         public override string ToString()
         {
-            return "Provider={" + $"{base.ToString()} address={address}, kilometer={kilometer}" + "}";
+            return "Provider={" + $"name={name}, organisation={organisation}, phone={phone}, mail={mail}, ispublic={ispublic}, address={address}, kilometer={kilometer}" + "}";
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(name, organisation, phone, mail, ispublic, address, kilometer);
         }
 
     }
 
     
+
 }

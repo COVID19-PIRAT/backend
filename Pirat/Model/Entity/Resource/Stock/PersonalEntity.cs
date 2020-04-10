@@ -8,8 +8,16 @@ using Pirat.DatabaseContext;
 
 namespace Pirat.Model.Entity
 {
-    public class PersonalEntity : PersonalBase, IFindable, IDeletable, IUpdatable, IInsertable
+    public class PersonalEntity : Resource, IFindable, IDeletable, IUpdatable, IInsertable
     {
+
+        public string institution { get; set; } = string.Empty;
+
+        public string researchgroup { get; set; } = string.Empty;
+
+        public bool experience_rt_pcr { get; set; }
+
+        public string annotation { get; set; } = string.Empty;
 
         public int offer_id { get; set; }
 
@@ -34,7 +42,6 @@ namespace Pirat.Model.Entity
 
         public PersonalEntity build(AddressEntity a)
         {
-
             address_id = a.id;
             return this;
         }

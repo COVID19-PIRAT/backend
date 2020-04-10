@@ -10,12 +10,10 @@ using Pirat.Model.Entity;
 namespace Pirat.Model
 {
 
-    public abstract class PersonalBase : Resource
+    public class Personal : Resource
     {
-
         [JsonProperty]
         [FromQuery(Name = "institution")]
-        // [Required]
         public string institution { get; set; } = string.Empty;
 
         [JsonProperty]
@@ -31,37 +29,6 @@ namespace Pirat.Model
         [FromQuery(Name = "annotation")]
         public string annotation { get; set; } = string.Empty;
 
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals(obj as PersonalBase);
-        }
-
-        public bool Equals(PersonalBase other)
-        {
-            return other != null
-                   && institution.Equals(other.institution, StringComparison.Ordinal)
-                   && researchgroup.Equals(other.researchgroup, StringComparison.Ordinal)
-                   && experience_rt_pcr == other.experience_rt_pcr
-                   && annotation.Equals(other.annotation, StringComparison.Ordinal);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(base.GetHashCode(), institution, researchgroup, experience_rt_pcr, annotation);
-        }
-
-        public override string ToString()
-        {
-            return "PersonalBase={ " + $"{base.ToString()} institution={institution}, researchgroup={researchgroup}, " +
-                   $"experience_rt_pcr={experience_rt_pcr}, annotation={annotation}" + " }";
-        }
-    }
-
-    public class Personal : PersonalBase
-    {
         [JsonProperty]
         [FromQuery(Name = "qualification")]
         [Required]
@@ -106,6 +73,10 @@ namespace Pirat.Model
         {
             return other != null
                    && base.Equals(other)
+                   && institution.Equals(other.institution, StringComparison.Ordinal)
+                   && researchgroup.Equals(other.researchgroup, StringComparison.Ordinal)
+                   && experience_rt_pcr == other.experience_rt_pcr
+                   && annotation.Equals(other.annotation, StringComparison.Ordinal)
                    && qualification.Equals(other.qualification, StringComparison.Ordinal)
                    && area.Equals(other.area, StringComparison.Ordinal)
                    && address.Equals(other.address)
@@ -114,35 +85,15 @@ namespace Pirat.Model
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(base.GetHashCode(), qualification, area, address, kilometer);
+            return HashCode.Combine(base.GetHashCode(), new string[]{institution , researchgroup, annotation, qualification, area} , experience_rt_pcr, address, kilometer);
         }
 
         public override string ToString()
         {
-            return "Personal={ " + $"{base.ToString()} qualification={qualification} area={area} address={address} kilometer={kilometer}" + " }";
+            return "Personal={ " + $"{base.ToString()} institution={institution}, researchgroup={researchgroup}, " +
+                   $"experience_rt_pcr={experience_rt_pcr}, annotation={annotation}, qualification={qualification} area={area} address={address} kilometer={kilometer}" + " }";
         }
     }
 
     
-
-    public class Manpower : PersonalBase
-    {
-
-        [JsonProperty]
-        [FromQuery(Name = "qualification")]
-        [Required]
-        public List<string> qualification { get; set; }
-
-        [JsonProperty]
-        [FromQuery(Name = "area")]
-        [Required]
-        public List<string> area { get; set; }
-
-        public Address address { get; set; }
-
-        [JsonProperty]
-        [FromQuery(Name = "kilometer")]
-        public int kilometer { get; set; }
-
-    }
 }
