@@ -78,6 +78,22 @@ namespace Pirat.DatabaseTests
 
             exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE region_subscription CASCADE"));
             Assert.Null(exception);
+
+            exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE change CASCADE"));
+            Assert.Null(exception);
+        }
+
+        /// <summary>
+        /// Call this method to verify the change table has a certain amount of entries and verify that an entry has always a diff amount greater than zero.
+        /// </summary>
+        /// <param name="numberOfRows">The amount of entries the table should have</param>
+        public void VerifyChangeTable(int numberOfRows)
+        {
+            var changes = DemandContext.change.Select(ch => ch).ToList();
+            Assert.NotNull(changes);
+            Assert.NotEmpty(changes);
+            Assert.True(changes.Count == numberOfRows);
+            Assert.All(changes, change => Assert.True(0 < change.diff_amount));
         }
 
         /// <summary>
@@ -451,6 +467,9 @@ namespace Pirat.DatabaseTests
                 "This is an unnecessary reason.");
             changedConsumable = (await _resourceDemandService.queryLink(_token)).consumables[0];
             Assert.Equal(newAmount, changedConsumable.amount);
+
+            // Verify change table
+            VerifyChangeTable(4);
         }
 
         /// <summary>
@@ -474,6 +493,9 @@ namespace Pirat.DatabaseTests
             await _resourceUpdateService.ChangeConsumableAmount(_token, consumable.id, newAmount, "Eaten by a shark");
             Consumable changedConsumable = (await _resourceDemandService.queryLink(_token)).consumables[0];
             Assert.Equal(newAmount, changedConsumable.amount);
+
+            // Verify change table
+            VerifyChangeTable(2);
         }
 
         /// <summary>
@@ -498,6 +520,9 @@ namespace Pirat.DatabaseTests
                 .ChangeConsumableAmount(_token, consumable.id, newAmount));
             Assert.Equal(consumable.amount,
                 (await _resourceDemandService.queryLink(_token)).consumables[0].amount);
+
+            // Verify change table
+            VerifyChangeTable(0);
         }
 
         /// <summary>
@@ -522,6 +547,9 @@ namespace Pirat.DatabaseTests
                 .ChangeConsumableAmount(_token, consumable.id, newAmount, "I forgot the reason"));
             Assert.Equal(consumable.amount,
                 (await _resourceDemandService.queryLink(_token)).consumables[0].amount);
+
+            // Verify change table
+            VerifyChangeTable(0);
         }
 
         /// <summary>
@@ -555,6 +583,9 @@ namespace Pirat.DatabaseTests
             newOffer = await _resourceDemandService.queryLink(_token);
             Assert.Equal(oldOffer.personals.Count + 1, newOffer.personals.Count);
             Assert.Equal(newPersonal, newOffer.personals.Find(x => x.id == newPersonal.id));
+
+            // Verify change table
+            VerifyChangeTable(3);
         }
 
         /// <summary>
@@ -585,6 +616,9 @@ namespace Pirat.DatabaseTests
             await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService.AddResource(_token, newPersonal));
             newOffer = await _resourceDemandService.queryLink(_token);
             Assert.Equal(oldOffer.personals.Count, newOffer.personals.Count);
+
+            // Verify change table
+            VerifyChangeTable(0);
         }
     }
 }

@@ -14,6 +14,8 @@ namespace Pirat.Model
         
         public string change_type { get; set; }
 
+        public int diff_amount { get; set; }
+
         public string reason { get; set; } = string.Empty;
         
         public DateTime timestamp { get; set; } = DateTime.Now;
