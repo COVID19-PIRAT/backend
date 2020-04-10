@@ -7,15 +7,17 @@ using Pirat.Codes;
 using Pirat.DatabaseContext;
 using Pirat.Exceptions;
 using Pirat.Model;
+using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Stock;
 
 namespace Pirat.Services.Resource
 {
     internal class QueryHelper
     {
-        private DemandContext _context;
+        private ResourceContext _context;
 
-        internal QueryHelper(DemandContext context)
+        internal QueryHelper(ResourceContext context)
         {
             _context = context;
         }

@@ -8,6 +8,6 @@ namespace Pirat.Model.Entity
 {
     public interface IUpdatable
     {
-        Task UpdateAsync(DemandContext context);
+        Task UpdateAsync(ResourceContext context);
     }
 }

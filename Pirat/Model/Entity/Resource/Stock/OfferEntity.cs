@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Pirat.DatabaseContext;
+using Pirat.Model.Api.Resource;
 
-namespace Pirat.Model.Entity
+namespace Pirat.Model.Entity.Resource.Stock
 {
     /// <summary>
     /// An offer made by the user. Data is stored in table offer on the database.
@@ -34,7 +33,7 @@ namespace Pirat.Model.Entity
         public int address_id { get; set; }
 
 
-        public OfferEntity build(Provider p)
+        public OfferEntity Build(Provider p)
         {
             name = p.name;
             organisation = p.organisation;
@@ -44,24 +43,24 @@ namespace Pirat.Model.Entity
             return this;
         }
 
-        public async Task<IFindable> FindAsync(DemandContext context, int id)
+        public async Task<IFindable> FindAsync(ResourceContext context, int id)
         {
             return await context.offer.FindAsync(id);
         }
 
-        public async Task DeleteAsync(DemandContext context)
+        public async Task DeleteAsync(ResourceContext context)
         {
             context.offer.Remove(this);
             await context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(DemandContext context)
+        public async Task UpdateAsync(ResourceContext context)
         {
             context.offer.Update(this);
             await context.SaveChangesAsync();
         }
 
-        public async Task<IInsertable> InsertAsync(DemandContext context)
+        public async Task<IInsertable> InsertAsync(ResourceContext context)
         {
             context.offer.Add(this);
             await context.SaveChangesAsync();

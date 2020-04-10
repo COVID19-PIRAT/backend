@@ -22,14 +22,14 @@ namespace Pirat.DatabaseTests
         private const string connectionString =
             "Server=localhost;Port=5432;Database=postgres;User ID=postgres;Password=postgres";
 
-        private static DbContextOptions<DemandContext> options =
-            new DbContextOptionsBuilder<DemandContext>().UseNpgsql(connectionString).Options;
+        private static DbContextOptions<ResourceContext> options =
+            new DbContextOptionsBuilder<ResourceContext>().UseNpgsql(connectionString).Options;
 
-        private static readonly DemandContext DemandContext = new DemandContext(options);
+        private static readonly ResourceContext ResourceContext = new ResourceContext(options);
 
-        private readonly ResourceDemandService _resourceDemandService;
+        private readonly ResourceStockQueryService _resourceStockQueryService;
 
-        private readonly ResourceUpdateService _resourceUpdateService;
+        private readonly ResourceStockUpdateService _resourceStockUpdateService;
 
         private readonly CaptainHookGenerator _captainHookGenerator;
 
@@ -40,8 +40,8 @@ namespace Pirat.DatabaseTests
         /// </summary>
         public DemandServiceTest()
         {
-            var loggerDemand = new Mock<ILogger<ResourceDemandService>>();
-            var loggerUpdate = new Mock<ILogger<ResourceUpdateService>>();
+            var loggerDemand = new Mock<ILogger<ResourceStockQueryService>>();
+            var loggerUpdate = new Mock<ILogger<ResourceStockUpdateService>>();
             var addressMaker = new Mock<IAddressMaker>();
             addressMaker.Setup(m => m.SetCoordinates(It.IsAny<AddressEntity>())).Callback((AddressEntity a) =>
             {
@@ -49,8 +49,8 @@ namespace Pirat.DatabaseTests
                 a.longitude = 0;
                 a.hascoordinates = false;
             });
-            _resourceDemandService = new ResourceDemandService(loggerDemand.Object, DemandContext, addressMaker.Object);
-            _resourceUpdateService = new ResourceUpdateService(loggerUpdate.Object, DemandContext, addressMaker.Object);
+            _resourceStockQueryService = new ResourceStockQueryService(loggerDemand.Object, ResourceContext, addressMaker.Object);
+            _resourceStockUpdateService = new ResourceStockUpdateService(loggerUpdate.Object, ResourceContext, addressMaker.Object);
             _captainHookGenerator = new CaptainHookGenerator();
             _shyPirateGenerator = new ShyPirateGenerator();
         }
@@ -60,13 +60,13 @@ namespace Pirat.DatabaseTests
         /// </summary>
         public void Dispose()
         {
-            var exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE offer CASCADE"));
+            var exception = Record.Exception(() => ResourceContext.Database.ExecuteSqlRaw("TRUNCATE offer CASCADE"));
             Assert.Null(exception);
 
-            exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE address CASCADE"));
+            exception = Record.Exception(() => ResourceContext.Database.ExecuteSqlRaw("TRUNCATE address CASCADE"));
             Assert.Null(exception);
 
-            exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE region_subscription CASCADE"));
+            exception = Record.Exception(() => ResourceContext.Database.ExecuteSqlRaw("TRUNCATE region_subscription CASCADE"));
             Assert.Null(exception);
         }
 
@@ -76,18 +76,18 @@ namespace Pirat.DatabaseTests
         {
             //Insert the offer
             var offer = _captainHookGenerator.generateOffer();
-            var token = await _resourceUpdateService.InsertAsync(offer);
+            var token = await _resourceStockUpdateService.InsertAsync(offer);
             Assert.True(token.Length == 30);
 
             //Query the link
-            var entity = await _resourceDemandService.QueryLinkAsync(token);
+            var entity = await _resourceStockQueryService.QueryLinkAsync(token);
             Assert.Equal(offer.provider.name, entity.provider.name);
 
             //Now query the elements. If it is not empty we received the element back
 
             //Get device
             var queryDevice = _captainHookGenerator.GenerateDevice();
-            var resultDevices = await _resourceDemandService.QueryOffersAsync(queryDevice)
+            var resultDevices = await _resourceStockQueryService.QueryOffersAsync(queryDevice)
                 .ToListAsync();
             Assert.NotNull(resultDevices);
             Assert.NotEmpty(resultDevices);
@@ -108,7 +108,7 @@ namespace Pirat.DatabaseTests
 
             //Get consumable
             var queryConsumable = _captainHookGenerator.GenerateConsumable();
-            var resultConsumables = await _resourceDemandService.QueryOffersAsync(queryConsumable)
+            var resultConsumables = await _resourceStockQueryService.QueryOffersAsync(queryConsumable)
                 .ToListAsync();
             Assert.NotNull(resultConsumables);
             Assert.NotEmpty(resultDevices);
@@ -120,7 +120,7 @@ namespace Pirat.DatabaseTests
 
             //Get personal
             var manpowerQuery = _captainHookGenerator.GenerateManpower();
-            var resultPersonal = await _resourceDemandService.QueryOffersAsync(manpowerQuery)
+            var resultPersonal = await _resourceStockQueryService.QueryOffersAsync(manpowerQuery)
                 .ToListAsync();
             Assert.NotNull(resultPersonal);
             Assert.NotEmpty(resultPersonal);
@@ -129,22 +129,22 @@ namespace Pirat.DatabaseTests
             Assert.Equal(offer.personals.First().qualification, personal.resource.qualification);
 
             //Delete the offer and check if it worked
-            var exception = await Record.ExceptionAsync(() => _resourceUpdateService.DeleteAsync(token));
+            var exception = await Record.ExceptionAsync(() => _resourceStockUpdateService.DeleteAsync(token));
             Assert.Null(exception);
 
             //Offer should be not available anymore
-            await Assert.ThrowsAsync<DataNotFoundException>(async () => await _resourceDemandService.QueryLinkAsync(token));
+            await Assert.ThrowsAsync<DataNotFoundException>(async () => await _resourceStockQueryService.QueryLinkAsync(token));
         }
 
         [Fact]
         public async Task InsertPrivateOffer_QueryNoProvider()
         {
             var offer = _shyPirateGenerator.generateOffer();
-            var token = await _resourceUpdateService.InsertAsync(offer);
+            var token = await _resourceStockUpdateService.InsertAsync(offer);
 
             //Get device
             var queryDevice = _shyPirateGenerator.GenerateDevice();
-            var resultDevices = await _resourceDemandService.QueryOffersAsync(queryDevice)
+            var resultDevices = await _resourceStockQueryService.QueryOffersAsync(queryDevice)
                 .ToListAsync();
             Assert.NotNull(resultDevices);
             Assert.NotEmpty(resultDevices);
@@ -162,11 +162,11 @@ namespace Pirat.DatabaseTests
             Assert.Null(providerFromQuery);
 
             //Delete the offer and check if it worked
-            var exception = await Record.ExceptionAsync(() => _resourceUpdateService.DeleteAsync(token));
+            var exception = await Record.ExceptionAsync(() => _resourceStockUpdateService.DeleteAsync(token));
             Assert.Null(exception);
 
             //Offer should be not available anymore
-            await Assert.ThrowsAsync<DataNotFoundException>(async () => await _resourceDemandService.QueryLinkAsync(token));
+            await Assert.ThrowsAsync<DataNotFoundException>(async () => await _resourceStockQueryService.QueryLinkAsync(token));
         }
 
 
@@ -174,7 +174,7 @@ namespace Pirat.DatabaseTests
         public async Task QueryLink_NotExist()
         {
             var token = "oooooWoooooWoooooWoooooWoooooW";
-            await Assert.ThrowsAsync<DataNotFoundException>(async () => await _resourceDemandService.QueryLinkAsync(token));
+            await Assert.ThrowsAsync<DataNotFoundException>(async () => await _resourceStockQueryService.QueryLinkAsync(token));
         }
 
 

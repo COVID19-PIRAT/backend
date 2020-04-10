@@ -13,6 +13,6 @@ namespace Pirat.Model.Entity
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task<IInsertable> InsertAsync(DemandContext context);
+        Task<IInsertable> InsertAsync(ResourceContext context);
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Pirat.Model;
-using Pirat.Model.Api.Resource.Stock;
+using Pirat.Model.Api.Resource;
 
 namespace Pirat.Services.Resource
 {

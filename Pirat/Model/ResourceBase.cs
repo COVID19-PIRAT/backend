@@ -8,7 +8,7 @@ using Pirat.Helper;
 
 namespace Pirat.Model
 {
-    public abstract class Resource
+    public abstract class ResourceBase
     {
         [JsonProperty]
         [SwaggerExclude]
@@ -19,10 +19,10 @@ namespace Pirat.Model
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals(obj as Resource);
+            return Equals(obj as ResourceBase);
         }
 
-        public bool Equals(Resource other)
+        public bool Equals(ResourceBase other)
         {
             return other != null && id == other.id;
         }
@@ -34,7 +34,7 @@ namespace Pirat.Model
 
         public override string ToString()
         {
-            return "Resource={ " + $"id={id}" + " }";
+            return "ResourceBase={ " + $"id={id}" + " }";
         }
     }
 }

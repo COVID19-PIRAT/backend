@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Demand;
+using Pirat.Model.Entity.Resource.Stock;
 
-namespace Pirat.Model
+namespace Pirat.Model.Api.Resource
 {
     public class Device : Item
     {
@@ -18,6 +15,18 @@ namespace Pirat.Model
             name = d.name;
             manufacturer = d.manufacturer;
             ordernumber = d.ordernumber;
+            amount = d.amount;
+            annotation = d.annotation;
+            return this;
+        }
+
+        public Device build(DemandDeviceEntity d)
+        {
+            id = d.id;
+            category = d.category;
+            name = d.name;
+            manufacturer = d.manufacturer;
+            //ordernumber = d.ordernumber;
             amount = d.amount;
             annotation = d.annotation;
             return this;

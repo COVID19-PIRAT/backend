@@ -159,6 +159,65 @@ create table change
 
 alter table change owner to postgres;
 
+create table demand
+(
+	id serial
+		constraint demand_pk
+			primary key,
+	institution text,
+	name text,
+	mail text not null,
+	phone text,
+	address_id int
+		constraint demand_address_id_fk
+			references address,
+	annotation text,
+	token text not null,
+	created_at_timestamp timestamp not null
+);
+
+create index demand_token_index
+	on demand (token);
+	
+	
+create table demand_device
+(
+	id serial not null
+		constraint demand_device_pk
+			primary key,
+	demand_id integer not null
+		constraint demand_device_demand_id_fk
+			references demand
+				on update cascade on delete cascade,
+	category text not null,
+	name text,
+	manufacturer text,
+	amount integer not null,
+	annotation text,
+	created_at_timestamp timestamp not null,
+	is_deleted boolean not null
+);
+
+
+create table demand_consumable
+(
+	id serial not null
+		constraint demand_consumable_pk
+			primary key,
+	demand_id integer not null
+		constraint demand_consumable_demand_id_fk
+			references demand
+				on update cascade on delete cascade,
+	category text not null,
+	name text,
+	manufacturer text,
+	amount integer not null,
+	unit text not null,
+	annotation text,
+	created_at_timestamp timestamp not null,
+	is_deleted boolean not null
+);
+
 	
 -- INSERT INTO address 
 -- (id, streetnumber, postalcode, city, country, hascoordinates, latitude, longitude, street) 

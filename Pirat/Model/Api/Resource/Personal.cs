@@ -1,16 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Pirat.Model.Entity;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Pirat.Model.Entity.Resource.Stock;
 
-namespace Pirat.Model
+namespace Pirat.Model.Api.Resource
 {
 
-    public class Personal : Resource
+    public class Personal : ResourceBase
     {
         [JsonProperty]
         [FromQuery(Name = "institution")]

@@ -11,6 +11,6 @@ namespace Pirat.Model.Entity
      */
     public interface IFindable
     {
-        Task<IFindable> FindAsync(DemandContext context, int id);
+        Task<IFindable> FindAsync(ResourceContext context, int id);
     }
 }

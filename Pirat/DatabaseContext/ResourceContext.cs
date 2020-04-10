@@ -5,10 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Common;
+using Pirat.Model.Entity.Resource.Demand;
+using Pirat.Model.Entity.Resource.Stock;
 
 namespace Pirat.DatabaseContext
 {
-    public class DemandContext : DbContext
+    public class ResourceContext : DbContext
     {
         public DbSet<OfferEntity> offer { get; set; }
 
@@ -24,7 +27,13 @@ namespace Pirat.DatabaseContext
         
         public DbSet<ChangeEntity> change { get; set; }
 
-        public DemandContext(DbContextOptions<DemandContext> options) : base(options)
+        public DbSet<DemandEntity> demand { get; set; }
+
+        public DbSet<DemandConsumableEntity> demand_consumable { get; set; }
+
+        public DbSet<DemandDeviceEntity> demand_device { get; set; }
+
+        public ResourceContext(DbContextOptions<ResourceContext> options) : base(options)
         {
         }
 

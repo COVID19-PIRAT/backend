@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Demand;
+using Pirat.Model.Entity.Resource.Stock;
 
-namespace Pirat.Model
+namespace Pirat.Model.Api.Resource
 {
     public class Consumable : Item
     {
@@ -21,6 +20,19 @@ namespace Pirat.Model
             name = c.name;
             manufacturer = c.manufacturer;
             ordernumber = c.ordernumber;
+            amount = c.amount;
+            unit = c.unit;
+            annotation = c.annotation;
+            return this;
+        }
+
+        public Consumable build(DemandConsumableEntity c)
+        {
+            id = c.id;
+            category = c.category;
+            name = c.name;
+            manufacturer = c.manufacturer;
+            //ordernumber = c.ordernumber;
             amount = c.amount;
             unit = c.unit;
             annotation = c.annotation;

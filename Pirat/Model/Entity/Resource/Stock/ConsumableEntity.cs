@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Pirat.DatabaseContext;
+using Pirat.Model.Api.Resource;
 
-namespace Pirat.Model.Entity
+namespace Pirat.Model.Entity.Resource.Stock
 {
     public class ConsumableEntity : ItemEntity, IFindable, IDeletable, IUpdatable, IInsertable
     {
@@ -12,7 +10,7 @@ namespace Pirat.Model.Entity
         public string unit { get; set; }
 
 
-        public ConsumableEntity build(Consumable c)
+        public ConsumableEntity Build(Consumable c)
         {
             category = c.category;
             name = c.name;
@@ -24,31 +22,31 @@ namespace Pirat.Model.Entity
             return this;
         }
 
-        public ConsumableEntity build(AddressEntity a)
+        public ConsumableEntity Build(AddressEntity a)
         {
             address_id = a.id;
             return this;
         }
 
         
-        public async Task<IFindable> FindAsync(DemandContext context, int id)
+        public async Task<IFindable> FindAsync(ResourceContext context, int id)
         {
             return await context.consumable.FindAsync(id);
         }
 
-        public async Task DeleteAsync(DemandContext context)
+        public async Task DeleteAsync(ResourceContext context)
         {
             context.consumable.Remove(this);
             await context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(DemandContext context)
+        public async Task UpdateAsync(ResourceContext context)
         {
             context.consumable.Update(this);
             await context.SaveChangesAsync();
         }
 
-        public async Task<IInsertable> InsertAsync(DemandContext context)
+        public async Task<IInsertable> InsertAsync(ResourceContext context)
         {
             context.consumable.Add(this);
             await context.SaveChangesAsync();

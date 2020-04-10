@@ -7,6 +7,7 @@ using System.Text;
 using Pirat.DatabaseContext;
 using Pirat.Model.Entity;
 using System.Threading.Tasks;
+using Pirat.Model.Api.Resource;
 
 namespace Pirat.Model
 {
@@ -72,25 +73,25 @@ namespace Pirat.Model
 			return builder.ToString();
 		}
 
-        public async Task<IInsertable> InsertAsync(DemandContext context)
+        public async Task<IInsertable> InsertAsync(ResourceContext context)
         {
             context.address.Add(this);
 			await context.SaveChangesAsync();
             return this;
         }
 
-        public async Task<IFindable> FindAsync(DemandContext context, int id)
+        public async Task<IFindable> FindAsync(ResourceContext context, int id)
         {
             return await context.address.FindAsync(id);
         }
 
-        public async Task UpdateAsync(DemandContext context)
+        public async Task UpdateAsync(ResourceContext context)
         {
             context.address.Update(this);
             await context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(DemandContext context)
+        public async Task DeleteAsync(ResourceContext context)
         {
             context.address.Remove(this);
             await context.SaveChangesAsync();

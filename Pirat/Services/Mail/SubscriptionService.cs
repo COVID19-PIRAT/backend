@@ -5,20 +5,22 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Pirat.DatabaseContext;
 using Pirat.Model;
+using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Stock;
 
 namespace Pirat.Services.Mail
 {
     public class SubscriptionService : ISubscriptionService
     {
-        private readonly DemandContext _context;
+        private readonly ResourceContext _context;
 
         private readonly IMailService _mailService;
 
         private readonly IAddressMaker _addressMaker;
 
 
-        public SubscriptionService(DemandContext context, IMailService mailService, IAddressMaker addressMaker)
+        public SubscriptionService(ResourceContext context, IMailService mailService, IAddressMaker addressMaker)
         {
             _context = context;
             _mailService = mailService;

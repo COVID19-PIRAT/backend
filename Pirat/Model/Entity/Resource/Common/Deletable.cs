@@ -8,6 +8,6 @@ namespace Pirat.Model.Entity
 {
     public interface IDeletable
     {
-        Task DeleteAsync(DemandContext context);
+        Task DeleteAsync(ResourceContext context);
     }
 }

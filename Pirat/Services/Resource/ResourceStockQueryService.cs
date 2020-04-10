@@ -9,24 +9,25 @@ using Pirat.Codes;
 using Pirat.DatabaseContext;
 using Pirat.Exceptions;
 using Pirat.Model;
-using Pirat.Model.Api.Resource.Stock;
+using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Stock;
 using Pirat.Services.Helper;
 
 namespace Pirat.Services.Resource
 {
-    public class ResourceDemandService : IResourceDemandService
+    public class ResourceStockQueryService : IResourceStockQueryService
     {
-        private readonly ILogger<ResourceDemandService> _logger;
+        private readonly ILogger<ResourceStockQueryService> _logger;
 
-        private readonly DemandContext _context;
+        private readonly ResourceContext _context;
 
         private readonly IAddressMaker _addressMaker;
 
         private readonly QueryHelper _queryHelper;
 
 
-        public ResourceDemandService(ILogger<ResourceDemandService> logger, DemandContext context, IAddressMaker addressMaker)
+        public ResourceStockQueryService(ILogger<ResourceStockQueryService> logger, ResourceContext context, IAddressMaker addressMaker)
         {
             _logger = logger;
             _context = context;
@@ -37,7 +38,7 @@ namespace Pirat.Services.Resource
         }
         public async IAsyncEnumerable<OfferResource<Consumable>> QueryOffersAsync(Consumable con)
         {
-            var consumable = new ConsumableEntity().build(con);
+            var consumable = new ConsumableEntity().Build(con);
             var maxDistance = con.kilometer;
             var consumableAddress = con.address;
             var location = new AddressEntity().build(consumableAddress);
@@ -107,7 +108,7 @@ namespace Pirat.Services.Resource
 
         public async IAsyncEnumerable<OfferResource<Device>> QueryOffersAsync(Device dev)
         {
-            var device = new DeviceEntity().build(dev);
+            var device = new DeviceEntity().Build(dev);
             var maxDistance = dev.kilometer;
             var deviceAddress = dev.address;
             var location = new AddressEntity().build(deviceAddress);
