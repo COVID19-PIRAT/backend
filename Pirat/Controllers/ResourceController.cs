@@ -86,7 +86,7 @@ namespace Pirat.Controllers
             try
             {
                 consumable.address = address;
-                _resourceInputValidatorService.validateForQuery(consumable);
+                _resourceInputValidatorService.ValidateForQuery(consumable);
                 return Ok(await _resourceDemandService.QueryOffersAsync(consumable).ToListAsync());
             }
             catch (ArgumentException e)
@@ -120,7 +120,7 @@ namespace Pirat.Controllers
             try
             {
                 device.address = address;
-                _resourceInputValidatorService.validateForQuery(device);
+                _resourceInputValidatorService.ValidateForQuery(device);
                 return Ok(await _resourceDemandService.QueryOffersAsync(device).ToListAsync());
             }
             catch (ArgumentException e)
@@ -153,7 +153,7 @@ namespace Pirat.Controllers
             try
             {
                 manpower.address = address;
-                _resourceInputValidatorService.validateForQuery(manpower);
+                _resourceInputValidatorService.ValidateForQuery(manpower);
                 return Ok(await _resourceDemandService.QueryOffersAsync(manpower).ToListAsync());
             }
             catch (ArgumentException e)
@@ -188,7 +188,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                _resourceInputValidatorService.validateToken(token);
+                _resourceInputValidatorService.ValidateToken(token);
                 return Ok(await _resourceDemandService.QueryLinkAsync(token));
             }
             catch (ArgumentException e)
@@ -224,7 +224,7 @@ namespace Pirat.Controllers
             try
             {
                 _mailInputValidatorService.validateMail(offer.provider.mail);
-                _resourceInputValidatorService.validateForDatabaseInsertion(offer);
+                _resourceInputValidatorService.ValidateForDatabaseInsertion(offer);
                 var token = await _resourceUpdateService.InsertAsync(offer);
                 await _mailService.SendNewOfferConfirmationMailAsync(token, offer.provider.mail, offer.provider.name);
                 return Ok(token);
@@ -408,7 +408,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                _resourceInputValidatorService.validateForChangeInformation(token, provider);
+                _resourceInputValidatorService.ValidateForChangeInformation(token, provider);
                 await _resourceUpdateService.ChangeInformationAsync(token, provider);
                 return Ok();
             }
@@ -446,7 +446,7 @@ namespace Pirat.Controllers
             try
             {
                 consumable.id = id;
-                _resourceInputValidatorService.validateForChangeInformation(token, consumable);
+                _resourceInputValidatorService.ValidateForChangeInformation(token, consumable);
                 int changedRows = await _resourceUpdateService.ChangeInformationAsync(token, consumable);
                 return Ok(changedRows);
             }
@@ -483,7 +483,7 @@ namespace Pirat.Controllers
             try
             {
                 device.id = id;
-                _resourceInputValidatorService.validateForChangeInformation(token, device);
+                _resourceInputValidatorService.ValidateForChangeInformation(token, device);
                 int changedRows = await _resourceUpdateService.ChangeInformationAsync(token, device);
                 return Ok(changedRows);
             }
@@ -520,7 +520,7 @@ namespace Pirat.Controllers
             try
             {
                 personal.id = id;
-                _resourceInputValidatorService.validateForChangeInformation(token, personal);
+                _resourceInputValidatorService.ValidateForChangeInformation(token, personal);
                 int changedRows = await _resourceUpdateService.ChangeInformationAsync(token, personal);
                 return Ok(changedRows);
             }
@@ -693,12 +693,12 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> AddResource(string token, [FromBody] Consumable consumable)
+        public async Task<IActionResult> AddResourceAsync(string token, [FromBody] Consumable consumable)
         {
             try
             {
-                _resourceInputValidatorService.validateForDatabaseInsertion(consumable);
-                await _resourceUpdateService.AddResource(token, consumable);
+                _resourceInputValidatorService.ValidateForDatabaseInsertion(consumable);
+                await _resourceUpdateService.AddResourceAsync(token, consumable);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -728,12 +728,12 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> AddResource(string token, [FromBody] Device device)
+        public async Task<IActionResult> AddResourceAsync(string token, [FromBody] Device device)
         {
             try
             {
-                _resourceInputValidatorService.validateForDatabaseInsertion(device);
-                await _resourceUpdateService.AddResource(token, device);
+                _resourceInputValidatorService.ValidateForDatabaseInsertion(device);
+                await _resourceUpdateService.AddResourceAsync(token, device);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -763,12 +763,12 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> AddResource(string token, [FromBody] Personal personal)
+        public async Task<IActionResult> AddResourceAsync(string token, [FromBody] Personal personal)
         {
             try
             {
-                _resourceInputValidatorService.validateForDatabaseInsertion(personal);
-                await _resourceUpdateService.AddResource(token, personal);
+                _resourceInputValidatorService.ValidateForDatabaseInsertion(personal);
+                await _resourceUpdateService.AddResourceAsync(token, personal);
                 return Ok();
             }
             catch (ArgumentException e)

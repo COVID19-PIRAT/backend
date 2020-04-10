@@ -18,9 +18,8 @@ using Xunit;
 
 namespace Pirat.DatabaseTests
 {
-    public class ResourceDeleteTest : IDisposable
+    public class ResourceDeleteTest : IAsyncLifetime
     {
-
         private const string connectionString =
             "Server=localhost;Port=5432;Database=postgres;User ID=postgres;Password=postgres";
 
@@ -37,13 +36,13 @@ namespace Pirat.DatabaseTests
 
         private readonly AnneBonnyGenerator _anneBonnyGenerator;
 
-        private readonly Offer _offerCaptainHook;
+        private Offer _offerCaptainHook;
 
-        private readonly string _tokenCaptainHook;
+        private string _tokenCaptainHook;
 
-        private readonly Offer _offerAnneBonny;
+        private Offer _offerAnneBonny;
 
-        private readonly string _tokenAnneBonny;
+        private string _tokenAnneBonny;
 
         public ResourceDeleteTest()
         {
@@ -61,32 +60,25 @@ namespace Pirat.DatabaseTests
             _resourceUpdateService = new ResourceUpdateService(loggerUpdate.Object, DemandContext, addressMaker.Object);
             _captainHookGenerator = new CaptainHookGenerator();
             _anneBonnyGenerator = new AnneBonnyGenerator();
+        }
 
-            var task = Task.Run(async () =>
-            {
-                Offer offer = _captainHookGenerator.generateOffer();
-                var token = await _resourceUpdateService.InsertAsync(offer);
-                offer = await _resourceDemandService.QueryLinkAsync(token);
-                return (offer, token);
-            });
-            task.Wait();
-            (_offerCaptainHook, _tokenCaptainHook) = task.Result;
+        public async Task InitializeAsync()
+        {
+            var offer = _captainHookGenerator.generateOffer();
+            var token = await _resourceUpdateService.InsertAsync(offer);
+            offer = await _resourceDemandService.QueryLinkAsync(token);
+            (_offerCaptainHook, _tokenCaptainHook) = (offer, token);
 
-            task = Task.Run(async () =>
-            {
-                Offer offer = _anneBonnyGenerator.generateOffer();
-                var token = await _resourceUpdateService.InsertAsync(offer);
-                offer = await _resourceDemandService.QueryLinkAsync(token);
-                return (offer, token);
-            });
-            task.Wait();
-            (_offerAnneBonny, _tokenAnneBonny) = task.Result;
+            offer = _anneBonnyGenerator.generateOffer();
+            token = await _resourceUpdateService.InsertAsync(offer);
+            offer = await _resourceDemandService.QueryLinkAsync(token);
+            (_offerAnneBonny, _tokenAnneBonny) = (offer, token);
         }
 
         /// <summary>
         /// Called after each test
         /// </summary>
-        public void Dispose()
+        public Task DisposeAsync()
         {
             var exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE offer CASCADE"));
             Assert.Null(exception);
@@ -99,15 +91,19 @@ namespace Pirat.DatabaseTests
 
             exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE change CASCADE"));
             Assert.Null(exception);
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Call this method to verify the change table has a certain amount of entries and verify that an entry has always a diff amount greater than zero.
         /// </summary>
         /// <param name="numberOfRows">The amount of entries the table should have</param>
-        public void VerifyChangeTable(int numberOfRows)
+        private async Task VerifyChangeTableAsync(int numberOfRows)
         {
-            var changes = DemandContext.change.Select(ch => ch).ToList();
+            var query = from change in DemandContext.change as IQueryable<ChangeEntity>
+                        select change;
+            var changes = await query.ToListAsync();
             Assert.NotNull(changes);
             Assert.True(changes.Count == numberOfRows);
             Assert.All(changes, change => Assert.True(0 < change.diff_amount));
@@ -116,7 +112,8 @@ namespace Pirat.DatabaseTests
         /// <summary>
         /// Tests marking of a consumable as deleted and tests that this personal is not retrieved anymore
         /// </summary>
-        public async void Test_DeleteConsumable()
+        [Fact]
+        public async Task Test_DeleteConsumable()
         {
             var consumableCh = _offerCaptainHook.consumables[0];
 
@@ -145,13 +142,14 @@ namespace Pirat.DatabaseTests
             Assert.NotEmpty(foundOfferAb.consumables);
 
             // Verify change table
-            VerifyChangeTable(1);
+            await VerifyChangeTableAsync(1);
         }
 
         /// <summary>
         /// Tests marking of a device as deleted and tests that this device is not retrieved anymore
         /// </summary>
-        public async void Test_DeleteDevice()
+        [Fact]
+        public async Task Test_DeleteDevice()
         {
             var deviceCh = _offerCaptainHook.devices[0];
 
@@ -180,13 +178,14 @@ namespace Pirat.DatabaseTests
             Assert.NotEmpty(foundOfferAb.devices);
 
             // Verify change table
-            VerifyChangeTable(1);
+            await VerifyChangeTableAsync(1);
         }
 
         /// <summary>
         /// Tests marking of a personal as deleted and tests that this personal is not retrieved anymore
         /// </summary>
-        public async void Test_DeletePersonal()
+        [Fact]
+        public async Task Test_DeletePersonal()
         {
             var personalCh = _offerCaptainHook.personals[0];
 
@@ -215,13 +214,14 @@ namespace Pirat.DatabaseTests
             Assert.NotEmpty(foundOfferAb.personals);
 
             // Verify change table
-            VerifyChangeTable(1);
+            await VerifyChangeTableAsync(1);
         }
 
         /// <summary>
         /// Tests and compare the different behaviour of query methods in <see cref="ResourceDemandService"/>
         /// </summary>
-        public async void Test_DeleteDevice_CompareQueryMethods()
+        [Fact]
+        public async Task Test_DeleteDevice_CompareQueryMethods()
         {
             var device = _offerCaptainHook.devices[0];
 
@@ -247,7 +247,8 @@ namespace Pirat.DatabaseTests
         /// <summary>
         /// Tests that deleting resources without a reason is not possible
         /// </summary>
-        public async void Test_DeleteResourceWithoutReason_NotPossible()
+        [Fact]
+        public async Task Test_DeleteResourceWithoutReason_NotPossible()
         {
             await Assert.ThrowsAsync<ArgumentException>(() => _resourceUpdateService.MarkConsumableAsDeletedAsync(_tokenAnneBonny, _offerAnneBonny.consumables[0].id, ""));
 
@@ -259,13 +260,14 @@ namespace Pirat.DatabaseTests
         /// <summary>
         /// Tests that deleting of non-existing resources throws an exception when try to delete them
         /// </summary>
-        public async void Test_DeleteNonExistingResource_NotPossible()
+        [Fact]
+        public async Task Test_DeleteNonExistingResource_NotPossible()
         {
-            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkConsumableAsDeletedAsync(_tokenAnneBonny, 999999, ""));
+            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkConsumableAsDeletedAsync(_tokenAnneBonny, 999999, "because"));
 
-            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkDeviceAsDeletedAsync(_tokenAnneBonny, 999999, ""));
+            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkDeviceAsDeletedAsync(_tokenAnneBonny, 999999, "because"));
 
-            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkPersonalAsDeletedAsync(_tokenAnneBonny, 999999, ""));
+            await Assert.ThrowsAsync<DataNotFoundException>(() => _resourceUpdateService.MarkPersonalAsDeletedAsync(_tokenAnneBonny, 999999, "because"));
         }
     }
 }

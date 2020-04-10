@@ -43,17 +43,17 @@ namespace Pirat.Services.Resource
         /// <param name="offerId">The unique id of the offer</param>
         /// <param name="consumable">The consumable from which the entity is created</param>
         /// <returns></returns>
-        private async Task Insert(int offerId, Consumable consumable)
+        private async Task InsertAsync(int offerId, Consumable consumable)
         {
             var consumableEntity = new ConsumableEntity().build(consumable);
             var addressEntity = new AddressEntity().build(consumable.address);
 
             _addressMaker.SetCoordinates(addressEntity);
-            addressEntity.Insert(_context);
+            await addressEntity.InsertAsync(_context);
 
             consumableEntity.offer_id = offerId;
             consumableEntity.address_id = addressEntity.id;
-            consumableEntity.Insert(_context);
+            await consumableEntity.InsertAsync(_context);
 
             consumable.id = consumableEntity.id;
         }
@@ -66,17 +66,17 @@ namespace Pirat.Services.Resource
         /// <param name="offerId">The unique id of the offer</param>
         /// <param name="device">The device from which the entity is created</param>
         /// <returns></returns>
-        private async Task Insert(int offerId, Device device)
+        private async Task InsertAsync(int offerId, Device device)
         {
             var deviceEntity = new DeviceEntity().build(device);
             var addressEntity = new AddressEntity().build(device.address);
 
             _addressMaker.SetCoordinates(addressEntity);
-            addressEntity.Insert(_context);
+            await addressEntity.InsertAsync(_context);
 
             deviceEntity.offer_id = offerId;
             deviceEntity.address_id = addressEntity.id;
-            deviceEntity.Insert(_context);
+            await deviceEntity.InsertAsync(_context);
 
             device.id = deviceEntity.id;
         }
@@ -89,17 +89,17 @@ namespace Pirat.Services.Resource
         /// <param name="offerId">The unique id of the offer</param>
         /// <param name="personal">The personal from which the entity is created</param>
         /// <returns></returns>
-        private async Task Insert(int offerId, Personal personal)
+        private async Task InsertAsync(int offerId, Personal personal)
         {
             var personEntity = new PersonalEntity().build(personal);
             var addressEntity = new AddressEntity().build(personal.address);
 
             _addressMaker.SetCoordinates(addressEntity);
-            addressEntity.Insert(_context);
+            await addressEntity.InsertAsync(_context);
 
             personEntity.offer_id = offerId;
             personEntity.address_id = addressEntity.id;
-            personEntity.Insert(_context);
+            await personEntity.InsertAsync(_context);
 
             personal.id = personEntity.id;
         }
@@ -134,21 +134,21 @@ namespace Pirat.Services.Resource
             {
                 foreach (var c in offer.consumables)
                 {
-                    Insert(offer_id, c);
+                    await InsertAsync(offer_id, c);
                 }
             }
             if (!(offer.personals is null))
             {
                 foreach (var p in offer.personals)
                 {
-                    Insert(offer_id, p);
+                    await InsertAsync(offer_id, p);
                 }
             }
             if (!(offer.devices is null))
             {
                 foreach (var d in offer.devices)
                 {
-                    Insert(offer_id, d);
+                    await InsertAsync(offer_id, d);
                 }
             }
 
@@ -448,21 +448,21 @@ namespace Pirat.Services.Resource
 
         public async Task AddResourceAsync(string token, Consumable consumable)
         {
-            OfferEntity offerEntity = _queryHelper.retrieveOfferFromToken(token);
+            OfferEntity offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
 
             await InsertAsync(offerEntity.id, consumable);
         }
 
         public async Task AddResourceAsync(string token, Device device)
         {
-            OfferEntity offerEntity = _queryHelper.retrieveOfferFromToken(token);
+            OfferEntity offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
 
             await InsertAsync(offerEntity.id, device);
         }
 
         public async Task AddResourceAsync(string token, Personal personal)
         {
-            OfferEntity offerEntity = _queryHelper.retrieveOfferFromToken(token);
+            OfferEntity offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
 
             await InsertAsync(offerEntity.id, personal);
         }
@@ -475,13 +475,14 @@ namespace Pirat.Services.Resource
             }
 
             ConsumableEntity consumableEntity = (ConsumableEntity) await new ConsumableEntity().FindAsync(_context, consumableId);
-            AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, consumableEntity.address_id);
-
 
             if (consumableEntity is null)
             {
                 throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
             }
+
+            AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, consumableEntity.address_id);
+
             if (addressEntity is null)
             {
                 throw new InvalidDataStateException(Error.FatalCodes.RESOURCE_WITHOUT_RELATED_ADDRESS);
@@ -512,12 +513,14 @@ namespace Pirat.Services.Resource
             }
 
             DeviceEntity deviceEntity = (DeviceEntity) await new DeviceEntity().FindAsync(_context, deviceId);
-            AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, deviceEntity.address_id);
 
             if (deviceEntity is null)
             {
                 throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_DEVICE);
             }
+
+            AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, deviceEntity.address_id);
+            
             if (addressEntity is null)
             {
                 throw new InvalidDataStateException(Error.FatalCodes.RESOURCE_WITHOUT_RELATED_ADDRESS);
@@ -548,12 +551,14 @@ namespace Pirat.Services.Resource
             }
 
             PersonalEntity personalEntity = (PersonalEntity)await new PersonalEntity().FindAsync(_context, personalId);
-            AddressEntity addressEntity = (AddressEntity)await new AddressEntity().FindAsync(_context, personalEntity.address_id);
 
             if (personalEntity is null)
             {
                 throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_PERSONAL);
             }
+
+            AddressEntity addressEntity = (AddressEntity)await new AddressEntity().FindAsync(_context, personalEntity.address_id);
+
 
             if (addressEntity is null)
             {

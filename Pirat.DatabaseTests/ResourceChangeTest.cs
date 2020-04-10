@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -87,9 +88,11 @@ namespace Pirat.DatabaseTests
         /// Call this method to verify the change table has a certain amount of entries and verify that an entry has always a diff amount greater than zero.
         /// </summary>
         /// <param name="numberOfRows">The amount of entries the table should have</param>
-        public void VerifyChangeTable(int numberOfRows)
+        private async Task VerifyChangeTableAsync(int numberOfRows)
         {
-            var changes = DemandContext.change.Select(ch => ch).ToList();
+            var query = from change in DemandContext.change as IQueryable<ChangeEntity>
+                        select change;
+            var changes = await query.ToListAsync();
             Assert.NotNull(changes);
             Assert.Equal(numberOfRows, changes.Count);
             Assert.All(changes, change => Assert.True(0 < change.diff_amount));
@@ -477,7 +480,7 @@ namespace Pirat.DatabaseTests
             Assert.Equal(newAmount, changedConsumable.amount);
 
             // Verify change table
-            VerifyChangeTable(4);
+            await VerifyChangeTableAsync(4);
         }
 
         /// <summary>
@@ -503,7 +506,7 @@ namespace Pirat.DatabaseTests
             Assert.Equal(newAmount, changedConsumable.amount);
 
             // Verify change table
-            VerifyChangeTable(2);
+            await VerifyChangeTableAsync(2);
         }
 
         /// <summary>
@@ -530,7 +533,7 @@ namespace Pirat.DatabaseTests
                 (await _resourceDemandService.QueryLinkAsync(_token)).consumables[0].amount);
 
             // Verify change table
-            VerifyChangeTable(0);
+            await VerifyChangeTableAsync(0);
         }
 
         /// <summary>
@@ -556,7 +559,7 @@ namespace Pirat.DatabaseTests
             Assert.Equal(consumable.amount,
                 (await _resourceDemandService.QueryLinkAsync(_token)).consumables[0].amount);
             // Verify change table
-            VerifyChangeTable(0);
+            await VerifyChangeTableAsync(0);
         }
 
         /// <summary>

@@ -21,7 +21,7 @@ namespace Pirat.Services.Resource
             }
         }
 
-        public void validateToken(string token)
+        public void ValidateToken(string token)
         {
             if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
             {
@@ -79,7 +79,7 @@ namespace Pirat.Services.Resource
 
         #region Checks for INSERTIONS
 
-        public void validateForDatabaseInsertion(Consumable consumable)
+        public void ValidateForDatabaseInsertion(Consumable consumable)
         {
             validateInformation(consumable);
 
@@ -90,7 +90,7 @@ namespace Pirat.Services.Resource
 
         }
 
-        public void validateForDatabaseInsertion(Device device)
+        public void ValidateForDatabaseInsertion(Device device)
         {
             validateInformation(device);
 
@@ -101,12 +101,12 @@ namespace Pirat.Services.Resource
 
         }
 
-        public void validateForDatabaseInsertion(Personal personal)
+        public void ValidateForDatabaseInsertion(Personal personal)
         {
             validateInformation(personal);
         }
 
-        public void validateForDatabaseInsertion(Offer offer)
+        public void ValidateForDatabaseInsertion(Offer offer)
         {
             validateInformation(offer.provider);
 
@@ -117,18 +117,18 @@ namespace Pirat.Services.Resource
                 throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_OFFER);
             }
 
-            offer.consumables?.ForEach(validateForDatabaseInsertion);
+            offer.consumables?.ForEach(ValidateForDatabaseInsertion);
 
-            offer.devices?.ForEach(validateForDatabaseInsertion);
+            offer.devices?.ForEach(ValidateForDatabaseInsertion);
 
-            offer.personals?.ForEach(validateForDatabaseInsertion);
+            offer.personals?.ForEach(ValidateForDatabaseInsertion);
         }
 
         #endregion
 
         #region Check for QUERIES
 
-        public void validateForQuery(Device device)
+        public void ValidateForQuery(Device device)
         {
             if (string.IsNullOrEmpty(device.category))
             {
@@ -146,7 +146,7 @@ namespace Pirat.Services.Resource
             validateAddress(device.address);
         }
 
-        public void validateForQuery(Consumable consumable)
+        public void ValidateForQuery(Consumable consumable)
         {
             if (string.IsNullOrEmpty(consumable.category))
             {
@@ -164,7 +164,7 @@ namespace Pirat.Services.Resource
             validateAddress(consumable.address);
         }
 
-        public void validateForQuery(Manpower manpower)
+        public void ValidateForQuery(Manpower manpower)
         {
             validateAddress(manpower.address);
         }
@@ -173,27 +173,27 @@ namespace Pirat.Services.Resource
 
         #region Checks for UPDATES
 
-        public void validateForChangeInformation(string token, Provider provider)
+        public void ValidateForChangeInformation(string token, Provider provider)
         {
-            validateToken(token);
+            ValidateToken(token);
             validateInformation(provider);
         }
 
-        public void validateForChangeInformation(string token, Consumable consumable)
+        public void ValidateForChangeInformation(string token, Consumable consumable)
         {
-            validateToken(token);
+            ValidateToken(token);
             validateInformation(consumable);
         }
 
-        public void validateForChangeInformation(string token, Device device)
+        public void ValidateForChangeInformation(string token, Device device)
         {
-            validateToken(token);
+            ValidateToken(token);
             validateInformation(device);
         }
 
-        public void validateForChangeInformation(string token, Personal personal)
+        public void ValidateForChangeInformation(string token, Personal personal)
         {
-            validateToken(token);
+            ValidateToken(token);
             validateInformation(personal);
         }
 
