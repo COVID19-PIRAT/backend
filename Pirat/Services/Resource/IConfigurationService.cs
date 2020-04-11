@@ -7,5 +7,6 @@ namespace Pirat.Services.Resource
 {
     public interface IConfigurationService
     {
+        Task<List<string>> GetRegionCodesAsync();
     }
 }

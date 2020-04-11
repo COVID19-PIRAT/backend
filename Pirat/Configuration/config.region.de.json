@@ -1,0 +1,24 @@
+{
+  "languages": [ "de", "en" ],
+  "categories": {
+    "device": [
+      "PCR_THERMOCYCLER",
+      "RT_PCR_THERMOCYCLER",
+      "ZENTRIFUGE",
+      "VORTEXTER",
+      "PIPETTE",
+      "SONSTIGES"
+    ],
+    "consumable": [
+      "MASKE",
+      "SCHUTZKLEIDUNG",
+      "SCHUTZBRILLE",
+      "HANDSCHUHE",
+      "DESINFEKTIONSMITTEL",
+      "REAKTIONSGEFAESSE",
+      "READOUTPLATES",
+      "PIPETTENSPITZEN",
+      "SONSTIGES"
+    ]
+  }
+}

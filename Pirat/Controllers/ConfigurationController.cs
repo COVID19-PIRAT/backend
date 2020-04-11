@@ -56,6 +56,7 @@ namespace Pirat.Controllers
         {
             // ToDo
             await Task.Yield();
+            var x = await _configurationManager.GetRegionCodesAsync();
             return this.StatusCode(StatusCodes.Status501NotImplemented);
         }
 
