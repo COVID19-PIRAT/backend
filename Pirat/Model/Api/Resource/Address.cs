@@ -40,7 +40,7 @@ namespace Pirat.Model.Api.Resource
         public decimal longitude { get; set; }
 
 
-        public Address build(AddressEntity e)
+        public Address Build(AddressEntity e)
         {
             street = e.street;
             streetnumber = e.streetnumber;

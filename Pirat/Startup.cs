@@ -55,7 +55,7 @@ namespace Pirat
                 new ReCaptchaService(Environment.GetEnvironmentVariable("PIRAT_GOOGLE_RECAPTCHA_SECRET")));
             services.AddTransient<IAddressMaker, AddressMaker>();
             services.AddTransient<ISubscriptionService, SubscriptionService>();
-            services.AddTransient<IResourceInputValidatorService, ResourceInputValidatorService>();
+            services.AddTransient<IResourceStockInputValidatorService, ResourceStockInputValidatorService>();
             services.AddTransient<IMailInputValidatorService, MailInputValidatorService>();
 
             //Cors

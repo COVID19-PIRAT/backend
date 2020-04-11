@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Pirat.Model.Entity.Resource.Demand;
 using Pirat.Model.Entity.Resource.Stock;
 
 namespace Pirat.Model.Api.Resource
@@ -24,7 +25,7 @@ namespace Pirat.Model.Api.Resource
         [FromQuery(Name = "kilometer")]
         public int kilometer { get; set; }
 
-        public Provider build(OfferEntity o)
+        public Provider Build(OfferEntity o)
         {
             name = o.name;
             organisation = o.organisation;
@@ -34,13 +35,22 @@ namespace Pirat.Model.Api.Resource
             return this;
         }
 
-        public Provider build(Address a)
+        public Provider Build(DemandEntity d)
+        {
+            name = d.name;
+            organisation = d.institution;
+            phone = d.phone;
+            mail = d.mail;
+            return this;
+        }
+
+        public Provider Build(Address a)
         {
             address = a;
             return this;
         }
 
-        public Provider build(int kilometer)
+        public Provider Build(int kilometer)
         {
             this.kilometer = kilometer;
             return this;

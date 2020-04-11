@@ -10,15 +10,15 @@ using Xunit;
 
 namespace Pirat.Tests
 {
-    public class ResourceInputValidatorTests : IDisposable
+    public class ResourceStockInputValidatorTest : IDisposable
     {
-        private IResourceInputValidatorService _service;
+        private IResourceStockInputValidatorService _service;
         private CaptainHookGenerator _captainHookGenerator;
         private string _dummyToken;
 
-        public ResourceInputValidatorTests()
+        public ResourceStockInputValidatorTest()
         {
-            _service = new ResourceInputValidatorService();
+            _service = new ResourceStockInputValidatorService();
             _captainHookGenerator = new CaptainHookGenerator();
             _dummyToken = "VDVZymVwZjedg3PBsStV6KhZ6FAFSP";
         }
@@ -31,23 +31,23 @@ namespace Pirat.Tests
         {
             var offer = _captainHookGenerator.generateOffer();
             offer.provider.name = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForDatabaseInsertion(offer));
+            Assert.Throws<ArgumentException>(() => _service.ValidateForStockInsertion(offer));
 
             offer = _captainHookGenerator.generateOffer();
             offer.consumables.First().unit = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForDatabaseInsertion(offer));
+            Assert.Throws<ArgumentException>(() => _service.ValidateForStockInsertion(offer));
 
             offer = _captainHookGenerator.generateOffer();
             offer.devices.First().category = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForDatabaseInsertion(offer));
+            Assert.Throws<ArgumentException>(() => _service.ValidateForStockInsertion(offer));
 
             offer = _captainHookGenerator.generateOffer();
             offer.personals.First().qualification = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForDatabaseInsertion(offer));
+            Assert.Throws<ArgumentException>(() => _service.ValidateForStockInsertion(offer));
 
             offer = _captainHookGenerator.generateOffer();
             offer.personals.First().area = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForDatabaseInsertion(offer));
+            Assert.Throws<ArgumentException>(() => _service.ValidateForStockInsertion(offer));
         }
 
         /// <summary>
@@ -66,11 +66,11 @@ namespace Pirat.Tests
             newPersonal.address.postalcode = "22459";
             newPersonal.qualification = null; // Invalid!
 
-            Assert.Throws<ArgumentException>(() => _service.ValidateForDatabaseInsertion(newDevice));
+            Assert.Throws<ArgumentException>(() => _service.ValidateForStockInsertion(newDevice));
 
-            Assert.Throws<ArgumentException>(() => _service.ValidateForDatabaseInsertion(newConsumable));
+            Assert.Throws<ArgumentException>(() => _service.ValidateForStockInsertion(newConsumable));
 
-            Assert.Throws<ArgumentException>(() => _service.ValidateForDatabaseInsertion(newPersonal));
+            Assert.Throws<ArgumentException>(() => _service.ValidateForStockInsertion(newPersonal));
         }
 
 
@@ -79,11 +79,11 @@ namespace Pirat.Tests
         {
             var consumable = _captainHookGenerator.GenerateConsumable();
             consumable.category = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForQuery(consumable));
+            Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(consumable));
 
             consumable = _captainHookGenerator.GenerateConsumable();
             consumable.address.country = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForQuery(consumable));
+            Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(consumable));
         }
 
         [Fact]
@@ -91,11 +91,11 @@ namespace Pirat.Tests
         {
             var device = _captainHookGenerator.GenerateDevice();
             device.category = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForQuery(device));
+            Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(device));
 
             device = _captainHookGenerator.GenerateDevice();
             device.address.postalcode = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForQuery(device));
+            Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(device));
         }
 
 
@@ -104,7 +104,7 @@ namespace Pirat.Tests
         {
             var manpower = _captainHookGenerator.GenerateManpower();
             manpower.address.postalcode = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForQuery(manpower));
+            Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(manpower));
         }
 
         [Fact]

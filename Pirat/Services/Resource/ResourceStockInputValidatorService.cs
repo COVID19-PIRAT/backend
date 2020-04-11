@@ -10,7 +10,7 @@ namespace Pirat.Services.Resource
     /// <summary>
     /// This service checks if resource information coming from the front end is sufficient for the tasks
     /// </summary>
-    public class ResourceInputValidatorService : IResourceInputValidatorService
+    public class ResourceStockInputValidatorService : IResourceStockInputValidatorService
     {
         #region Checks used by different scenarios
 
@@ -32,7 +32,7 @@ namespace Pirat.Services.Resource
 
         #endregion
 
-        #region Minimum attributes for information in INSERTIONS and UPDATES
+        #region Minimum attributes for information in STOCK INSERTIONS and UPDATES
 
         private void validateInformation(Provider provider)
         {
@@ -78,9 +78,9 @@ namespace Pirat.Services.Resource
 
         #endregion
 
-        #region Checks for INSERTIONS
+        #region Checks for STOCK INSERTIONS
 
-        public void ValidateForDatabaseInsertion(Consumable consumable)
+        public void ValidateForStockInsertion(Consumable consumable)
         {
             validateInformation(consumable);
 
@@ -91,7 +91,7 @@ namespace Pirat.Services.Resource
 
         }
 
-        public void ValidateForDatabaseInsertion(Device device)
+        public void ValidateForStockInsertion(Device device)
         {
             validateInformation(device);
 
@@ -102,12 +102,12 @@ namespace Pirat.Services.Resource
 
         }
 
-        public void ValidateForDatabaseInsertion(Personal personal)
+        public void ValidateForStockInsertion(Personal personal)
         {
             validateInformation(personal);
         }
 
-        public void ValidateForDatabaseInsertion(Offer offer)
+        public void ValidateForStockInsertion(Offer offer)
         {
             validateInformation(offer.provider);
 
@@ -118,18 +118,18 @@ namespace Pirat.Services.Resource
                 throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_OFFER);
             }
 
-            offer.consumables?.ForEach(ValidateForDatabaseInsertion);
+            offer.consumables?.ForEach(ValidateForStockInsertion);
 
-            offer.devices?.ForEach(ValidateForDatabaseInsertion);
+            offer.devices?.ForEach(ValidateForStockInsertion);
 
-            offer.personals?.ForEach(ValidateForDatabaseInsertion);
+            offer.personals?.ForEach(ValidateForStockInsertion);
         }
 
         #endregion
 
-        #region Check for QUERIES
+        #region Check for STOCK QUERIES
 
-        public void ValidateForQuery(Device device)
+        public void ValidateForStockQuery(Device device)
         {
             if (string.IsNullOrEmpty(device.category))
             {
@@ -147,7 +147,7 @@ namespace Pirat.Services.Resource
             validateAddress(device.address);
         }
 
-        public void ValidateForQuery(Consumable consumable)
+        public void ValidateForStockQuery(Consumable consumable)
         {
             if (string.IsNullOrEmpty(consumable.category))
             {
@@ -165,7 +165,7 @@ namespace Pirat.Services.Resource
             validateAddress(consumable.address);
         }
 
-        public void ValidateForQuery(Manpower manpower)
+        public void ValidateForStockQuery(Manpower manpower)
         {
             validateAddress(manpower.address);
         }

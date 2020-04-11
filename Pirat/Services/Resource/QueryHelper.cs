@@ -27,7 +27,7 @@ namespace Pirat.Services.Resource
         internal async Task<Address> QueryAddressAsync(int addressKey)
         {
             var a = (AddressEntity) await new AddressEntity().FindAsync(_context, addressKey);
-            return new Address().build(a);
+            return new Address().Build(a);
         }
 
         internal async Task<OfferEntity> RetrieveOfferFromTokenAsync(string token)

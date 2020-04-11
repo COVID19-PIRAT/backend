@@ -8,7 +8,7 @@ namespace Pirat.Model.Api.Resource
     public class Device : Item
     {
 
-        public Device build(DeviceEntity d)
+        public Device Build(DeviceEntity d)
         {
             id = d.id;
             category = d.category;
@@ -20,7 +20,7 @@ namespace Pirat.Model.Api.Resource
             return this;
         }
 
-        public Device build(DeviceDemandEntity d)
+        public Device Build(DeviceDemandEntity d)
         {
             id = d.id;
             category = d.category;
@@ -31,7 +31,7 @@ namespace Pirat.Model.Api.Resource
             return this;
         }
 
-        public Device build(Address a)
+        public Device Build(Address a)
         {
             address = a;
             return this;

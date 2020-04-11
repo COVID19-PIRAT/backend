@@ -13,6 +13,8 @@
 
   <ItemGroup>
     <Folder Include="Configurations\" />
+    <Folder Include="Services\Resource\Common\" />
+    <Folder Include="Services\Resource\Stock\" />
   </ItemGroup>
 
   <ItemGroup>
