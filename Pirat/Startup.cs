@@ -47,6 +47,7 @@ namespace Pirat
             services.AddTransient<IResourceStockInputValidatorService, ResourceStockInputValidatorService>();
             services.AddTransient<IResourceDemandInputValidatorService, ResourceDemandInputValidatorService>();
             services.AddTransient<IMailInputValidatorService, MailInputValidatorService>();
+            services.AddSingleton<IConfigurationService, ConfigurationService>();
 
             //Cors
             services.AddCors(options =>
