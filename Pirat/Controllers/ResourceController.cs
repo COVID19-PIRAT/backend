@@ -15,7 +15,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Pirat.Codes;
 using Pirat.Extensions.Swagger.SwaggerConfiguration;
+using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Stock;
 using Pirat.Services.Mail;
 using Pirat.Services.Middleware;
 using Pirat.Services.Resource;
@@ -33,9 +35,9 @@ namespace Pirat.Controllers
 
         private readonly ILogger<ResourceController> _logger;
 
-        private readonly IResourceDemandService _resourceDemandService;
+        private readonly IResourceStockQueryService _resourceStockQueryService;
 
-        private readonly IResourceUpdateService _resourceUpdateService;
+        private readonly IResourceStockUpdateService _resourceStockUpdateService;
 
         private readonly IResourceInputValidatorService _resourceInputValidatorService;
 
@@ -47,8 +49,8 @@ namespace Pirat.Controllers
 
         public ResourceController(
             ILogger<ResourceController> logger,
-            IResourceDemandService resourceDemandService,
-            IResourceUpdateService resourceUpdateService,
+            IResourceStockQueryService resourceStockQueryService,
+            IResourceStockUpdateService resourceStockUpdateService,
             IResourceInputValidatorService resourceInputValidatorService,
             IMailService mailService,
             IMailInputValidatorService mailInputValidatorService,
@@ -56,8 +58,8 @@ namespace Pirat.Controllers
             )
         {
             _logger = logger;
-            _resourceDemandService = resourceDemandService;
-            _resourceUpdateService = resourceUpdateService;
+            _resourceStockQueryService = resourceStockQueryService;
+            _resourceStockUpdateService = resourceStockUpdateService;
             _resourceInputValidatorService = resourceInputValidatorService;
             _mailService = mailService;
             _mailInputValidatorService = mailInputValidatorService;
@@ -87,7 +89,7 @@ namespace Pirat.Controllers
             {
                 consumable.address = address;
                 _resourceInputValidatorService.ValidateForQuery(consumable);
-                return Ok(await _resourceDemandService.QueryOffersAsync(consumable).ToListAsync());
+                return Ok(await _resourceStockQueryService.QueryOffersAsync(consumable).ToListAsync());
             }
             catch (ArgumentException e)
             {
@@ -121,7 +123,7 @@ namespace Pirat.Controllers
             {
                 device.address = address;
                 _resourceInputValidatorService.ValidateForQuery(device);
-                return Ok(await _resourceDemandService.QueryOffersAsync(device).ToListAsync());
+                return Ok(await _resourceStockQueryService.QueryOffersAsync(device).ToListAsync());
             }
             catch (ArgumentException e)
             {
@@ -154,7 +156,7 @@ namespace Pirat.Controllers
             {
                 manpower.address = address;
                 _resourceInputValidatorService.ValidateForQuery(manpower);
-                return Ok(await _resourceDemandService.QueryOffersAsync(manpower).ToListAsync());
+                return Ok(await _resourceStockQueryService.QueryOffersAsync(manpower).ToListAsync());
             }
             catch (ArgumentException e)
             {
@@ -189,7 +191,7 @@ namespace Pirat.Controllers
             try
             {
                 _resourceInputValidatorService.ValidateToken(token);
-                return Ok(await _resourceDemandService.QueryLinkAsync(token));
+                return Ok(await _resourceStockQueryService.QueryLinkAsync(token));
             }
             catch (ArgumentException e)
             {
@@ -225,7 +227,7 @@ namespace Pirat.Controllers
             {
                 _mailInputValidatorService.validateMail(offer.provider.mail);
                 _resourceInputValidatorService.ValidateForDatabaseInsertion(offer);
-                var token = await _resourceUpdateService.InsertAsync(offer);
+                var token = await _resourceStockUpdateService.InsertAsync(offer);
                 await _mailService.SendNewOfferConfirmationMailAsync(token, offer.provider.mail, offer.provider.name);
                 return Ok(token);
             }
@@ -264,13 +266,13 @@ namespace Pirat.Controllers
             {
                 _mailInputValidatorService.validateMail(contactInformationDemand.senderEmail);
 
-                var consumable = (ConsumableEntity) await _resourceDemandService.FindAsync(new ConsumableEntity(), id);
+                var consumable = (ConsumableEntity) await _resourceStockQueryService.FindAsync(new ConsumableEntity(), id);
                 if (consumable is null)
                 {
                     return NotFound(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
                 }
 
-                var offer = (OfferEntity) await _resourceDemandService.FindAsync(new OfferEntity(), consumable.offer_id);
+                var offer = (OfferEntity) await _resourceStockQueryService.FindAsync(new OfferEntity(), consumable.offer_id);
                 if (offer is null)
                 {
                     return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
@@ -313,13 +315,13 @@ namespace Pirat.Controllers
             try
             {
                 _mailInputValidatorService.validateMail(contactInformationDemand.senderEmail);
-                var device = (DeviceEntity) await _resourceDemandService.FindAsync(new DeviceEntity(), id);
+                var device = (DeviceEntity) await _resourceStockQueryService.FindAsync(new DeviceEntity(), id);
                 if (device is null)
                 {
                     return NotFound(Error.ErrorCodes.NOTFOUND_DEVICE);
                 }
 
-                var offer = (OfferEntity) await _resourceDemandService.FindAsync(new OfferEntity(), device.offer_id);
+                var offer = (OfferEntity) await _resourceStockQueryService.FindAsync(new OfferEntity(), device.offer_id);
                 if (offer is null)
                 {
                     return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
@@ -362,13 +364,13 @@ namespace Pirat.Controllers
             try
             {
                 _mailInputValidatorService.validateMail(contactInformationDemand.senderEmail);
-                var personal = (PersonalEntity) await _resourceDemandService.FindAsync(new PersonalEntity(), id);
+                var personal = (PersonalEntity) await _resourceStockQueryService.FindAsync(new PersonalEntity(), id);
                 if (personal is null)
                 {
                     return NotFound(Error.ErrorCodes.NOTFOUND_PERSONAL);
                 }
 
-                var offer = (OfferEntity) await _resourceDemandService.FindAsync(new OfferEntity(), personal.offer_id);
+                var offer = (OfferEntity) await _resourceStockQueryService.FindAsync(new OfferEntity(), personal.offer_id);
                 if (offer is null)
                 {
                     return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
@@ -409,7 +411,7 @@ namespace Pirat.Controllers
             try
             {
                 _resourceInputValidatorService.ValidateForChangeInformation(token, provider);
-                await _resourceUpdateService.ChangeInformationAsync(token, provider);
+                await _resourceStockUpdateService.ChangeInformationAsync(token, provider);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -447,7 +449,7 @@ namespace Pirat.Controllers
             {
                 consumable.id = id;
                 _resourceInputValidatorService.ValidateForChangeInformation(token, consumable);
-                int changedRows = await _resourceUpdateService.ChangeInformationAsync(token, consumable);
+                int changedRows = await _resourceStockUpdateService.ChangeInformationAsync(token, consumable);
                 return Ok(changedRows);
             }
             catch (ArgumentException e)
@@ -484,7 +486,7 @@ namespace Pirat.Controllers
             {
                 device.id = id;
                 _resourceInputValidatorService.ValidateForChangeInformation(token, device);
-                int changedRows = await _resourceUpdateService.ChangeInformationAsync(token, device);
+                int changedRows = await _resourceStockUpdateService.ChangeInformationAsync(token, device);
                 return Ok(changedRows);
             }
             catch (ArgumentException e)
@@ -521,7 +523,7 @@ namespace Pirat.Controllers
             {
                 personal.id = id;
                 _resourceInputValidatorService.ValidateForChangeInformation(token, personal);
-                int changedRows = await _resourceUpdateService.ChangeInformationAsync(token, personal);
+                int changedRows = await _resourceStockUpdateService.ChangeInformationAsync(token, personal);
                 return Ok(changedRows);
             }
             catch (ArgumentException e)
@@ -556,7 +558,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                await _resourceUpdateService.ChangeConsumableAmountAsync(token, id, amountChange.amount, amountChange.reason);
+                await _resourceStockUpdateService.ChangeConsumableAmountAsync(token, id, amountChange.amount, amountChange.reason);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -591,7 +593,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                await _resourceUpdateService.ChangeDeviceAmountAsync(token, id, amountChange.amount, amountChange.reason);
+                await _resourceStockUpdateService.ChangeDeviceAmountAsync(token, id, amountChange.amount, amountChange.reason);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -615,7 +617,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                await _resourceUpdateService.MarkConsumableAsDeletedAsync(token, id, reason);
+                await _resourceStockUpdateService.MarkConsumableAsDeletedAsync(token, id, reason);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -639,7 +641,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                await _resourceUpdateService.MarkDeviceAsDeletedAsync(token, id, reason);
+                await _resourceStockUpdateService.MarkDeviceAsDeletedAsync(token, id, reason);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -663,7 +665,7 @@ namespace Pirat.Controllers
         {
             try
             {
-                await _resourceUpdateService.MarkPersonalAsDeletedAsync(token, id, reason);
+                await _resourceStockUpdateService.MarkPersonalAsDeletedAsync(token, id, reason);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -698,7 +700,7 @@ namespace Pirat.Controllers
             try
             {
                 _resourceInputValidatorService.ValidateForDatabaseInsertion(consumable);
-                await _resourceUpdateService.AddResourceAsync(token, consumable);
+                await _resourceStockUpdateService.AddResourceAsync(token, consumable);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -733,7 +735,7 @@ namespace Pirat.Controllers
             try
             {
                 _resourceInputValidatorService.ValidateForDatabaseInsertion(device);
-                await _resourceUpdateService.AddResourceAsync(token, device);
+                await _resourceStockUpdateService.AddResourceAsync(token, device);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -768,7 +770,7 @@ namespace Pirat.Controllers
             try
             {
                 _resourceInputValidatorService.ValidateForDatabaseInsertion(personal);
-                await _resourceUpdateService.AddResourceAsync(token, personal);
+                await _resourceStockUpdateService.AddResourceAsync(token, personal);
                 return Ok();
             }
             catch (ArgumentException e)

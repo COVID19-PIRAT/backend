@@ -397,7 +397,7 @@ create table demand
 	address_id int
 		constraint demand_address_id_fk
 			references address,
-	comment text,
+	annotation text,
 	token text not null,
 	created_at_timestamp timestamp not null
 );
@@ -419,7 +419,7 @@ create table demand_device
 	name text,
 	manufacturer text,
 	amount integer not null,
-	comment text,
+	annotation text,
 	created_at_timestamp timestamp not null,
 	is_deleted boolean not null
 );
@@ -439,7 +439,7 @@ create table demand_consumable
 	manufacturer text,
 	amount integer not null,
 	unit text not null,
-	comment text,
+	annotation text,
 	created_at_timestamp timestamp not null,
 	is_deleted boolean not null
 );

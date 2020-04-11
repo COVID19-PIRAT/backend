@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Pirat.DatabaseContext;
 using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Common;
 
 namespace Pirat.Model
 {
@@ -35,7 +36,7 @@ namespace Pirat.Model
 
         public bool active { get; set; }
 
-        public async Task<IInsertable> InsertAsync(DemandContext context)
+        public async Task<IInsertable> InsertAsync(ResourceContext context)
         {
             context.region_subscription.Add(this);
             await context.SaveChangesAsync();

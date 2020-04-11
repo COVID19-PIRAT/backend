@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using Pirat.Codes;
 using Pirat.Exceptions;
 using Pirat.Model;
+using Pirat.Model.Entity.Resource.Common;
 
 namespace Pirat.Services
 {

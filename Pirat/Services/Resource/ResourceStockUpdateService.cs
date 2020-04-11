@@ -10,22 +10,25 @@ using Pirat.Codes;
 using Pirat.DatabaseContext;
 using Pirat.Exceptions;
 using Pirat.Model;
+using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Common;
+using Pirat.Model.Entity.Resource.Stock;
 
 namespace Pirat.Services.Resource
 {
-    public class ResourceUpdateService : IResourceUpdateService
+    public class ResourceStockUpdateService : IResourceStockUpdateService
     {
-        private readonly ILogger<ResourceUpdateService> _logger;
+        private readonly ILogger<ResourceStockUpdateService> _logger;
 
-        private readonly DemandContext _context;
+        private readonly ResourceContext _context;
 
         private readonly IAddressMaker _addressMaker;
 
         private readonly QueryHelper _queryHelper;
 
 
-        public ResourceUpdateService(ILogger<ResourceUpdateService> logger, DemandContext context, IAddressMaker addressMaker)
+        public ResourceStockUpdateService(ILogger<ResourceStockUpdateService> logger, ResourceContext context, IAddressMaker addressMaker)
         {
             _logger = logger;
             _context = context;
@@ -45,7 +48,7 @@ namespace Pirat.Services.Resource
         /// <returns></returns>
         private async Task InsertAsync(int offerId, Consumable consumable)
         {
-            var consumableEntity = new ConsumableEntity().build(consumable);
+            var consumableEntity = new ConsumableEntity().Build(consumable);
             var addressEntity = new AddressEntity().build(consumable.address);
 
             _addressMaker.SetCoordinates(addressEntity);
@@ -68,7 +71,7 @@ namespace Pirat.Services.Resource
         /// <returns></returns>
         private async Task InsertAsync(int offerId, Device device)
         {
-            var deviceEntity = new DeviceEntity().build(device);
+            var deviceEntity = new DeviceEntity().Build(device);
             var addressEntity = new AddressEntity().build(device.address);
 
             _addressMaker.SetCoordinates(addressEntity);
@@ -91,7 +94,7 @@ namespace Pirat.Services.Resource
         /// <returns></returns>
         private async Task InsertAsync(int offerId, Personal personal)
         {
-            var personEntity = new PersonalEntity().build(personal);
+            var personEntity = new PersonalEntity().Build(personal);
             var addressEntity = new AddressEntity().build(personal.address);
 
             _addressMaker.SetCoordinates(addressEntity);
@@ -111,7 +114,7 @@ namespace Pirat.Services.Resource
 
             //Build as entities
 
-            var offerEntity = new OfferEntity().build(provider);
+            var offerEntity = new OfferEntity().Build(provider);
             var offerAddressEntity = new AddressEntity().build(provider.address);
 
             //Create the coordinates and store the address of the offer

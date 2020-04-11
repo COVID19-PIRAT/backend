@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Pirat.Model;
+using Pirat.Model.Api.Resource;
 
 namespace Pirat.Services.Resource
 {
     /// <summary>
     /// Service for all actions that change the state of the database
     /// </summary>
-    public interface IResourceUpdateService
+    public interface IResourceStockUpdateService
     {
 
         public Task<string> InsertAsync(Offer offer);

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Demand;
+using Pirat.Model.Entity.Resource.Stock;
 
-namespace Pirat.Model
+namespace Pirat.Model.Api.Resource
 {
     public class Device : Item
     {
@@ -16,6 +15,17 @@ namespace Pirat.Model
             name = d.name;
             manufacturer = d.manufacturer;
             ordernumber = d.ordernumber;
+            amount = d.amount;
+            annotation = d.annotation;
+            return this;
+        }
+
+        public Device build(DeviceDemandEntity d)
+        {
+            id = d.id;
+            category = d.category;
+            name = d.name;
+            manufacturer = d.manufacturer;
             amount = d.amount;
             annotation = d.annotation;
             return this;
@@ -70,7 +80,7 @@ namespace Pirat.Model
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return HashCode.Combine(base.GetHashCode());
         }
 
         public override string ToString()

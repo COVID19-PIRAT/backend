@@ -1,4 +1,5 @@
 ﻿using Pirat.Model;
+using Pirat.Model.Api.Resource;
 
 namespace Pirat.Services.Resource
 {

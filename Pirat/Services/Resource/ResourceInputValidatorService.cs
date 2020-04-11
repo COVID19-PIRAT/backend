@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Pirat.Codes;
 using Pirat.Model;
+using Pirat.Model.Api.Resource;
 
 namespace Pirat.Services.Resource
 {

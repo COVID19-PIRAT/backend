@@ -48,8 +48,8 @@ namespace Pirat
             services.AddHealthChecks();
 
             //Services
-            services.AddTransient<IResourceDemandService, ResourceDemandService>();
-            services.AddTransient<IResourceUpdateService, ResourceUpdateService>();
+            services.AddTransient<IResourceStockQueryService, ResourceStockQueryService>();
+            services.AddTransient<IResourceStockUpdateService, ResourceStockUpdateService>();
             services.AddTransient<IMailService, MailService>();
             services.AddTransient<IReCaptchaService, ReCaptchaService>(s => 
                 new ReCaptchaService(Environment.GetEnvironmentVariable("PIRAT_GOOGLE_RECAPTCHA_SECRET")));
@@ -78,7 +78,7 @@ namespace Pirat
             var connectionString = Environment.GetEnvironmentVariable("PIRAT_CONNECTION");
 
             //DB context
-            services.AddDbContext<DemandContext>(options => options.UseNpgsql(connectionString));
+            services.AddDbContext<ResourceContext>(options => options.UseNpgsql(connectionString));
 
             //Swagger (see extensions)
             services.AddSwagger();

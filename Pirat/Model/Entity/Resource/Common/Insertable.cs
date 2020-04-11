@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Pirat.DatabaseContext;
 
-namespace Pirat.Model.Entity
+namespace Pirat.Model.Entity.Resource.Common
 {
     public interface IInsertable
     {
@@ -13,6 +10,6 @@ namespace Pirat.Model.Entity
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task<IInsertable> InsertAsync(DemandContext context);
+        Task<IInsertable> InsertAsync(ResourceContext context);
     }
 }

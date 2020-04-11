@@ -1,15 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using System.Threading.Tasks;
 using Pirat.DatabaseContext;
+using Pirat.Model.Api.Resource;
+using Pirat.Model.Entity.Resource.Common;
 
-namespace Pirat.Model.Entity
+namespace Pirat.Model.Entity.Resource.Stock
 {
-    public class PersonalEntity : PersonalBase, IFindable, IDeletable, IUpdatable, IInsertable
+    public class PersonalEntity : IFindable, IDeletable, IUpdatable, IInsertable
     {
+        public int id { get; set; }
+
+        public string institution { get; set; } = string.Empty;
+
+        public string researchgroup { get; set; } = string.Empty;
+
+        public bool experience_rt_pcr { get; set; }
+
+        public string annotation { get; set; } = string.Empty;
 
         public int offer_id { get; set; }
 
@@ -21,7 +27,7 @@ namespace Pirat.Model.Entity
 
         public bool is_deleted { get; set; }
 
-        public PersonalEntity build(Personal p)
+        public PersonalEntity Build(Personal p)
         {
             institution = p.institution;
             researchgroup = p.researchgroup;
@@ -32,31 +38,30 @@ namespace Pirat.Model.Entity
             return this;
         }
 
-        public PersonalEntity build(AddressEntity a)
+        public PersonalEntity Build(AddressEntity a)
         {
-
             address_id = a.id;
             return this;
         }
 
-        public async Task<IFindable> FindAsync(DemandContext context, int id)
+        public async Task<IFindable> FindAsync(ResourceContext context, int id)
         {
             return await context.personal.FindAsync(id);
         }
 
-        public async Task DeleteAsync(DemandContext context)
+        public async Task DeleteAsync(ResourceContext context)
         {
             context.personal.Remove(this);
             await context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(DemandContext context)
+        public async Task UpdateAsync(ResourceContext context)
         {
             context.personal.Update(this);
             await context.SaveChangesAsync();
         }
 
-        public async Task<IInsertable> InsertAsync(DemandContext context)
+        public async Task<IInsertable> InsertAsync(ResourceContext context)
         {
             context.personal.Add(this);
             await context.SaveChangesAsync();

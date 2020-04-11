@@ -10,6 +10,9 @@ using Moq;
 using Pirat.DatabaseContext;
 using Pirat.Examples.TestExamples;
 using Pirat.Model;
+using Pirat.Model.Api.Resource;
+using Pirat.Model.Entity.Resource.Common;
+using Pirat.Model.Entity.Resource.Stock;
 using Pirat.Services;
 using Pirat.Services.Resource;
 using Xunit;
@@ -21,14 +24,14 @@ namespace Pirat.DatabaseTests
         private const string connectionString =
             "Server=localhost;Port=5432;Database=postgres;User ID=postgres;Password=postgres";
 
-        private static DbContextOptions<DemandContext> options =
-            new DbContextOptionsBuilder<DemandContext>().UseNpgsql(connectionString).Options;
+        private static DbContextOptions<ResourceContext> options =
+            new DbContextOptionsBuilder<ResourceContext>().UseNpgsql(connectionString).Options;
 
-        private static readonly DemandContext DemandContext = new DemandContext(options);
+        private static readonly ResourceContext ResourceContext = new ResourceContext(options);
 
-        private readonly ResourceDemandService _resourceDemandService;
+        private readonly ResourceStockQueryService _resourceStockQueryService;
 
-        private readonly ResourceUpdateService _resourceUpdateService;
+        private readonly ResourceStockUpdateService _resourceStockUpdateService;
 
         private readonly CaptainHookGenerator _captainHookGenerator;
 
@@ -40,8 +43,8 @@ namespace Pirat.DatabaseTests
 
         public ResourceChangeTest()
         {
-            var loggerDemand = new Mock<ILogger<ResourceDemandService>>();
-            var loggerUpdate = new Mock<ILogger<ResourceUpdateService>>();
+            var loggerDemand = new Mock<ILogger<ResourceStockQueryService>>();
+            var loggerUpdate = new Mock<ILogger<ResourceStockUpdateService>>();
             var addressMaker = new Mock<IAddressMaker>();
             addressMaker.Setup(m => m.SetCoordinates(It.IsAny<AddressEntity>())).Callback((AddressEntity a) =>
             {
@@ -50,8 +53,8 @@ namespace Pirat.DatabaseTests
                 a.hascoordinates = false;
             });
 
-            this._resourceDemandService = new ResourceDemandService(loggerDemand.Object, DemandContext, addressMaker.Object);
-            _resourceUpdateService = new ResourceUpdateService(loggerUpdate.Object, DemandContext, addressMaker.Object);
+            this._resourceStockQueryService = new ResourceStockQueryService(loggerDemand.Object, ResourceContext, addressMaker.Object);
+            _resourceStockUpdateService = new ResourceStockUpdateService(loggerUpdate.Object, ResourceContext, addressMaker.Object);
             _captainHookGenerator = new CaptainHookGenerator();
             _shyPirateGenerator = new ShyPirateGenerator();
         }
@@ -59,8 +62,8 @@ namespace Pirat.DatabaseTests
         public async Task InitializeAsync()
         {
             var offer = _captainHookGenerator.generateOffer();
-            var token = await _resourceUpdateService.InsertAsync(offer);
-            offer = await _resourceDemandService.QueryLinkAsync(token);
+            var token = await _resourceStockUpdateService.InsertAsync(offer);
+            offer = await _resourceStockQueryService.QueryLinkAsync(token);
             (_offer, _token) = (offer, token);
         }
 
@@ -71,16 +74,16 @@ namespace Pirat.DatabaseTests
         /// </summary>
         public void Dispose()
         {
-            var exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE offer CASCADE"));
+            var exception = Record.Exception(() => ResourceContext.Database.ExecuteSqlRaw("TRUNCATE offer CASCADE"));
             Assert.Null(exception);
 
-            exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE address CASCADE"));
+            exception = Record.Exception(() => ResourceContext.Database.ExecuteSqlRaw("TRUNCATE address CASCADE"));
             Assert.Null(exception);
 
-            exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE region_subscription CASCADE"));
+            exception = Record.Exception(() => ResourceContext.Database.ExecuteSqlRaw("TRUNCATE region_subscription CASCADE"));
             Assert.Null(exception);
 
-            exception = Record.Exception(() => DemandContext.Database.ExecuteSqlRaw("TRUNCATE change CASCADE"));
+            exception = Record.Exception(() => ResourceContext.Database.ExecuteSqlRaw("TRUNCATE change CASCADE"));
             Assert.Null(exception);
         }
 
@@ -90,7 +93,7 @@ namespace Pirat.DatabaseTests
         /// <param name="numberOfRows">The amount of entries the table should have</param>
         private async Task VerifyChangeTableAsync(int numberOfRows)
         {
-            var query = from change in DemandContext.change as IQueryable<ChangeEntity>
+            var query = from change in ResourceContext.change as IQueryable<ChangeEntity>
                         select change;
             var changes = await query.ToListAsync();
             Assert.NotNull(changes);
@@ -116,11 +119,11 @@ namespace Pirat.DatabaseTests
             provider.address.country = "Atlantis";
 
             //Update
-            var changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, provider);
+            var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, provider);
             Assert.True(changedRows == 2);
 
             //We take a the token to get the offer with the updated provider
-            var response = await _resourceDemandService.QueryLinkAsync(_token);
+            var response = await _resourceStockQueryService.QueryLinkAsync(_token);
 
             //Assert
             Assert.NotNull(response);
@@ -143,11 +146,11 @@ namespace Pirat.DatabaseTests
             provider.mail = providerMailChanged;
 
             //Try to update
-            var changedRows = await  _resourceUpdateService.ChangeInformationAsync(_token, provider);
+            var changedRows = await  _resourceStockUpdateService.ChangeInformationAsync(_token, provider);
             Assert.True(changedRows == 0);
 
             //We take a the token to get the offer with the updated provider
-            var response = await _resourceDemandService.QueryLinkAsync(_token);
+            var response = await _resourceStockQueryService.QueryLinkAsync(_token);
 
             //Assert
             Assert.NotNull(response);
@@ -174,7 +177,7 @@ namespace Pirat.DatabaseTests
             consumable.address.country = "Deutschland";
 
             //Update
-            var changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, consumable);
+            var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, consumable);
             Assert.True(changedRows == 2);
 
             //Generate a consumable with the necessary attributes to find the updated consumable
@@ -187,7 +190,7 @@ namespace Pirat.DatabaseTests
                     country = "Deutschland"
                 }
             };
-            var response = await _resourceDemandService.QueryOffersAsync(queryConsumable)
+            var response = await _resourceStockQueryService.QueryOffersAsync(queryConsumable)
                 .ToListAsync();
 
             //Assert
@@ -213,12 +216,12 @@ namespace Pirat.DatabaseTests
             consumable.id = 999999;
 
             //Try to update
-            var changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, consumable);
+            var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, consumable);
             Assert.True(changedRows == 0);
 
             //Generate the consumable for the query that should still be findable 
             Consumable queryConsumable = _captainHookGenerator.GenerateConsumable();
-            var response = await _resourceDemandService.QueryOffersAsync(queryConsumable)
+            var response = await _resourceStockQueryService.QueryOffersAsync(queryConsumable)
                 .ToListAsync();
 
             //Assert
@@ -245,7 +248,7 @@ namespace Pirat.DatabaseTests
             device.address.country = "Deutschland";
 
             //Update
-            var changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, device);
+            var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, device);
             Assert.True(changedRows == 2);
 
             //Generate a device with the necessary attributes to find the updated device
@@ -258,7 +261,7 @@ namespace Pirat.DatabaseTests
                 },
                 category = device.category
             };
-            var response = await _resourceDemandService.QueryOffersAsync(queryDevice)
+            var response = await _resourceStockQueryService.QueryOffersAsync(queryDevice)
                 .ToListAsync();
 
             //Assert
@@ -284,12 +287,12 @@ namespace Pirat.DatabaseTests
             device.id = 999999;
 
             //Try to update
-            var changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, device);
+            var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, device);
             Assert.True(changedRows == 0);
 
             //The original device should still be findable
             Device queryDevice = _captainHookGenerator.GenerateDevice();
-            var response = await _resourceDemandService.QueryOffersAsync(queryDevice)
+            var response = await _resourceStockQueryService.QueryOffersAsync(queryDevice)
                 .ToListAsync();
 
             //Assert
@@ -319,7 +322,7 @@ namespace Pirat.DatabaseTests
             personal.institution = "TU Pirates";
 
             //Update
-            var changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, personal);
+            var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, personal);
             Assert.True(changedRows == 2);
 
             //Create manpower to find the updated personal
@@ -333,7 +336,7 @@ namespace Pirat.DatabaseTests
                     country = "Deutschland",
                 }
             };
-            var response = await _resourceDemandService.QueryOffersAsync(queryManpower)
+            var response = await _resourceStockQueryService.QueryOffersAsync(queryManpower)
                 .ToListAsync();
 
             //Assert
@@ -357,12 +360,12 @@ namespace Pirat.DatabaseTests
             personal.id = 999999;
 
             //Try to update
-            var changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, personal);
+            var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, personal);
             Assert.True(changedRows == 0);
 
             //The personal in the original manpower should still be findable
             Manpower queryManpower = _captainHookGenerator.GenerateManpower();
-            var response = await _resourceDemandService.QueryOffersAsync(queryManpower)
+            var response = await _resourceStockQueryService.QueryOffersAsync(queryManpower)
                 .ToListAsync();
 
             //Assert
@@ -381,7 +384,7 @@ namespace Pirat.DatabaseTests
             provider.address.postalcode = "85521";
             provider.address.country = "Deutschland";
             //Update
-            var changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, provider);
+            var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, provider);
             Assert.True(changedRows == 1);
             
             //Change
@@ -389,7 +392,7 @@ namespace Pirat.DatabaseTests
             consumable.address.postalcode = "85521";
             consumable.address.country = "Deutschland";
             //Update
-            changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, consumable);
+            changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, consumable);
             Assert.True(changedRows == 1);
             
             //Change
@@ -397,7 +400,7 @@ namespace Pirat.DatabaseTests
             device.address.postalcode = "85521";
             device.address.country = "Deutschland";
             //Update
-            changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, device);
+            changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, device);
             Assert.True(changedRows == 1);
             
             //Change
@@ -405,7 +408,7 @@ namespace Pirat.DatabaseTests
             personal.address.postalcode = "85521";
             personal.address.country = "Deutschland";
             //Update
-            changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, personal);
+            changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, personal);
             Assert.True(changedRows == 1);
             
         }
@@ -418,28 +421,28 @@ namespace Pirat.DatabaseTests
             Provider provider = _offer.provider;
             provider.name = "Awesome provider";
             //Update
-            var changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, provider);
+            var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, provider);
             Assert.True(changedRows == 1);
             
             //Change
             Consumable consumable = _offer.consumables[0];
             consumable.manufacturer = "A new manufacturer";
             //Update
-            changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, consumable);
+            changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, consumable);
             Assert.True(changedRows == 1);
             
             //Change
             Device device = _offer.devices[0];
             device.manufacturer = "New manufacturer";
             //Update
-            changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, device);
+            changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, device);
             Assert.True(changedRows == 1);
             
             //Change
             Personal personal = _offer.personals[0];
             personal.institution = "Super Powerful Pirates";
             //Update
-            changedRows = await _resourceUpdateService.ChangeInformationAsync(_token, personal);
+            changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, personal);
             Assert.True(changedRows == 1);
         }
 
@@ -455,28 +458,28 @@ namespace Pirat.DatabaseTests
 
             // Device, with no reason
             var newAmount = device.amount + 2;
-            await _resourceUpdateService.ChangeDeviceAmountAsync(_token, device.id, newAmount);
-            Device changedDevice = (await _resourceDemandService.QueryLinkAsync(_token)).devices[0];
+            await _resourceStockUpdateService.ChangeDeviceAmountAsync(_token, device.id, newAmount);
+            Device changedDevice = (await _resourceStockQueryService.QueryLinkAsync(_token)).devices[0];
             Assert.Equal(newAmount, changedDevice.amount);
             
             // Device, with a reason
             newAmount += 3;
-            await _resourceUpdateService.ChangeDeviceAmountAsync(_token, device.id, newAmount,
+            await _resourceStockUpdateService.ChangeDeviceAmountAsync(_token, device.id, newAmount,
                 "This is an unnecessary reason.");
-            changedDevice = (await _resourceDemandService.QueryLinkAsync(_token)).devices[0];
+            changedDevice = (await _resourceStockQueryService.QueryLinkAsync(_token)).devices[0];
             Assert.Equal(newAmount, changedDevice.amount);
             
             // Consumable, with no reason
             newAmount = consumable.amount + 5;
-            await _resourceUpdateService.ChangeConsumableAmountAsync(_token, consumable.id, newAmount);
-            Consumable changedConsumable = (await _resourceDemandService.QueryLinkAsync(_token)).consumables[0];
+            await _resourceStockUpdateService.ChangeConsumableAmountAsync(_token, consumable.id, newAmount);
+            Consumable changedConsumable = (await _resourceStockQueryService.QueryLinkAsync(_token)).consumables[0];
             Assert.Equal(newAmount, changedConsumable.amount);
             
             // Consumable, with a reason
             newAmount += 99;
-            await _resourceUpdateService.ChangeConsumableAmountAsync(_token, consumable.id, newAmount, 
+            await _resourceStockUpdateService.ChangeConsumableAmountAsync(_token, consumable.id, newAmount, 
                 "This is an unnecessary reason.");
-            changedConsumable = (await _resourceDemandService.QueryLinkAsync(_token)).consumables[0];
+            changedConsumable = (await _resourceStockQueryService.QueryLinkAsync(_token)).consumables[0];
             Assert.Equal(newAmount, changedConsumable.amount);
 
             // Verify change table
@@ -494,15 +497,15 @@ namespace Pirat.DatabaseTests
             
             // Device
             var newAmount = device.amount - 2;
-            await _resourceUpdateService.ChangeDeviceAmountAsync(_token, device.id, newAmount,
+            await _resourceStockUpdateService.ChangeDeviceAmountAsync(_token, device.id, newAmount,
                 "Given away with the help of PIRAT");
-            Device changedDevice = (await _resourceDemandService.QueryLinkAsync(_token)).devices[0];
+            Device changedDevice = (await _resourceStockQueryService.QueryLinkAsync(_token)).devices[0];
             Assert.Equal(newAmount, changedDevice.amount);
             
             // Consumable
             newAmount = consumable.amount - 5;
-            await _resourceUpdateService.ChangeConsumableAmountAsync(_token, consumable.id, newAmount, "Eaten by a shark");
-            Consumable changedConsumable = (await _resourceDemandService.QueryLinkAsync(_token)).consumables[0];
+            await _resourceStockUpdateService.ChangeConsumableAmountAsync(_token, consumable.id, newAmount, "Eaten by a shark");
+            Consumable changedConsumable = (await _resourceStockQueryService.QueryLinkAsync(_token)).consumables[0];
             Assert.Equal(newAmount, changedConsumable.amount);
 
             // Verify change table
@@ -520,17 +523,17 @@ namespace Pirat.DatabaseTests
             
             // Device, missing reason
             var newAmount = device.amount - 2;
-            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService
+            await Assert.ThrowsAnyAsync<Exception>(() => _resourceStockUpdateService
                 .ChangeDeviceAmountAsync(_token, device.id, newAmount, ""));
             Assert.Equal(device.amount,
-                (await _resourceDemandService.QueryLinkAsync(_token)).devices[0].amount);
+                (await _resourceStockQueryService.QueryLinkAsync(_token)).devices[0].amount);
 
             // Consumable, missing reason
             newAmount = consumable.amount - 5;
-            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService
+            await Assert.ThrowsAnyAsync<Exception>(() => _resourceStockUpdateService
                 .ChangeConsumableAmountAsync(_token, consumable.id, newAmount));
             Assert.Equal(consumable.amount,
-                (await _resourceDemandService.QueryLinkAsync(_token)).consumables[0].amount);
+                (await _resourceStockQueryService.QueryLinkAsync(_token)).consumables[0].amount);
 
             // Verify change table
             await VerifyChangeTableAsync(0);
@@ -547,17 +550,17 @@ namespace Pirat.DatabaseTests
             
             // Device, invalid amount
             var newAmount = 0;
-            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService
+            await Assert.ThrowsAnyAsync<Exception>(() => _resourceStockUpdateService
                 .ChangeDeviceAmountAsync(_token, device.id, newAmount, "A reasonable reason"));
             Assert.Equal(device.amount,
-                (await _resourceDemandService.QueryLinkAsync(_token)).devices[0].amount);
+                (await _resourceStockQueryService.QueryLinkAsync(_token)).devices[0].amount);
 
             // Consumable, invalid amount
             newAmount = 0;
-            await Assert.ThrowsAnyAsync<Exception>(() => _resourceUpdateService
+            await Assert.ThrowsAnyAsync<Exception>(() => _resourceStockUpdateService
                 .ChangeConsumableAmountAsync(_token, consumable.id, newAmount, "I forgot the reason"));
             Assert.Equal(consumable.amount,
-                (await _resourceDemandService.QueryLinkAsync(_token)).consumables[0].amount);
+                (await _resourceStockQueryService.QueryLinkAsync(_token)).consumables[0].amount);
             // Verify change table
             await VerifyChangeTableAsync(0);
         }
@@ -579,18 +582,18 @@ namespace Pirat.DatabaseTests
             newPersonal.address.postalcode = "22459";
             newPersonal.qualification = "PHD_STUDENT";
 
-            await _resourceUpdateService.AddResourceAsync(_token, newDevice);
-            Offer newOffer = await _resourceDemandService.QueryLinkAsync(_token);
+            await _resourceStockUpdateService.AddResourceAsync(_token, newDevice);
+            Offer newOffer = await _resourceStockQueryService.QueryLinkAsync(_token);
             Assert.Equal(oldOffer.devices.Count + 1, newOffer.devices.Count);
             Assert.Equal(newDevice, newOffer.devices.Find(x => x.id == newDevice.id));
             
-            await _resourceUpdateService.AddResourceAsync(_token, newConsumable);
-            newOffer = await _resourceDemandService.QueryLinkAsync(_token);
+            await _resourceStockUpdateService.AddResourceAsync(_token, newConsumable);
+            newOffer = await _resourceStockQueryService.QueryLinkAsync(_token);
             Assert.Equal(oldOffer.consumables.Count + 1, newOffer.consumables.Count);
             Assert.Equal(newConsumable, newOffer.consumables.Find(x => x.id == newConsumable.id));
             
-            await _resourceUpdateService.AddResourceAsync(_token, newPersonal);
-            newOffer = await _resourceDemandService.QueryLinkAsync(_token);
+            await _resourceStockUpdateService.AddResourceAsync(_token, newPersonal);
+            newOffer = await _resourceStockQueryService.QueryLinkAsync(_token);
             Assert.Equal(oldOffer.personals.Count + 1, newOffer.personals.Count);
             Assert.Equal(newPersonal, newOffer.personals.Find(x => x.id == newPersonal.id));
         }

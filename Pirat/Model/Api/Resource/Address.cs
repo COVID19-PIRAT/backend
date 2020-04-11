@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Pirat.Model.Entity.Resource.Common;
 
-namespace Pirat.Model
+namespace Pirat.Model.Api.Resource
 {
     public class Address
     {
@@ -65,11 +63,11 @@ namespace Pirat.Model
         public bool Equals(Address other)
         {
             return other != null 
-                   && street.Equals(other.street, StringComparison.Ordinal) 
-                   && postalcode.Equals(other.postalcode, StringComparison.Ordinal) 
-                   && city.Equals(other.city, StringComparison.Ordinal) 
-                   && streetnumber.Equals(other.streetnumber, StringComparison.Ordinal)
-                   && country.Equals(other.country, StringComparison.Ordinal) 
+                   && string.Equals(street, other.street, StringComparison.Ordinal) 
+                   && string.Equals(postalcode, other.postalcode, StringComparison.Ordinal) 
+                   && string.Equals(city, other.city, StringComparison.Ordinal) 
+                   && string.Equals(streetnumber, other.streetnumber, StringComparison.Ordinal)
+                   && string.Equals(country, other.country, StringComparison.Ordinal) 
                    && latitude == other.latitude && longitude == other.longitude;
         }
 

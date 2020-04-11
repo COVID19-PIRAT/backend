@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Pirat.Model;
+using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Common;
 
 namespace Pirat.Services.Resource
 {
-    public interface IResourceDemandService
+    public interface IResourceStockQueryService
     {
         IAsyncEnumerable<OfferResource<Consumable>> QueryOffersAsync(Consumable consumable);
 

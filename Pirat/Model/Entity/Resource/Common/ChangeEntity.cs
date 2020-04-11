@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Pirat.DatabaseContext;
-using Pirat.Model.Entity;
 
-namespace Pirat.Model
+namespace Pirat.Model.Entity.Resource.Common
 {
     public class ChangeEntity : IInsertable
     {
@@ -21,7 +20,7 @@ namespace Pirat.Model
         
         public DateTime timestamp { get; set; } = DateTime.Now;
 
-        public async Task<IInsertable> InsertAsync(DemandContext context)
+        public async Task<IInsertable> InsertAsync(ResourceContext context)
         {
             context.change.Add(this);
             await context.SaveChangesAsync();

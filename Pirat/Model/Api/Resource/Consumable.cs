@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Pirat.Model.Entity;
+using Pirat.Model.Entity.Resource.Demand;
+using Pirat.Model.Entity.Resource.Stock;
 
-namespace Pirat.Model
+namespace Pirat.Model.Api.Resource
 {
     public class Consumable : Item
     {
@@ -21,6 +20,18 @@ namespace Pirat.Model
             name = c.name;
             manufacturer = c.manufacturer;
             ordernumber = c.ordernumber;
+            amount = c.amount;
+            unit = c.unit;
+            annotation = c.annotation;
+            return this;
+        }
+
+        public Consumable build(ConsumableDemandEntity c)
+        {
+            id = c.id;
+            category = c.category;
+            name = c.name;
+            manufacturer = c.manufacturer;
             amount = c.amount;
             unit = c.unit;
             annotation = c.annotation;
@@ -89,22 +100,18 @@ namespace Pirat.Model
             }
         }
 
+
+        public bool Equals(Consumable other)
+        {
+            return base.Equals(other) && unit == other.unit;
+        }
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
             return Equals(obj as Consumable);
-        }
-        
-        public bool Equals(Consumable other)
-        {
-            return other != null && base.Equals(other) && unit.Equals(other.unit, StringComparison.Ordinal);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(base.GetHashCode(), unit);
         }
 
         public override string ToString()
