@@ -32,7 +32,6 @@ namespace Pirat.Model.Api.Resource
             category = c.category;
             name = c.name;
             manufacturer = c.manufacturer;
-            //ordernumber = c.ordernumber;
             amount = c.amount;
             unit = c.unit;
             annotation = c.annotation;
@@ -101,22 +100,18 @@ namespace Pirat.Model.Api.Resource
             }
         }
 
+
+        public bool Equals(Consumable other)
+        {
+            return base.Equals(other) && unit == other.unit;
+        }
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
             return Equals(obj as Consumable);
-        }
-        
-        public bool Equals(Consumable other)
-        {
-            return other != null && base.Equals(other) && unit.Equals(other.unit, StringComparison.Ordinal) && address.Equals(other.address);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(base.GetHashCode(), unit);
         }
 
         public override string ToString()

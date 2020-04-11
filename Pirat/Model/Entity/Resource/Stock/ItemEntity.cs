@@ -1,7 +1,9 @@
 ﻿namespace Pirat.Model.Entity.Resource.Stock
 {
-    public abstract class ItemEntity : Model.ResourceBase
+    public abstract class ItemEntity
     {
+        public int id { get; set; }
+        
         public string category { get; set; } = string.Empty;
 
         public string name { get; set; } = string.Empty;

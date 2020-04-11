@@ -2,11 +2,14 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Pirat.Helper;
 
 namespace Pirat.Model.Api.Resource
 {
-    public abstract class Item : ResourceBase
+    public abstract class Item
     {
+        [JsonProperty] [SwaggerExclude] public int id { get; set; }
+
         [JsonProperty]
         [Required]
         [FromQuery(Name = "category")]
@@ -49,14 +52,14 @@ namespace Pirat.Model.Api.Resource
         public bool Equals(Item other)
         {
             return other != null
-                   && base.Equals(other)
-                   && category.Equals(other.category, StringComparison.Ordinal)
-                   && name.Equals(other.name, StringComparison.Ordinal)
-                   && manufacturer.Equals(other.manufacturer, StringComparison.Ordinal)
-                   && ordernumber.Equals(other.ordernumber, StringComparison.Ordinal)
+                   && id == other.id
+                   && string.Equals(category, other.category, StringComparison.Ordinal)
+                   && string.Equals(name, other.name, StringComparison.Ordinal)
+                   && string.Equals(manufacturer, other.manufacturer, StringComparison.Ordinal)
+                   && string.Equals(ordernumber, other.ordernumber, StringComparison.Ordinal)
                    && amount == other.amount
-                   && annotation.Equals(other.annotation, StringComparison.Ordinal)
-                   && address.Equals(other.address) 
+                   && string.Equals(annotation, other.annotation, StringComparison.Ordinal)
+                   && Equals(address, other.address)
                    && kilometer == other.kilometer;
         }
 
@@ -67,7 +70,7 @@ namespace Pirat.Model.Api.Resource
 
         public override string ToString()
         {
-            return $"{base.ToString()} category={category}, name={name}, " +
+            return $"id={id}, category={category}, name={name}, " +
                    $"manufacturer={manufacturer}, ordernumber={ordernumber}, " +
                    $"amount={amount}, annotation={annotation}, address={address.ToString()}," +
                    $"kilometer={kilometer}";

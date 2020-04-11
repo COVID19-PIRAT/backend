@@ -5,8 +5,9 @@ using Pirat.Model.Entity.Resource.Common;
 
 namespace Pirat.Model.Entity.Resource.Stock
 {
-    public class PersonalEntity : Model.ResourceBase, IFindable, IDeletable, IUpdatable, IInsertable
+    public class PersonalEntity : IFindable, IDeletable, IUpdatable, IInsertable
     {
+        public int id { get; set; }
 
         public string institution { get; set; } = string.Empty;
 

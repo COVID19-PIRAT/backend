@@ -63,11 +63,11 @@ namespace Pirat.Model.Api.Resource
         public bool Equals(Address other)
         {
             return other != null 
-                   && street.Equals(other.street, StringComparison.Ordinal) 
-                   && postalcode.Equals(other.postalcode, StringComparison.Ordinal) 
-                   && city.Equals(other.city, StringComparison.Ordinal) 
-                   && streetnumber.Equals(other.streetnumber, StringComparison.Ordinal)
-                   && country.Equals(other.country, StringComparison.Ordinal) 
+                   && string.Equals(street, other.street, StringComparison.Ordinal) 
+                   && string.Equals(postalcode, other.postalcode, StringComparison.Ordinal) 
+                   && string.Equals(city, other.city, StringComparison.Ordinal) 
+                   && string.Equals(streetnumber, other.streetnumber, StringComparison.Ordinal)
+                   && string.Equals(country, other.country, StringComparison.Ordinal) 
                    && latitude == other.latitude && longitude == other.longitude;
         }
 

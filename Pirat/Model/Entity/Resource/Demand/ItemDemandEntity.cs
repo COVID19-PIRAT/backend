@@ -2,8 +2,10 @@
 
 namespace Pirat.Model.Entity.Resource.Demand
 {
-    public abstract class ItemDemandEntity : ResourceBase
+    public abstract class ItemDemandEntity
     {
+        public int id { get; set; }
+        
         public int demand_id { get; set; }
 
         public string category { get; set; } = string.Empty;
@@ -11,8 +13,6 @@ namespace Pirat.Model.Entity.Resource.Demand
         public string name { get; set; } = string.Empty;
 
         public string manufacturer { get; set; } = string.Empty;
-
-        //public string ordernumber { get; set; } = string.Empty;
 
         public int amount { get; set; }
 

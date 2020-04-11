@@ -15,7 +15,6 @@ namespace Pirat.Model.Entity.Resource.Demand
             category = c.category;
             name = c.name;
             manufacturer = c.manufacturer;
-            //ordernumber = c.ordernumber;
             amount = c.amount;
             unit = c.unit;
             annotation = c.annotation;

@@ -2,13 +2,18 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Pirat.Helper;
 using Pirat.Model.Entity.Resource.Stock;
 
 namespace Pirat.Model.Api.Resource
 {
 
-    public class Personal : ResourceBase
+    public class Personal
     {
+        [JsonProperty]
+        [SwaggerExclude]
+        public int id { get; set; }
+        
         [JsonProperty]
         [FromQuery(Name = "institution")]
         public string institution { get; set; } = string.Empty;
@@ -69,20 +74,21 @@ namespace Pirat.Model.Api.Resource
         public bool Equals(Personal other)
         {
             return other != null
-                   && base.Equals(other)
-                   && institution.Equals(other.institution, StringComparison.Ordinal)
-                   && researchgroup.Equals(other.researchgroup, StringComparison.Ordinal)
+                   && id == other.id
+                   && string.Equals(institution, other.institution, StringComparison.Ordinal)
+                   && string.Equals(researchgroup, other.researchgroup, StringComparison.Ordinal)
                    && experience_rt_pcr == other.experience_rt_pcr
-                   && annotation.Equals(other.annotation, StringComparison.Ordinal)
-                   && qualification.Equals(other.qualification, StringComparison.Ordinal)
-                   && area.Equals(other.area, StringComparison.Ordinal)
-                   && address.Equals(other.address)
+                   && string.Equals(annotation, other.annotation, StringComparison.Ordinal)
+                   && string.Equals(qualification, other.qualification, StringComparison.Ordinal)
+                   && string.Equals(area, other.area, StringComparison.Ordinal)
+                   && Equals(address, other.address)
                    && kilometer == other.kilometer;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(base.GetHashCode(), new string[]{institution , researchgroup, annotation, qualification, area} , experience_rt_pcr, address, kilometer);
+            return HashCode.Combine(base.GetHashCode(), new[]{institution , researchgroup, annotation, qualification, area} ,
+                experience_rt_pcr, address, kilometer);
         }
 
         public override string ToString()
