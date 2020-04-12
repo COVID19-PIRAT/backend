@@ -1,0 +1,21 @@
+{
+  "consumable": {
+    "MASKE": "Maske",
+    "SCHUTZKLEIDUNG": "Schutzkleidung",
+    "SCHUTZBRILLE": "Schutzbrille",
+    "HANDSCHUHE": "Handschuhe",
+    "DESINFEKTIONSMITTEL": "Desinfektionsmittel",
+    "REAKTIONSGEFAESSE": "Reaktionsgef‰ﬂe",
+    "READOUTPLATES": "Readoutplates",
+    "PIPETTENSPITZEN": "Pipettenspitze",
+    "SONSTIGES": "Sonstiges"
+  },
+  "devices": {
+    "PCR_THERMOCYCLER": "PCR Thermocycler",
+    "RT_PCR_THERMOCYCLER": "Real-Time PCR Thermocycler",
+    "ZENTRIFUGE": "Zentrifuge",
+    "VORTEXER": "Vortexer",
+    "PIPETTE": "Pipette",
+    "SONSTIGES": "Sonstiges"
+  }
+}
