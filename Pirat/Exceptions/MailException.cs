@@ -11,5 +11,9 @@ namespace Pirat.Exceptions
         public MailException(string message)
         : base(message)
         { }
+
+        public MailException() { }
+
+        public MailException(string message, Exception innerException) : base(message, innerException) { }
     }
 }

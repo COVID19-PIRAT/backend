@@ -14,5 +14,9 @@ namespace Pirat.Exceptions
         public InvalidDataStateException(string message)
             : base(message)
         { }
+
+        public InvalidDataStateException() { }
+
+        public InvalidDataStateException(string message, Exception innerException) : base(message, innerException) { }
     }
 }
