@@ -34,7 +34,7 @@ namespace Pirat.Services.Resource
         internal async Task<OfferEntity> RetrieveOfferFromTokenAsync(string token)
         {
             var query = from o in _context.offer as IQueryable<OfferEntity>
-                        where o.token.Equals(token)
+                        where o.token == token
                         select o;
             var offers = await query.Select(o => o).ToListAsync();
 
@@ -52,7 +52,7 @@ namespace Pirat.Services.Resource
         internal async Task<DemandEntity> RetrieveDemandFromTokenAsync(string token)
         {
             var query = from o in _context.demand as IQueryable<DemandEntity>
-                where o.token.Equals(token)
+                where o.token== token
                 select o;
             var demands = await query.Select(o => o).ToListAsync();
 

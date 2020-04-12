@@ -52,16 +52,16 @@ namespace Pirat.Services.Resource
                         join c in _context.consumable on o.id equals c.offer_id
                         join ap in _context.address on o.address_id equals ap.id
                         join ac in _context.address on c.address_id equals ac.id
-                        where consumable.category.Equals(c.category) && !c.is_deleted
+                        where consumable.category == c.category && !c.is_deleted
                         select new { o, c, ap, ac };
 
             if (!string.IsNullOrEmpty(consumable.name))
             {
-                query = query.Where(collection => consumable.name.Equals(collection.c.name));
+                query = query.Where(collection => consumable.name == collection.c.name);
             }
             if (!string.IsNullOrEmpty(consumable.manufacturer))
             {
-                query = query.Where(collection => consumable.manufacturer.Equals(collection.c.manufacturer)); ;
+                query = query.Where(collection => consumable.manufacturer == collection.c.manufacturer); ;
             }
             if (consumable.amount > 0)
             {
@@ -123,16 +123,16 @@ namespace Pirat.Services.Resource
                         join d in _context.device on o.id equals d.offer_id
                         join ap in _context.address on o.address_id equals ap.id
                         join ac in _context.address on d.address_id equals ac.id
-                        where device.category.Equals(d.category) && !d.is_deleted
+                        where device.category == d.category && !d.is_deleted
                         select new { o, d, ap, ac };
 
             if (!string.IsNullOrEmpty(device.name))
             {
-                query = query.Where(collection => device.name.Equals(collection.d.name));
+                query = query.Where(collection => device.name == collection.d.name);
             }
             if (!string.IsNullOrEmpty(device.manufacturer))
             {
-                query = query.Where(collection => device.manufacturer.Equals(collection.d.manufacturer)); ;
+                query = query.Where(collection => device.manufacturer == collection.d.manufacturer); ;
             }
             if (device.amount > 0)
             {
@@ -198,7 +198,7 @@ namespace Pirat.Services.Resource
 
             if (!string.IsNullOrEmpty(manpower.institution))
             {
-                query = query.Where(collection => manpower.institution.Equals(collection.personal.institution)); ;
+                query = query.Where(collection => manpower.institution == collection.personal.institution); ;
             }
 
             if (manpower.qualification.Any())
@@ -212,7 +212,7 @@ namespace Pirat.Services.Resource
 
             if (!string.IsNullOrEmpty(manpower.researchgroup))
             {
-                query = query.Where(collection => manpower.researchgroup.Equals(collection.personal.researchgroup)); ;
+                query = query.Where(collection => manpower.researchgroup == collection.personal.researchgroup); ;
             }
             if (manpower.experience_rt_pcr)
             {

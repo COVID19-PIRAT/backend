@@ -326,8 +326,7 @@ namespace Pirat.Services.Resource
             var query = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join c in _context.consumable on o.id equals c.offer_id
-                where token.Equals(o.token)
-                        && c.id == consumableId
+                where token == o.token && c.id == consumableId
                 select c;
             var foundConsumables = await query.ToListAsync();
 
@@ -402,8 +401,7 @@ namespace Pirat.Services.Resource
             var query = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join d in _context.device on o.id equals d.offer_id
-                where token.Equals(o.token)
-                      && d.id == deviceId
+                where token == o.token && d.id == deviceId
                 select d;
 
             var foundDevices = await query.ToListAsync();
