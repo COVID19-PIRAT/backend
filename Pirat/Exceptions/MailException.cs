@@ -17,6 +17,5 @@ namespace Pirat.Exceptions
 
         public MailException(string message, Exception innerException) : base(message, innerException) { }
 
-        protected MailException(SerializationInfo info , StreamingContext context) { }
     }
 }
