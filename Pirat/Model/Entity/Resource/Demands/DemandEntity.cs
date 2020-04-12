@@ -20,7 +20,7 @@ namespace Pirat.Model.Entity.Resource.Demands
         public string phone { get; set; } = string.Empty;
 
         //OPTIONAL
-        public int address_id { get; set; }
+        public int? address_id { get; set; }
 
 
         //public bool ispublic { get; set; }

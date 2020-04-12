@@ -29,7 +29,6 @@ namespace Pirat.Services.Resource.Demand
             _addressMaker = addressMaker;
 
             _queryHelper = new QueryHelper(context);
-
         }
 
 
@@ -47,54 +46,64 @@ namespace Pirat.Services.Resource.Demand
                 _addressMaker.SetCoordinates(locationOfDemandedConsumable);
             }
             
-
             var query = from demand in _context.demand as IQueryable<DemandEntity>
-                        join c in _context.demand_consumable on demand.id equals c.demand_id
-                        join ad in _context.address on demand.address_id equals ad.id
-                        where consumable.category.Equals(c.category) && !c.is_deleted
-                        select new { demand, c, ad };
+                join c in _context.demand_consumable on demand.id equals c.demand_id
+                join ad in _context.address on demand.address_id equals ad.id into tmp
+                from ad in tmp.DefaultIfEmpty()
+                where consumable.category.Equals(c.category) && !c.is_deleted
+                select new {demand, c, ad};
 
 
             if (!string.IsNullOrEmpty(consumable.name))
             {
                 query = query.Where(collection => consumable.name.Equals(collection.c.name));
             }
+
             if (!string.IsNullOrEmpty(consumable.manufacturer))
             {
-                query = query.Where(collection => consumable.manufacturer.Equals(collection.c.manufacturer)); ;
+                query = query.Where(collection => consumable.manufacturer.Equals(collection.c.manufacturer));
             }
+
             if (consumable.amount > 0)
             {
                 query = query.Where(collection => consumable.amount <= collection.c.amount);
             }
 
-            List<DemandResource<Consumable>> resources = new List<DemandResource<Consumable>>();
             var results = await query.ToListAsync();
 
             foreach (var data in results)
             {
                 var resource = new Consumable().build(data.c);
 
+                // If the query specifies a location but the demand does not, the demand should not be considered.
+                if (locationOfDemandedConsumable != null && data.ad == null)
+                {
+                    continue;
+                }
+
                 if (locationOfDemandedConsumable != null)
                 {
                     var yLatitude = data.ad.latitude;
                     var yLongitude = data.ad.longitude;
-                    var distance = DistanceCalculator.computeDistance(locationOfDemandedConsumable.latitude, locationOfDemandedConsumable.longitude, yLatitude, yLongitude);
+                    var distance = DistanceCalculator.computeDistance(
+                        locationOfDemandedConsumable.latitude, locationOfDemandedConsumable.longitude,
+                        yLatitude, yLongitude);
                     if (distance > maxDistance && maxDistance != 0)
                     {
                         continue;
                     }
-                    resource.kilometer = (int)Math.Round(distance);
+                    resource.kilometer = (int) Math.Round(distance);
                 }
                 
-
                 var provider = new Provider().Build(data.demand);
-                var providerAddress = new Address().Build(data.ad);
-
-                provider.address = providerAddress;
+                if (data.ad != null)
+                {
+                    provider.address = new Address().Build(data.ad);
+                }
 
                 var demand = new DemandResource<Consumable>()
                 {
+                    provider = provider,
                     resource = resource
                 };
 
@@ -118,19 +127,22 @@ namespace Pirat.Services.Resource.Demand
 
 
             var query = from demand in _context.demand as IQueryable<DemandEntity>
-                        join d in _context.demand_device on demand.id equals d.demand_id
-                        join ad in _context.address on demand.address_id equals ad.id
-                        where device.category.Equals(d.category) && !d.is_deleted
-                        select new { demand, d, ad };
+                join d in _context.demand_device on demand.id equals d.demand_id
+                join ad in _context.address on demand.address_id equals ad.id into tmp
+                from ad in tmp.DefaultIfEmpty()
+                where device.category.Equals(d.category) && !d.is_deleted
+                select new {demand, d, ad};
 
             if (!string.IsNullOrEmpty(device.name))
             {
                 query = query.Where(collection => device.name.Equals(collection.d.name));
             }
+
             if (!string.IsNullOrEmpty(device.manufacturer))
             {
-                query = query.Where(collection => device.manufacturer.Equals(collection.d.manufacturer)); ;
+                query = query.Where(collection => device.manufacturer.Equals(collection.d.manufacturer));
             }
+
             if (device.amount > 0)
             {
                 query = query.Where(collection => device.amount <= collection.d.amount);
@@ -143,26 +155,35 @@ namespace Pirat.Services.Resource.Demand
             {
                 var resource = new Device().Build(data.d);
 
+                // If the query specifies a location but the demand does not, the demand should not be considered.
+                if (locationOfDemandedDevice != null && data.ad == null)
+                {
+                    continue;
+                }
+                
                 if (locationOfDemandedDevice != null)
                 {
                     var yLatitude = data.ad.latitude;
                     var yLongitude = data.ad.longitude;
-                    var distance = DistanceCalculator.computeDistance(locationOfDemandedDevice.latitude, locationOfDemandedDevice.longitude, yLatitude, yLongitude);
+                    var distance = DistanceCalculator.computeDistance(
+                        locationOfDemandedDevice.latitude, locationOfDemandedDevice.longitude,
+                        yLatitude, yLongitude);
                     if (distance > maxDistance && maxDistance != 0)
                     {
                         continue;
                     }
-                    resource.kilometer = (int)Math.Round(distance);
+                    resource.kilometer = (int) Math.Round(distance);
                 }
-
-
+                
                 var provider = new Provider().Build(data.demand);
-                var providerAddress = new Address().Build(data.ad);
-
-                provider.address = providerAddress;
+                if (data.ad != null)
+                {
+                    provider.address = new Address().Build(data.ad);
+                }
 
                 var demand = new DemandResource<Device>()
                 {
+                    provider = provider,
                     resource = resource
                 };
 
