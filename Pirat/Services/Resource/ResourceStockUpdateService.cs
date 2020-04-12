@@ -397,7 +397,6 @@ namespace Pirat.Services.Resource
         public async Task ChangeDeviceAmountAsync(string token, int deviceId, int newAmount, string reason)
         {
             NullCheck.ThrowIfNull<string>(token);
-            NullCheck.ThrowIfNull<string>(reason);
 
             // Get consumable from database
             var query = 
@@ -443,7 +442,9 @@ namespace Pirat.Services.Resource
                 
                 return;
             }
-            
+
+            NullCheck.ThrowIfNull<string>(reason);
+
             // If amount has decreased: ensure that a reason is provided
             if (reason.Trim().Length == 0)
             {
