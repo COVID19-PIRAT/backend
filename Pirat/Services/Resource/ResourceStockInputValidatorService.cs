@@ -21,7 +21,7 @@ namespace Pirat.Services.Resource
 
             if (string.IsNullOrEmpty(address.postalcode) || string.IsNullOrEmpty(address.country))
             {
-                throw new ArgumentException(FailureCodes.INCOMPLETE_ADDRESS);
+                throw new ArgumentException(FailureCodes.IncompleteAddress);
             }
         }
 
@@ -29,7 +29,7 @@ namespace Pirat.Services.Resource
         {
             if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
             {
-                throw new ArgumentException(FailureCodes.INVALID_TOKEN);
+                throw new ArgumentException(FailureCodes.InvalidToken);
             }
         }
 
@@ -42,7 +42,7 @@ namespace Pirat.Services.Resource
             if (string.IsNullOrEmpty(provider.name) || string.IsNullOrEmpty(provider.organisation) ||
                 string.IsNullOrEmpty(provider.mail))
             {
-                throw new ArgumentException(FailureCodes.INCOMPLETE_PROVIDER);
+                throw new ArgumentException(FailureCodes.IncompleteProvider);
             }
 
             validateAddress(provider.address);
@@ -53,7 +53,7 @@ namespace Pirat.Services.Resource
             if (string.IsNullOrEmpty(consumable.category) || string.IsNullOrEmpty(consumable.name) ||
                 string.IsNullOrEmpty(consumable.unit))
             {
-                throw new ArgumentException(FailureCodes.INCOMPLETE_CONSUMABLE);
+                throw new ArgumentException(FailureCodes.IncompleteConsumable);
             }
 
             validateAddress(consumable.address);
@@ -63,7 +63,7 @@ namespace Pirat.Services.Resource
         {
             if (string.IsNullOrEmpty(device.name) || string.IsNullOrEmpty(device.category))
             {
-                throw new ArgumentException(FailureCodes.INCOMPLETE_DEVICE);
+                throw new ArgumentException(FailureCodes.IncompleteDevice);
             }
             validateAddress(device.address);
         }
@@ -72,7 +72,7 @@ namespace Pirat.Services.Resource
         {
             if (string.IsNullOrEmpty(personal.qualification) || string.IsNullOrEmpty(personal.area) || string.IsNullOrEmpty(personal.institution))
             {
-                throw new ArgumentException(FailureCodes.INCOMPLETE_PERSONAL);
+                throw new ArgumentException(FailureCodes.IncompletePersonal);
             }
 
             validateAddress(personal.address);
@@ -91,7 +91,7 @@ namespace Pirat.Services.Resource
 
             if (consumable.amount < 1)
             {
-                throw new ArgumentException(FailureCodes.INVALID_AMOUNT_CONSUMABLE);
+                throw new ArgumentException(FailureCodes.InvalidAmountConsumable);
             }
 
         }
@@ -104,7 +104,7 @@ namespace Pirat.Services.Resource
 
             if (device.amount < 1)
             {
-                throw new ArgumentException(FailureCodes.INVALID_AMOUNT_DEVICE);
+                throw new ArgumentException(FailureCodes.InvalidAmountDevice);
             }
 
         }
@@ -126,7 +126,7 @@ namespace Pirat.Services.Resource
                 (offer.devices == null || !offer.devices.Any()) &&
                 (offer.personals == null || !offer.personals.Any()))
             {
-                throw new ArgumentException(FailureCodes.INCOMPLETE_OFFER);
+                throw new ArgumentException(FailureCodes.IncompleteOffer);
             }
 
             offer.consumables?.ForEach(ValidateForStockInsertion);
@@ -146,7 +146,7 @@ namespace Pirat.Services.Resource
 
             if (string.IsNullOrEmpty(device.category))
             {
-                throw new ArgumentException(FailureCodes.INCOMPLETE_DEVICE);
+                throw new ArgumentException(FailureCodes.IncompleteDevice);
             }
 
             try
@@ -155,7 +155,7 @@ namespace Pirat.Services.Resource
             }
             catch (KeyNotFoundException)
             {
-                throw new ArgumentException(FailureCodes.INVALID_CATEGORY_DEVICE);
+                throw new ArgumentException(FailureCodes.InvalidCategoryDevice);
             }
             validateAddress(device.address);
         }
@@ -166,7 +166,7 @@ namespace Pirat.Services.Resource
 
             if (string.IsNullOrEmpty(consumable.category))
             {
-                throw new ArgumentException(FailureCodes.INCOMPLETE_CONSUMABLE);
+                throw new ArgumentException(FailureCodes.IncompleteConsumable);
             }
 
             try
@@ -175,7 +175,7 @@ namespace Pirat.Services.Resource
             }
             catch (KeyNotFoundException)
             {
-                throw new ArgumentException(FailureCodes.INVALID_CATEGORY_CONSUMABLE);
+                throw new ArgumentException(FailureCodes.InvalidCategoryConsumable);
             }
             validateAddress(consumable.address);
         }

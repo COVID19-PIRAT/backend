@@ -169,7 +169,7 @@ namespace Pirat.Services.Resource
         {
             if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
             {
-                throw new ArgumentException(FailureCodes.INVALID_TOKEN);
+                throw new ArgumentException(FailureCodes.InvalidToken);
             }
 
             var offer = await _queryHelper.RetrieveOfferFromTokenAsync(token);
@@ -204,7 +204,7 @@ namespace Pirat.Services.Resource
 
             if (2 < changedRows)
             {
-                throw new InvalidDataStateException(FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
+                throw new InvalidDataStateException(FatalCodes.UpdatesMadeInTooManyRows);
             }
 
             return changedRows;
@@ -238,7 +238,7 @@ namespace Pirat.Services.Resource
 
             if (2 < changedRows)
             {
-                throw new InvalidDataStateException(FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
+                throw new InvalidDataStateException(FatalCodes.UpdatesMadeInTooManyRows);
             }
 
             return changedRows;
@@ -271,7 +271,7 @@ namespace Pirat.Services.Resource
 
             if (2 < changedRows)
             {
-                throw new InvalidDataStateException(FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
+                throw new InvalidDataStateException(FatalCodes.UpdatesMadeInTooManyRows);
             }
 
             return changedRows;
@@ -306,7 +306,7 @@ namespace Pirat.Services.Resource
 
             if (2 < changedRows)
             {
-                throw new InvalidDataStateException(FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
+                throw new InvalidDataStateException(FatalCodes.UpdatesMadeInTooManyRows);
             }
 
             return changedRows;
@@ -332,7 +332,7 @@ namespace Pirat.Services.Resource
 
             if (foundConsumables.Count == 0)
             {
-                throw new DataNotFoundException(FailureCodes.NOTFOUND_CONSUMABLE);
+                throw new DataNotFoundException(FailureCodes.NotFoundConsumable);
             }
             ConsumableEntity consumable = foundConsumables[0];
             
@@ -367,11 +367,11 @@ namespace Pirat.Services.Resource
             // If amount has decreased: ensure that a reason is provided
             if (reason.Trim().Length == 0)
             {
-                throw new ArgumentException(FailureCodes.INVALID_REASON);
+                throw new ArgumentException(FailureCodes.InvalidReason);
             }
             if (newAmount < 1)
             {
-                throw new ArgumentException(FailureCodes.INVALID_AMOUNT_CONSUMABLE);
+                throw new ArgumentException(FailureCodes.InvalidAmountConsumable);
             }
             consumable.amount = newAmount;
             await consumable.UpdateAsync(_context);
@@ -408,7 +408,7 @@ namespace Pirat.Services.Resource
 
             if (foundDevices.Count == 0)
             {
-                throw new DataNotFoundException(FailureCodes.NOTFOUND_CONSUMABLE);
+                throw new DataNotFoundException(FailureCodes.NotFoundConsumable);
             }
 
             DeviceEntity device = foundDevices[0];
@@ -446,11 +446,11 @@ namespace Pirat.Services.Resource
             // If amount has decreased: ensure that a reason is provided
             if (reason.Trim().Length == 0)
             {
-                throw new ArgumentException(FailureCodes.INVALID_REASON);
+                throw new ArgumentException(FailureCodes.InvalidReason);
             }
             if (newAmount < 1)
             {
-                throw new ArgumentException(FailureCodes.INVALID_AMOUNT_DEVICE);
+                throw new ArgumentException(FailureCodes.InvalidAmountDevice);
             }
             device.amount = newAmount;
             await device.UpdateAsync(_context);
@@ -500,21 +500,21 @@ namespace Pirat.Services.Resource
 
             if (reason.Trim().Length == 0)
             {
-                throw new ArgumentException(FailureCodes.INVALID_REASON);
+                throw new ArgumentException(FailureCodes.InvalidReason);
             }
 
             ConsumableEntity consumableEntity = (ConsumableEntity) await new ConsumableEntity().FindAsync(_context, consumableId);
 
             if (consumableEntity is null)
             {
-                throw new DataNotFoundException(FailureCodes.NOTFOUND_CONSUMABLE);
+                throw new DataNotFoundException(FailureCodes.NotFoundConsumable);
             }
 
             AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, consumableEntity.address_id);
 
             if (addressEntity is null)
             {
-                throw new InvalidDataStateException(FatalCodes.RESOURCE_WITHOUT_RELATED_ADDRESS);
+                throw new InvalidDataStateException(FatalCodes.ResourceWithoutRelatedAddress);
             }
 
             consumableEntity.is_deleted = true;
@@ -541,21 +541,21 @@ namespace Pirat.Services.Resource
 
             if (reason.Trim().Length == 0)
             {
-                throw new ArgumentException(FailureCodes.INVALID_REASON);
+                throw new ArgumentException(FailureCodes.InvalidReason);
             }
 
             DeviceEntity deviceEntity = (DeviceEntity) await new DeviceEntity().FindAsync(_context, deviceId);
 
             if (deviceEntity is null)
             {
-                throw new DataNotFoundException(FailureCodes.NOTFOUND_DEVICE);
+                throw new DataNotFoundException(FailureCodes.NotFoundDevice);
             }
 
             AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, deviceEntity.address_id);
             
             if (addressEntity is null)
             {
-                throw new InvalidDataStateException(FatalCodes.RESOURCE_WITHOUT_RELATED_ADDRESS);
+                throw new InvalidDataStateException(FatalCodes.ResourceWithoutRelatedAddress);
             }
 
             deviceEntity.is_deleted = true;
@@ -581,14 +581,14 @@ namespace Pirat.Services.Resource
 
             if (reason.Trim().Length == 0)
             {
-                throw new ArgumentException(FailureCodes.INVALID_REASON);
+                throw new ArgumentException(FailureCodes.InvalidReason);
             }
 
             PersonalEntity personalEntity = (PersonalEntity)await new PersonalEntity().FindAsync(_context, personalId);
 
             if (personalEntity is null)
             {
-                throw new DataNotFoundException(FailureCodes.NOTFOUND_PERSONAL);
+                throw new DataNotFoundException(FailureCodes.NotFoundPersonal);
             }
 
             AddressEntity addressEntity = (AddressEntity)await new AddressEntity().FindAsync(_context, personalEntity.address_id);
@@ -596,7 +596,7 @@ namespace Pirat.Services.Resource
 
             if (addressEntity is null)
             {
-                throw new InvalidDataStateException(FatalCodes.RESOURCE_WITHOUT_RELATED_ADDRESS);
+                throw new InvalidDataStateException(FatalCodes.ResourceWithoutRelatedAddress);
             }
 
             personalEntity.is_deleted = true;

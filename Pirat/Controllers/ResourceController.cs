@@ -283,13 +283,13 @@ namespace Pirat.Controllers
                 var consumable = (ConsumableEntity) await _resourceStockQueryService.FindAsync(new ConsumableEntity(), id);
                 if (consumable is null)
                 {
-                    return NotFound(FailureCodes.NOTFOUND_CONSUMABLE);
+                    return NotFound(FailureCodes.NotFoundConsumable);
                 }
 
                 var offer = (OfferEntity) await _resourceStockQueryService.FindAsync(new OfferEntity(), consumable.offer_id);
                 if (offer is null)
                 {
-                    return NotFound(FailureCodes.NOTFOUND_OFFER);
+                    return NotFound(FailureCodes.NotFoundOffer);
                 }
 
                 var mailAddressReceiver = offer.mail;
@@ -334,13 +334,13 @@ namespace Pirat.Controllers
                 var device = (DeviceEntity) await _resourceStockQueryService.FindAsync(new DeviceEntity(), id);
                 if (device is null)
                 {
-                    return NotFound(FailureCodes.NOTFOUND_DEVICE);
+                    return NotFound(FailureCodes.NotFoundDevice);
                 }
 
                 var offer = (OfferEntity) await _resourceStockQueryService.FindAsync(new OfferEntity(), device.offer_id);
                 if (offer is null)
                 {
-                    return NotFound(FailureCodes.NOTFOUND_OFFER);
+                    return NotFound(FailureCodes.NotFoundOffer);
                 }
 
                 var mailAddressReceiver = offer.mail;
@@ -385,13 +385,13 @@ namespace Pirat.Controllers
                 var personal = (PersonalEntity) await _resourceStockQueryService.FindAsync(new PersonalEntity(), id);
                 if (personal is null)
                 {
-                    return NotFound(FailureCodes.NOTFOUND_PERSONAL);
+                    return NotFound(FailureCodes.NotFoundPersonal);
                 }
 
                 var offer = (OfferEntity) await _resourceStockQueryService.FindAsync(new OfferEntity(), personal.offer_id);
                 if (offer is null)
                 {
-                    return NotFound(FailureCodes.NOTFOUND_OFFER);
+                    return NotFound(FailureCodes.NotFoundOffer);
                 }
 
                 var mailAddressReceiver = offer.mail;
