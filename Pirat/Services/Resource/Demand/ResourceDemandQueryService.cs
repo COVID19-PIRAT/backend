@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Pirat.DatabaseContext;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
-using Pirat.Model.Entity.Resource.Demand;
+using Pirat.Model.Entity.Resource.Demands;
 using Pirat.Services.Helper;
 
 namespace Pirat.Services.Resource.Demand
@@ -39,21 +39,21 @@ namespace Pirat.Services.Resource.Demand
 
 
             var maxDistance = con.kilometer;
-            AddressEntity location = null;
-            if (con.address != null)
+            AddressEntity locationOfDemandedConsumable = null;
+            if (!string.IsNullOrEmpty(con.address.country) && !string.IsNullOrEmpty(con.address.postalcode))
             {
                 var consumableAddress = con.address;
-                location = new AddressEntity().build(consumableAddress);
-                _addressMaker.SetCoordinates(location);
+                locationOfDemandedConsumable = new AddressEntity().build(consumableAddress);
+                _addressMaker.SetCoordinates(locationOfDemandedConsumable);
             }
             
 
             var query = from demand in _context.demand as IQueryable<DemandEntity>
                         join c in _context.demand_consumable on demand.id equals c.demand_id
-                        join ap in _context.address on demand.address_id equals ap.id
-                        join ac in _context.address on c.address_id equals ac.id
+                        join ad in _context.address on demand.address_id equals ad.id
                         where consumable.category.Equals(c.category) && !c.is_deleted
-                        select new { demand, c, ap, ac };
+                        select new { demand, c, ad };
+
 
             if (!string.IsNullOrEmpty(consumable.name))
             {
@@ -75,11 +75,11 @@ namespace Pirat.Services.Resource.Demand
             {
                 var resource = new Consumable().build(data.c);
 
-                if (location != null)
+                if (locationOfDemandedConsumable != null)
                 {
-                    var yLatitude = data.ac.latitude;
-                    var yLongitude = data.ac.longitude;
-                    var distance = DistanceCalculator.computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
+                    var yLatitude = data.ad.latitude;
+                    var yLongitude = data.ad.longitude;
+                    var distance = DistanceCalculator.computeDistance(locationOfDemandedConsumable.latitude, locationOfDemandedConsumable.longitude, yLatitude, yLongitude);
                     if (distance > maxDistance && maxDistance != 0)
                     {
                         continue;
@@ -89,11 +89,9 @@ namespace Pirat.Services.Resource.Demand
                 
 
                 var provider = new Provider().Build(data.demand);
-                var providerAddress = new Address().Build(data.ap);
-                var resourceAddress = new Address().Build(data.ac);
+                var providerAddress = new Address().Build(data.ad);
 
                 provider.address = providerAddress;
-                resource.address = resourceAddress;
 
                 var demand = new DemandResource<Consumable>()
                 {
@@ -110,21 +108,20 @@ namespace Pirat.Services.Resource.Demand
 
 
             var maxDistance = dev.kilometer;
-            AddressEntity location = null;
-            if (dev.address != null)
+            AddressEntity locationOfDemandedDevice = null;
+            if (!string.IsNullOrEmpty(dev.address.country) && !string.IsNullOrEmpty(dev.address.postalcode))
             {
                 var deviceAddress = dev.address;
-                location = new AddressEntity().build(deviceAddress);
-                _addressMaker.SetCoordinates(location);
+                locationOfDemandedDevice = new AddressEntity().build(deviceAddress);
+                _addressMaker.SetCoordinates(locationOfDemandedDevice);
             }
 
 
             var query = from demand in _context.demand as IQueryable<DemandEntity>
                         join d in _context.demand_device on demand.id equals d.demand_id
-                        join ap in _context.address on d.address_id equals ap.id
-                        join ac in _context.address on d.address_id equals ac.id
+                        join ad in _context.address on demand.address_id equals ad.id
                         where device.category.Equals(d.category) && !d.is_deleted
-                        select new { demand, d, ap, ac };
+                        select new { demand, d, ad };
 
             if (!string.IsNullOrEmpty(device.name))
             {
@@ -146,11 +143,11 @@ namespace Pirat.Services.Resource.Demand
             {
                 var resource = new Device().Build(data.d);
 
-                if (location != null)
+                if (locationOfDemandedDevice != null)
                 {
-                    var yLatitude = data.ac.latitude;
-                    var yLongitude = data.ac.longitude;
-                    var distance = DistanceCalculator.computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
+                    var yLatitude = data.ad.latitude;
+                    var yLongitude = data.ad.longitude;
+                    var distance = DistanceCalculator.computeDistance(locationOfDemandedDevice.latitude, locationOfDemandedDevice.longitude, yLatitude, yLongitude);
                     if (distance > maxDistance && maxDistance != 0)
                     {
                         continue;
@@ -160,11 +157,9 @@ namespace Pirat.Services.Resource.Demand
 
 
                 var provider = new Provider().Build(data.demand);
-                var providerAddress = new Address().Build(data.ap);
-                var resourceAddress = new Address().Build(data.ac);
+                var providerAddress = new Address().Build(data.ad);
 
                 provider.address = providerAddress;
-                resource.address = resourceAddress;
 
                 var demand = new DemandResource<Device>()
                 {

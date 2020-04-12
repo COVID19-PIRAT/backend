@@ -25,6 +25,7 @@ using Pirat.Services.Helper.AddressMaker;
 using Pirat.Services.Mail;
 using Pirat.Services.Middleware;
 using Pirat.Services.Resource;
+using Pirat.Services.Resource.Demand;
 using Pirat.Services.Schedule;
 using Pirat.SwaggerConfiguration;
 using Swashbuckle.AspNetCore.Filters;
@@ -50,12 +51,14 @@ namespace Pirat
             //Services
             services.AddTransient<IResourceStockQueryService, ResourceStockQueryService>();
             services.AddTransient<IResourceStockUpdateService, ResourceStockUpdateService>();
+            services.AddTransient<IResourceDemandQueryService, ResourceDemandQueryService>();
             services.AddTransient<IMailService, MailService>();
             services.AddTransient<IReCaptchaService, ReCaptchaService>(s => 
                 new ReCaptchaService(Environment.GetEnvironmentVariable("PIRAT_GOOGLE_RECAPTCHA_SECRET")));
             services.AddTransient<IAddressMaker, AddressMaker>();
             services.AddTransient<ISubscriptionService, SubscriptionService>();
             services.AddTransient<IResourceStockInputValidatorService, ResourceStockInputValidatorService>();
+            services.AddTransient<IResourceDemandInputValidatorService, ResourceDemandInputValidatorService>();
             services.AddTransient<IMailInputValidatorService, MailInputValidatorService>();
 
             //Cors

@@ -4,7 +4,7 @@ using Pirat.DatabaseContext;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
 
-namespace Pirat.Model.Entity.Resource.Demand
+namespace Pirat.Model.Entity.Resource.Demands
 {
     public class DemandEntity : IFindable, IDeletable, IUpdatable, IInsertable
     {
@@ -19,6 +19,7 @@ namespace Pirat.Model.Entity.Resource.Demand
 
         public string phone { get; set; } = string.Empty;
 
+        //OPTIONAL
         public int address_id { get; set; }
 
 

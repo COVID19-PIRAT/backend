@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Pirat.Model.Entity.Resource.Demand
+namespace Pirat.Model.Entity.Resource.Demands
 {
     public abstract class ItemDemandEntity
     {
@@ -18,8 +18,6 @@ namespace Pirat.Model.Entity.Resource.Demand
 
         public string annotation { get; set; } = string.Empty;
 
-
-        public int address_id { get; set; }
 
         public bool is_deleted { get; set; }
 

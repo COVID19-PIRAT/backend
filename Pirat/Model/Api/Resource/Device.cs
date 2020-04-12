@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Pirat.Model.Entity.Resource.Demand;
+using Pirat.Model.Entity.Resource.Demands;
 using Pirat.Model.Entity.Resource.Stock;
 
 namespace Pirat.Model.Api.Resource

@@ -3,7 +3,7 @@ using Pirat.DatabaseContext;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
 
-namespace Pirat.Model.Entity.Resource.Demand
+namespace Pirat.Model.Entity.Resource.Demands
 {
 
     public class DeviceDemandEntity : ItemDemandEntity, IFindable, IDeletable, IUpdatable, IInsertable
@@ -20,11 +20,6 @@ namespace Pirat.Model.Entity.Resource.Demand
             return this;
         }
 
-        public DeviceDemandEntity Build(AddressEntity a)
-        {
-            address_id = a.id;
-            return this;
-        }
 
         public async Task<IFindable> FindAsync(ResourceContext context, int id)
         {
