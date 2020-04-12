@@ -31,14 +31,14 @@ namespace Pirat.Services.Helper.AddressMaker
 			}
 
 			JObject json = (JObject) JsonConvert.DeserializeObject(responseString);
-			JArray result = (JArray) json.GetValue("results");
+			JArray result = (JArray) json.GetValue("results", StringComparison.Ordinal);
 			if (result.Count == 0)
 			{
 				throw new UnknownAdressException(FailureCodes.INVALID_ADDRESS);
 			}
-			JObject location = (JObject)((JObject)((JObject)result[0]).GetValue("geometry")).GetValue("location");
-			decimal lat = location.GetValue("lat").ToObject<decimal>();
-			decimal lng = location.GetValue("lng").ToObject<decimal>();
+			JObject location = (JObject)((JObject)((JObject)result[0]).GetValue("geometry", StringComparison.Ordinal)).GetValue("location", StringComparison.Ordinal);
+			decimal lat = location.GetValue("lat", StringComparison.Ordinal).ToObject<decimal>();
+			decimal lng = location.GetValue("lng", StringComparison.Ordinal).ToObject<decimal>();
 
 			address.latitude = lat;
 			address.longitude = lng;
