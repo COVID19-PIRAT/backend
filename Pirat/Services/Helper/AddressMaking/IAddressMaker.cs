@@ -1,6 +1,6 @@
 using Pirat.Model.Entity.Resource.Common;
 
-namespace Pirat.Services.Helper.Address
+namespace Pirat.Services.Helper.AddressMaking
 {
     public interface IAddressMaker {
 

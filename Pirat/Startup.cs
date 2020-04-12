@@ -21,7 +21,7 @@ using Pirat.Extensions;
 using Pirat.Extensions.Swagger;
 using Pirat.Helper;
 using Pirat.Services;
-using Pirat.Services.Helper.Address;
+using Pirat.Services.Helper.AddressMaking;
 using Pirat.Services.Mail;
 using Pirat.Services.Middleware;
 using Pirat.Services.Resource;

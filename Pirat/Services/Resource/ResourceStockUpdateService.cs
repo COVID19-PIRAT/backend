@@ -18,7 +18,7 @@ using Pirat.Model.Entity;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Model.Entity.Resource.Stock;
 using Pirat.Other;
-using Pirat.Services.Helper.Address;
+using Pirat.Services.Helper.AddressMaking;
 
 namespace Pirat.Services.Resource
 {

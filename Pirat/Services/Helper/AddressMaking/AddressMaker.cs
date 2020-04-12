@@ -8,7 +8,7 @@ using Pirat.Exceptions;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Other;
 
-namespace Pirat.Services.Helper.Address
+namespace Pirat.Services.Helper.AddressMaking
 {
 	public class AddressMaker : IAddressMaker
 	{
