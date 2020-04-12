@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Pirat.DatabaseTests
 {
-    public class DemandServiceTest : IDisposable
+    public class ResourceStockInsertTest : IDisposable
     {
 
         private const string connectionString =
@@ -39,7 +39,7 @@ namespace Pirat.DatabaseTests
         /// <summary>
         /// Called before each test
         /// </summary>
-        public DemandServiceTest()
+        public ResourceStockInsertTest()
         {
             var loggerDemand = new Mock<ILogger<ResourceStockQueryService>>();
             var loggerUpdate = new Mock<ILogger<ResourceStockUpdateService>>();

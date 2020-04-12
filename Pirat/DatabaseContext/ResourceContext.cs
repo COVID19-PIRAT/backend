@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Pirat.Model.Entity;
 using Pirat.Model.Entity.Resource.Common;
-using Pirat.Model.Entity.Resource.Demand;
+using Pirat.Model.Entity.Resource.Demands;
 using Pirat.Model.Entity.Resource.Stock;
 
 namespace Pirat.DatabaseContext

@@ -3,7 +3,7 @@ using Pirat.DatabaseContext;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
 
-namespace Pirat.Model.Entity.Resource.Demand
+namespace Pirat.Model.Entity.Resource.Demands
 {
     public class ConsumableDemandEntity : ItemDemandEntity, IFindable, IDeletable, IUpdatable, IInsertable
     {
@@ -18,12 +18,6 @@ namespace Pirat.Model.Entity.Resource.Demand
             amount = c.amount;
             unit = c.unit;
             annotation = c.annotation;
-            return this;
-        }
-
-        public ConsumableDemandEntity Build(AddressEntity a)
-        {
-            address_id = a.id;
             return this;
         }
 

@@ -81,9 +81,9 @@ namespace Pirat.Services.Resource
                 }
                 resource.kilometer = (int)Math.Round(distance);
 
-                var provider = new Provider().build(data.o);
-                var providerAddress = new Address().build(data.ap);
-                var resourceAddress = new Address().build(data.ac);
+                var provider = new Provider().Build(data.o);
+                var providerAddress = new Address().Build(data.ap);
+                var resourceAddress = new Address().Build(data.ac);
 
                 provider.address = providerAddress;
                 resource.address = resourceAddress;
@@ -139,7 +139,7 @@ namespace Pirat.Services.Resource
             var results = await query.ToListAsync();
             foreach (var data in results)
             {
-                var resource = new Device().build(data.d);
+                var resource = new Device().Build(data.d);
 
                 var yLatitude = data.ac.latitude;
                 var yLongitude = data.ac.longitude;
@@ -151,9 +151,9 @@ namespace Pirat.Services.Resource
                 }
                 resource.kilometer = (int)Math.Round(distance);
 
-                var provider = new Provider().build(data.o);
-                var providerAddress = new Address().build(data.ap);
-                var resourceAddress = new Address().build(data.ac);
+                var provider = new Provider().Build(data.o);
+                var providerAddress = new Address().Build(data.ap);
+                var resourceAddress = new Address().Build(data.ac);
 
                 provider.address = providerAddress;
                 resource.address = resourceAddress;
@@ -228,9 +228,9 @@ namespace Pirat.Services.Resource
                 }
                 resource.kilometer = (int)Math.Round(distance);
 
-                var provider = new Provider().build(data.o);
-                var providerAddress = new Address().build(data.ap);
-                var resourceAddress = new Address().build(data.ac);
+                var provider = new Provider().Build(data.o);
+                var providerAddress = new Address().Build(data.ap);
+                var resourceAddress = new Address().Build(data.ac);
 
                 provider.address = providerAddress;
                 resource.address = resourceAddress;
@@ -266,7 +266,7 @@ namespace Pirat.Services.Resource
 
             //Build the provider from the offerEntity and the address we retrieve from the address id
 
-            var provider = new Provider().build(offerEntity).build(await _queryHelper.QueryAddressAsync(offerEntity.address_id));
+            var provider = new Provider().Build(offerEntity).Build(await _queryHelper.QueryAddressAsync(offerEntity.address_id));
 
             //Create the offer we will send back and retrieve all associated resources
 
@@ -285,7 +285,7 @@ namespace Pirat.Services.Resource
             foreach (var d in deviceEntities)
             {
                 if(d.is_deleted) continue;
-                offer.devices.Add(new Device().build(d).build(await _queryHelper.QueryAddressAsync(d.address_id)));
+                offer.devices.Add(new Device().Build(d).Build(await _queryHelper.QueryAddressAsync(d.address_id)));
             }
 
             var queP = from p in _context.personal as IQueryable<PersonalEntity> where p.offer_id == offerKey select p;

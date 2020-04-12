@@ -7,7 +7,7 @@ using Pirat.Exceptions;
 using Pirat.Model;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
-using Pirat.Model.Entity.Resource.Demand;
+using Pirat.Model.Entity.Resource.Demands;
 using Pirat.Model.Entity.Resource.Stock;
 
 namespace Pirat.Services.Resource
@@ -27,7 +27,7 @@ namespace Pirat.Services.Resource
         internal async Task<Address> QueryAddressAsync(int addressKey)
         {
             var a = (AddressEntity) await new AddressEntity().FindAsync(_context, addressKey);
-            return new Address().build(a);
+            return new Address().Build(a);
         }
 
         internal async Task<OfferEntity> RetrieveOfferFromTokenAsync(string token)

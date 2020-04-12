@@ -104,7 +104,7 @@ namespace Pirat.Services.Mail
                         ss[0].latitude, ss[0].longitude);
                     if (distance <= MAX_DISTANCE)
                     {
-                        postalCodeToResources[postalCode].devices.Add(new Device().build(da.device));
+                        postalCodeToResources[postalCode].devices.Add(new Device().Build(da.device));
                     }
                 }
             }
