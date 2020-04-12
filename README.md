@@ -41,6 +41,7 @@ Set the following environment variables:
 * PIRAT_SENDER_MAIL_ADDRESS
 * PIRAT_SENDER_MAIL_USERNAME
 * PIRAT_SENDER_MAIL_PASSWORD
+* PIRAT_ADMIN_KEY
 
 
 Use dotnet publish on the sln File
