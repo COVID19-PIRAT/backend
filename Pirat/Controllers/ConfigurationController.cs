@@ -1,28 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Pirat.DatabaseContext;
-using Pirat.Exceptions;
-using Pirat.Model;
-using Pirat.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Pirat.Codes;
+using Pirat.Configuration;
 using Pirat.Extensions.Swagger.SwaggerConfiguration;
-using Pirat.Model.Entity;
-using Pirat.Services.Mail;
-using Pirat.Services.Middleware;
+using Pirat.Services;
 using Pirat.Services.Resource;
-using Pirat.SwaggerConfiguration;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
-using Pirat.Configuration;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace Pirat.Controllers
 {
@@ -30,8 +18,8 @@ namespace Pirat.Controllers
     [Route("/configuration")]
     public class ConfigurationController : ControllerBase
     {
-        private readonly ILogger<ConfigurationController> _logger;
         private readonly IConfigurationService _configurationManager;
+        private readonly ILogger<ConfigurationController> _logger;
 
         public ConfigurationController(
             ILogger<ConfigurationController> logger,
@@ -43,30 +31,94 @@ namespace Pirat.Controllers
         }
 
         /// <summary>
+        /// Gets the complete configuration for the given region.
+        /// </summary>
+        /// <param name="regionCode"></param>
+        /// <returns></returns>
+        [HttpGet("region/{regionCode:required}")]
+        [Produces("application/json")]
+        [SwaggerResponse(Status200OK, type: typeof(RegionClientConfig))]
+        [SwaggerResponseExample(Status200OK, typeof(RegionResponseExampleProvider))]
+        [SwaggerResponse(Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(Status404NotFound, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> GetConfigurationAsync(string regionCode)
+        {
+            if (string.IsNullOrWhiteSpace(regionCode))
+            {
+                return BadRequest(Error.ErrorCodes.INVALID_REGION_CODE);
+            }
+
+            var region = await _configurationManager
+                .GetConfigForRegionAsync(regionCode);
+
+            if (region != null)
+            {
+                return Ok(region);
+            }
+            else
+            {
+                using var scope = _logger.BeginScope(nameof(GetConfigurationAsync));
+                _logger.LogInformation(
+                    "Tried to get config for unknown region: {0}",
+                    regionCode
+                );
+
+                return NotFound(Error.ErrorCodes.INVALID_REGION_CODE);
+            }
+        }
+
+        /// <summary>
+        /// Gets a list with all supported languages for the given region.
+        /// </summary>
+        /// <param name="regionCode"></param>
+        /// <returns></returns>
+        [HttpGet("languages/{regionCode:required}")]
+        [Produces("application/json")]
+        [SwaggerResponse(Status200OK, type: typeof(List<string>))]
+        [SwaggerResponse(Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(Status404NotFound, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> GetLanguagesForRegionAsync(string regionCode)
+        {
+            if (string.IsNullOrWhiteSpace(regionCode))
+            {
+                return BadRequest(Error.ErrorCodes.INVALID_REGION_CODE);
+            }
+
+            var languages = await _configurationManager
+                .GetLanguagesInRegionAsync(regionCode);
+
+            if (languages != null)
+            {
+                return Ok(languages);
+            }
+            else
+            {
+                using var scope = _logger.BeginScope(nameof(GetLanguagesForRegionAsync));
+                _logger.LogInformation(
+                    "Tried to get languages for unknown region: {0}",
+                    regionCode
+                );
+
+                return NotFound(Error.ErrorCodes.INVALID_REGION_CODE);
+            }
+        }
+
+        /// <summary>
         /// Creates a list with all region codes that are currently available.
         /// </summary>
-        /// <returns>
-        /// a list with all region codes
-        /// </returns>
+        /// <returns>a list with all region codes</returns>
         /// <response code="200">List with all region codes</response>
         [HttpGet("regions")]
         [Produces("application/json")]
-        [SwaggerResponse(StatusCodes.Status200OK, type: typeof(List<RegionCode>))]
-        public async Task<IActionResult> GetRegionsAsync()
+        [SwaggerResponse(Status200OK, type: typeof(List<string>))]
+        public IActionResult GetRegions()
         {
-            // ToDo
-            await Task.Yield();
-            var x = await _configurationManager.GetRegionCodesAsync();
-            return this.StatusCode(StatusCodes.Status501NotImplemented);
-        }
-
-        [HttpGet("{regionCode:required}")]
-        [Produces("application/json")]
-        public async Task<IActionResult> GetConfigurationAsync(string regionCode)
-        {
-            // ToDo
-            await Task.Yield();
-            return this.StatusCode(StatusCodes.Status501NotImplemented);
+            var regionCodes = _configurationManager.GetRegionCodes();
+            return Ok(regionCodes);
         }
     }
 }
