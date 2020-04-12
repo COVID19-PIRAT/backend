@@ -5,11 +5,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Pirat.Codes;
 using Pirat.Exceptions;
-using Pirat.Model;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Other;
 
-namespace Pirat.Services.Helper.AddressMaker
+namespace Pirat.Services.Helper.Address
 {
 	public class AddressMaker : IAddressMaker
 	{
