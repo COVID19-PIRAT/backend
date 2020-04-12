@@ -1,6 +1,7 @@
 ﻿using System;
 using Pirat.Codes;
 using Pirat.Model.Api.Resource;
+using Pirat.Other;
 
 namespace Pirat.Services.Resource.Demand
 {
@@ -22,6 +23,8 @@ namespace Pirat.Services.Resource.Demand
 
         public void ValidateForDemandQuery(Device device)
         {
+            NullCheck.ThrowIfNull<Device>(device);
+
             if (string.IsNullOrEmpty(device.category))
             {
                 throw new ArgumentException(FailureCodes.IncompleteDevice);
@@ -31,6 +34,8 @@ namespace Pirat.Services.Resource.Demand
 
         public void ValidateForDemandQuery(Consumable consumable)
         {
+            NullCheck.ThrowIfNull<Consumable>(consumable);
+
             if (string.IsNullOrEmpty(consumable.category))
             {
                 throw new ArgumentException(FailureCodes.IncompleteConsumable);

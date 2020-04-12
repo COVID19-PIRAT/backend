@@ -7,6 +7,7 @@ using Pirat.DatabaseContext;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Model.Entity.Resource.Demands;
+using Pirat.Other;
 using Pirat.Services.Helper;
 using Pirat.Services.Helper.AddressMaking;
 
@@ -35,8 +36,9 @@ namespace Pirat.Services.Resource.Demand
 
         public async IAsyncEnumerable<DemandResource<Consumable>> QueryDemandsAsync(Consumable con)
         {
-            var consumable = new ConsumableDemandEntity().Build(con);
+            NullCheck.ThrowIfNull<Consumable>(con);
 
+            var consumable = new ConsumableDemandEntity().Build(con);
 
             var maxDistance = con.kilometer;
             AddressEntity locationOfDemandedConsumable = null;
@@ -114,8 +116,9 @@ namespace Pirat.Services.Resource.Demand
 
         public async IAsyncEnumerable<DemandResource<Device>> QueryDemandsAsync(Device dev)
         {
-            var device = new DeviceDemandEntity().Build(dev);
+            NullCheck.ThrowIfNull<Device>(dev);
 
+            var device = new DeviceDemandEntity().Build(dev);
 
             var maxDistance = dev.kilometer;
             AddressEntity locationOfDemandedDevice = null;

@@ -39,6 +39,7 @@ namespace Pirat.Model.Api.Resource
 
         public Provider Build(DemandEntity d)
         {
+            NullCheck.ThrowIfNull<DemandEntity>(d);
             name = d.name;
             organisation = d.institution;
             phone = d.phone;
