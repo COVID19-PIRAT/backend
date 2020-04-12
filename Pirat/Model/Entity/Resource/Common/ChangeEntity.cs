@@ -33,16 +33,16 @@ namespace Pirat.Model.Entity.Resource.Common
 
     public static class ChangeEntityElementType
     {
-        public static string Device = "device";
-        public static string Consumable = "consumable";
-        public static string Personal = "personal";
+        public const string Device = "device";
+        public const string Consumable = "consumable";
+        public const string Personal = "personal";
     }
 
     public static class ChangeEntityChangeType
     {
-        public static string IncreaseAmount = "INCREASE_AMOUNT";
-        public static string DecreaseAmount = "DECREASE_AMOUNT";
-        public static string DeleteResource = "DELETE_RESOURCE";
+        public const string IncreaseAmount = "INCREASE_AMOUNT";
+        public const string DecreaseAmount = "DECREASE_AMOUNT";
+        public const string DeleteResource = "DELETE_RESOURCE";
     }
 
 }

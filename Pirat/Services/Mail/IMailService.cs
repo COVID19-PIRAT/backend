@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Pirat.Model;
+using Pirat.Model.Api.Resource;
 
 namespace Pirat.Services.Mail
 {
@@ -15,6 +16,6 @@ namespace Pirat.Services.Mail
 
         public Task SendRegionSubscriptionConformationMailAsync(RegionSubscription regionSubscription);
 
-        public Task SendNotificationAboutNewOffersAsync(RegionSubscription regionSubscription, SubscriptionService.ResourceList resourceList);
+        public Task SendNotificationAboutNewOffersAsync(RegionSubscription regionSubscription, ResourceCompilation resourceCompilation);
     }
 }

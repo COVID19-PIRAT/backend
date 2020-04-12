@@ -12,7 +12,7 @@ namespace Pirat.Model
         public bool success { get; set; }
 
         [JsonProperty]
-        public string challenge_ts { get; set; }
+        public string challengeTs { get; set; }
 
         [JsonProperty]
         public string hostname { get; set; }
