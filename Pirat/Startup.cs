@@ -87,8 +87,10 @@ namespace Pirat
             services.AddHostedService<ScheduledNotificationService>();
         }
 
+#pragma warning disable CA1822 // Disable warning CA1822 because it cannot be made static
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
+#pragma warning restore CA1822
         {
          
             if (env.IsDevelopment())

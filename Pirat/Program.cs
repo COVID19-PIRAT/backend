@@ -10,7 +10,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Pirat
 {
+#pragma warning disable CA1052 // Suppress because Program cannot be made "Static" or "NotInheritable"
     public class Program
+#pragma warning restore CA1052
     {
         public static void Main(string[] args)
         {

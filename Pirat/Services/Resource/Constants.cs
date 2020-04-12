@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Pirat.Services.Resource
 {
-    public class Constants
+    public static class Constants
     {
         public const int TokenLength = 30;
         //TODO Should we use default values if km is 0 in queries?

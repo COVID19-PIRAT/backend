@@ -15,7 +15,7 @@ namespace Pirat.Services.Resource
     {
         #region Checks used by different scenarios
 
-        private void validateAddress(Address address)
+        private static void validateAddress(Address address)
         {
             NullCheck.ThrowIfNull<Address>(address);
 
