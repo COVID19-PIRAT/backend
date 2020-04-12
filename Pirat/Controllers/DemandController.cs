@@ -7,7 +7,7 @@ using Pirat.Exceptions;
 using Pirat.Model.Api.Resource;
 using Pirat.Other;
 using Pirat.Services.Resource;
-using Pirat.Services.Resource.Demand;
+using Pirat.Services.Resource.Demands;
 
 namespace Pirat.Controllers
 {

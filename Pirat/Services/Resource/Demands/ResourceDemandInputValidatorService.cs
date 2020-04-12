@@ -3,7 +3,7 @@ using Pirat.Codes;
 using Pirat.Model.Api.Resource;
 using Pirat.Other;
 
-namespace Pirat.Services.Resource.Demand
+namespace Pirat.Services.Resource.Demands
 {
     public class ResourceDemandInputValidatorService : IResourceDemandInputValidatorService
     {

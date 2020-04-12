@@ -1,6 +1,6 @@
 ﻿using Pirat.Model.Api.Resource;
 
-namespace Pirat.Services.Resource.Demand
+namespace Pirat.Services.Resource.Demands
 {
     public interface IResourceDemandInputValidatorService
     {

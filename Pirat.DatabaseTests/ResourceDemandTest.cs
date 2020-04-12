@@ -5,7 +5,7 @@ using Pirat.DatabaseContext;
 using Pirat.Examples.TestExamples;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Services.Helper.AddressMaking;
-using Pirat.Services.Resource.Demand;
+using Pirat.Services.Resource.Demands;
 using Xunit;
 
 namespace Pirat.DatabaseTests

@@ -14,7 +14,7 @@ using Pirat.Services.Helper.AddressMaking;
 using Pirat.Services.Mail;
 using Pirat.Services.Middleware;
 using Pirat.Services.Resource;
-using Pirat.Services.Resource.Demand;
+using Pirat.Services.Resource.Demands;
 using Pirat.Services.Schedule;
 
 namespace Pirat

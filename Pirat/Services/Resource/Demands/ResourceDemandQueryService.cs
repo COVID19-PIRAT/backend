@@ -11,7 +11,7 @@ using Pirat.Other;
 using Pirat.Services.Helper;
 using Pirat.Services.Helper.AddressMaking;
 
-namespace Pirat.Services.Resource.Demand
+namespace Pirat.Services.Resource.Demands
 {
     public class ResourceDemandQueryService : IResourceDemandQueryService
     {
