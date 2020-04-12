@@ -34,7 +34,7 @@ namespace Pirat.Services.Helper.AddressMaker
 			JArray result = (JArray) json.GetValue("results");
 			if (result.Count == 0)
 			{
-				throw new UnknownAdressException(Error.ErrorCodes.INVALID_ADDRESS);
+				throw new UnknownAdressException(FailureCodes.INVALID_ADDRESS);
 			}
 			JObject location = (JObject)((JObject)((JObject)result[0]).GetValue("geometry")).GetValue("location");
 			decimal lat = location.GetValue("lat").ToObject<decimal>();

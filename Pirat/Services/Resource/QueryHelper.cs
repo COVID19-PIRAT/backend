@@ -39,11 +39,11 @@ namespace Pirat.Services.Resource
 
             if (!offers.Any())
             {
-                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_OFFER);
+                throw new DataNotFoundException(FailureCodes.NOTFOUND_OFFER);
             }
             if (1 < offers.Count)
             {
-                throw new InvalidDataStateException(Error.FatalCodes.MORE_THAN_ONE_OFFER_FROM_TOKEN);
+                throw new InvalidDataStateException(FatalCodes.MORE_THAN_ONE_OFFER_FROM_TOKEN);
             }
             return offers.First();
         }
@@ -57,11 +57,11 @@ namespace Pirat.Services.Resource
 
             if (!demands.Any())
             {
-                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_DEMAND);
+                throw new DataNotFoundException(FailureCodes.NOTFOUND_DEMAND);
             }
             if (1 < demands.Count)
             {
-                throw new InvalidDataStateException(Error.FatalCodes.MORE_THAN_ONE_DEMAND_FROM_TOKEN);
+                throw new InvalidDataStateException(FatalCodes.MORE_THAN_ONE_DEMAND_FROM_TOKEN);
             }
             return demands.First();
         }

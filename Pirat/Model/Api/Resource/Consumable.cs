@@ -118,6 +118,11 @@ namespace Pirat.Model.Api.Resource
             return Equals(obj as Consumable);
         }
 
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), unit);
+        }
+
         public override string ToString()
         {
             return "Consumable={ " + $"{base.ToString()} + unit={unit}" + " }";

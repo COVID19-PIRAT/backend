@@ -10,5 +10,9 @@ namespace Pirat.Exceptions
         public UnknownAdressException(string message)
         : base(message)
         { }
+
+        public UnknownAdressException() { }
+
+        public UnknownAdressException(string message, Exception innerException) : base(message, innerException) { }
     }
 }

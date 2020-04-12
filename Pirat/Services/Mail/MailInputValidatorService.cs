@@ -14,7 +14,7 @@ namespace Pirat.Services.Mail
         {
             if (string.IsNullOrEmpty(mailAddress) || !verifyMailWithRegex(mailAddress) || !MailboxAddress.TryParse(mailAddress, out _))
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_MAIL);
+                throw new ArgumentException(FailureCodes.INVALID_MAIL);
             }
         }
 

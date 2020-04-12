@@ -29,20 +29,20 @@ namespace Pirat.Model.Entity.Resource.Common
             return this;
         }
 
-        public static class ElementType
-        {
-            public static string Device = "device";
-            public static string Consumable = "consumable";
-            public static string Personal = "personal";
-        }
+    }
 
-        public static class ChangeType
-        {
-            public static string IncreaseAmount = "INCREASE_AMOUNT";
-            public static string DecreaseAmount = "DECREASE_AMOUNT";
-            public static string DeleteResource = "DELETE_RESOURCE";
-        }
+    public static class ChangeEntityElementType
+    {
+        public static string Device = "device";
+        public static string Consumable = "consumable";
+        public static string Personal = "personal";
+    }
 
+    public static class ChangeEntityChangeType
+    {
+        public static string IncreaseAmount = "INCREASE_AMOUNT";
+        public static string DecreaseAmount = "DECREASE_AMOUNT";
+        public static string DeleteResource = "DELETE_RESOURCE";
     }
 
 }

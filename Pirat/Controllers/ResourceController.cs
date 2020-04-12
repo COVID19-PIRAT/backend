@@ -283,13 +283,13 @@ namespace Pirat.Controllers
                 var consumable = (ConsumableEntity) await _resourceStockQueryService.FindAsync(new ConsumableEntity(), id);
                 if (consumable is null)
                 {
-                    return NotFound(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
+                    return NotFound(FailureCodes.NOTFOUND_CONSUMABLE);
                 }
 
                 var offer = (OfferEntity) await _resourceStockQueryService.FindAsync(new OfferEntity(), consumable.offer_id);
                 if (offer is null)
                 {
-                    return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
+                    return NotFound(FailureCodes.NOTFOUND_OFFER);
                 }
 
                 var mailAddressReceiver = offer.mail;
@@ -334,13 +334,13 @@ namespace Pirat.Controllers
                 var device = (DeviceEntity) await _resourceStockQueryService.FindAsync(new DeviceEntity(), id);
                 if (device is null)
                 {
-                    return NotFound(Error.ErrorCodes.NOTFOUND_DEVICE);
+                    return NotFound(FailureCodes.NOTFOUND_DEVICE);
                 }
 
                 var offer = (OfferEntity) await _resourceStockQueryService.FindAsync(new OfferEntity(), device.offer_id);
                 if (offer is null)
                 {
-                    return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
+                    return NotFound(FailureCodes.NOTFOUND_OFFER);
                 }
 
                 var mailAddressReceiver = offer.mail;
@@ -385,13 +385,13 @@ namespace Pirat.Controllers
                 var personal = (PersonalEntity) await _resourceStockQueryService.FindAsync(new PersonalEntity(), id);
                 if (personal is null)
                 {
-                    return NotFound(Error.ErrorCodes.NOTFOUND_PERSONAL);
+                    return NotFound(FailureCodes.NOTFOUND_PERSONAL);
                 }
 
                 var offer = (OfferEntity) await _resourceStockQueryService.FindAsync(new OfferEntity(), personal.offer_id);
                 if (offer is null)
                 {
-                    return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
+                    return NotFound(FailureCodes.NOTFOUND_OFFER);
                 }
 
                 var mailAddressReceiver = offer.mail;
