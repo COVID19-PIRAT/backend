@@ -7,9 +7,9 @@ namespace Pirat.Other
 {
     public static class NullCheck
     {
-        public static void ThrowIfNull<T>(object obj)
+        public static void ThrowIfNull<T>(object argument)
         {
-            if (obj == null) throw new ArgumentNullException($"{typeof(T)} is null");
+            if (argument == null) throw new ArgumentNullException($"Argument of type {typeof(T)} is null");
         }
     }
 }
