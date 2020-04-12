@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Pirat.Examples.TestExamples;
+using Pirat.Model.Api.Resource;
 using Pirat.Services.Resource.Demands;
 using Xunit;
 
@@ -88,6 +89,61 @@ namespace Pirat.Tests
             device.address.postalcode = "";
             var exception = Record.Exception(() => _service.ValidateForDemandQuery(device));
             Assert.Null(exception);
+        }
+
+        [Fact]
+        public void InsertDemand_AllowedInputs()
+        {
+            // The captain hook demand
+            Demand demand = _captainHookGenerator.GenerateDemand();
+            _service.ValidateForDemandInsertion(demand);
+            
+            // With minimal data
+            Demand demand2 = new Demand()
+            {
+                provider = new Provider()
+                {
+                    organisation = "test",
+                    name = "name",
+                    mail = "mail@test.com"
+                },
+                consumables = new List<Consumable>()
+                {
+                    new Consumable()
+                    {
+                        category = "MASKE",
+                        amount = 10,
+                        unit = "Stück"
+                    }
+                }
+            };
+            _service.ValidateForDemandInsertion(demand2);
+        }
+
+        [Fact]
+        public void InsertDemand_BadInputs()
+        {
+            // Missing Email
+            Demand demand = _captainHookGenerator.GenerateDemand();
+            demand.provider.mail = "";
+            Assert.Throws<ArgumentException>(() => _service.ValidateForDemandInsertion(demand));
+            
+            // Missing resources
+            Demand demand2 = new Demand()
+            {
+                provider = _captainHookGenerator.GenerateProvider()
+            };
+            Assert.Throws<ArgumentException>(() => _service.ValidateForDemandInsertion(demand2));
+            
+            // Wrong device
+            Demand demand3 = _captainHookGenerator.GenerateDemand();
+            demand3.devices[0].category = "";
+            Assert.Throws<ArgumentException>(() => _service.ValidateForDemandInsertion(demand3));
+            
+            // Wrong consumable
+            Demand demand4 = _captainHookGenerator.GenerateDemand();
+            demand4.consumables[0].amount = 0;
+            Assert.Throws<ArgumentException>(() => _service.ValidateForDemandInsertion(demand4));
         }
     }
 }
