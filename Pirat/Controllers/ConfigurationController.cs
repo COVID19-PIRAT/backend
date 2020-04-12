@@ -47,7 +47,7 @@ namespace Pirat.Controllers
         {
             if (string.IsNullOrWhiteSpace(regionCode))
             {
-                return BadRequest(Error.ErrorCodes.INVALID_REGION_CODE);
+                return BadRequest(FailureCodes.InvalidRegionCode);
             }
 
             var region = await _configurationManager
@@ -65,7 +65,7 @@ namespace Pirat.Controllers
                     regionCode
                 );
 
-                return NotFound(Error.ErrorCodes.INVALID_REGION_CODE);
+                return NotFound(FailureCodes.InvalidRegionCode);
             }
         }
 
@@ -85,7 +85,7 @@ namespace Pirat.Controllers
         {
             if (string.IsNullOrWhiteSpace(regionCode))
             {
-                return BadRequest(Error.ErrorCodes.INVALID_REGION_CODE);
+                return BadRequest(FailureCodes.InvalidRegionCode);
             }
 
             var languages = await _configurationManager
@@ -103,7 +103,7 @@ namespace Pirat.Controllers
                     regionCode
                 );
 
-                return NotFound(Error.ErrorCodes.INVALID_REGION_CODE);
+                return NotFound(FailureCodes.InvalidRegionCode);
             }
         }
 
