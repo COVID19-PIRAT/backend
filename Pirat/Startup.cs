@@ -64,14 +64,11 @@ namespace Pirat
             //Cors
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll",
-                    builder =>
-                    {
-                        builder
+                options.AddDefaultPolicy(builder => 
+                    builder
                         .AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader();
-                    });
+                        .AllowAnyHeader());
             });
 
             //Kestrel
@@ -127,7 +124,7 @@ namespace Pirat
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCors("AllowAll");
+            app.UseCors();
 
 
             app.UseEndpoints(endpoints =>

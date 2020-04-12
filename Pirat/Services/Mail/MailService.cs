@@ -7,6 +7,7 @@ using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using MimeKit;
 using Pirat.Model;
+using Pirat.Other;
 
 namespace Pirat.Services.Mail
 {
@@ -369,6 +370,8 @@ mail@pirat-tool.com
         public static string SummarizeResourcesToFormattedString(SubscriptionService.ResourceList resourceList,
             string language)
         {
+            NullCheck.ThrowIfNull<SubscriptionService.ResourceList>(resourceList);
+
             var devices = resourceList.devices
                 .GroupBy(device => device.GetCategoryLocalizedName(language))
                 .OrderBy(k=> k.Key)

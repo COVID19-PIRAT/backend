@@ -4,6 +4,7 @@ using System.Linq;
 using Pirat.Codes;
 using Pirat.Model;
 using Pirat.Model.Api.Resource;
+using Pirat.Other;
 
 namespace Pirat.Services.Resource
 {
@@ -16,6 +17,8 @@ namespace Pirat.Services.Resource
 
         private void validateAddress(Address address)
         {
+            NullCheck.ThrowIfNull<Address>(address);
+
             if (string.IsNullOrEmpty(address.postalcode) || string.IsNullOrEmpty(address.country))
             {
                 throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_ADDRESS);
@@ -82,6 +85,8 @@ namespace Pirat.Services.Resource
 
         public void ValidateForStockInsertion(Consumable consumable)
         {
+            NullCheck.ThrowIfNull<Consumable>(consumable);
+
             validateInformation(consumable);
 
             if (consumable.amount < 1)
@@ -93,6 +98,8 @@ namespace Pirat.Services.Resource
 
         public void ValidateForStockInsertion(Device device)
         {
+            NullCheck.ThrowIfNull<Device>(device);
+
             validateInformation(device);
 
             if (device.amount < 1)
@@ -104,11 +111,15 @@ namespace Pirat.Services.Resource
 
         public void ValidateForStockInsertion(Personal personal)
         {
+            NullCheck.ThrowIfNull<Personal>(personal);
+
             validateInformation(personal);
         }
 
         public void ValidateForStockInsertion(Offer offer)
         {
+            NullCheck.ThrowIfNull<Offer>(offer);
+
             validateInformation(offer.provider);
 
             if ((offer.consumables == null || !offer.consumables.Any()) &&
@@ -131,6 +142,8 @@ namespace Pirat.Services.Resource
 
         public void ValidateForStockQuery(Device device)
         {
+            NullCheck.ThrowIfNull<Device>(device);
+
             if (string.IsNullOrEmpty(device.category))
             {
                 throw new ArgumentException(Codes.Error.ErrorCodes.INCOMPLETE_DEVICE);
@@ -149,6 +162,8 @@ namespace Pirat.Services.Resource
 
         public void ValidateForStockQuery(Consumable consumable)
         {
+            NullCheck.ThrowIfNull<Consumable>(consumable);
+
             if (string.IsNullOrEmpty(consumable.category))
             {
                 throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_CONSUMABLE);
@@ -167,6 +182,8 @@ namespace Pirat.Services.Resource
 
         public void ValidateForStockQuery(Manpower manpower)
         {
+            NullCheck.ThrowIfNull<Manpower>(manpower);
+
             validateAddress(manpower.address);
         }
 
@@ -176,24 +193,32 @@ namespace Pirat.Services.Resource
 
         public void ValidateForChangeInformation(string token, Provider provider)
         {
+            NullCheck.ThrowIfNull<Provider>(provider);
+
             ValidateToken(token);
             validateInformation(provider);
         }
 
         public void ValidateForChangeInformation(string token, Consumable consumable)
         {
+            NullCheck.ThrowIfNull<Consumable>(consumable);
+
             ValidateToken(token);
             validateInformation(consumable);
         }
 
         public void ValidateForChangeInformation(string token, Device device)
         {
+            NullCheck.ThrowIfNull<Device>(device);
+
             ValidateToken(token);
             validateInformation(device);
         }
 
         public void ValidateForChangeInformation(string token, Personal personal)
         {
+            NullCheck.ThrowIfNull<Personal>(personal);
+
             ValidateToken(token);
             validateInformation(personal);
         }

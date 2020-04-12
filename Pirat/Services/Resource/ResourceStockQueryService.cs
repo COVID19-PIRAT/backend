@@ -13,6 +13,7 @@ using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Model.Entity.Resource.Stock;
+using Pirat.Other;
 using Pirat.Services.Helper;
 
 namespace Pirat.Services.Resource
@@ -39,6 +40,8 @@ namespace Pirat.Services.Resource
         }
         public async IAsyncEnumerable<OfferResource<Consumable>> QueryOffersAsync(Consumable con)
         {
+            NullCheck.ThrowIfNull<Consumable>(con);
+
             var consumable = new ConsumableEntity().Build(con);
             var maxDistance = con.kilometer;
             var consumableAddress = con.address;
@@ -109,6 +112,7 @@ namespace Pirat.Services.Resource
 
         public async IAsyncEnumerable<OfferResource<Device>> QueryOffersAsync(Device dev)
         {
+            NullCheck.ThrowIfNull<Device>(dev);
             var device = new DeviceEntity().Build(dev);
             var maxDistance = dev.kilometer;
             var deviceAddress = dev.address;
@@ -178,6 +182,8 @@ namespace Pirat.Services.Resource
 
         public async IAsyncEnumerable<OfferResource<Personal>> QueryOffersAsync(Manpower manpower)
         {
+            NullCheck.ThrowIfNull<Manpower>(manpower);
+
             var maxDistance = manpower.kilometer;
             var manpowerAddress = manpower.address;
             var location = new AddressEntity().build(manpowerAddress);
@@ -256,6 +262,7 @@ namespace Pirat.Services.Resource
 
         public Task<IFindable> FindAsync(IFindable findable, int id)
         {
+            NullCheck.ThrowIfNull<IFindable>(findable);
             return findable.FindAsync(_context, id);
         }
 

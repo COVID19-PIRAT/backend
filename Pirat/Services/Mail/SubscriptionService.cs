@@ -9,6 +9,7 @@ using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Model.Entity.Resource.Stock;
+using Pirat.Other;
 
 namespace Pirat.Services.Mail
 {
@@ -30,6 +31,7 @@ namespace Pirat.Services.Mail
 
         public async Task SubscribeRegionAsync(RegionSubscription subscription)
         {
+            NullCheck.ThrowIfNull<RegionSubscription>(subscription);
             AddressEntity addressEntity = new AddressEntity()
             {
                 postalcode = subscription.postalcode,

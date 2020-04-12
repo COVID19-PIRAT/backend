@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Pirat.Model.Entity.Resource.Demands;
 using Pirat.Model.Entity.Resource.Stock;
+using Pirat.Other;
 
 namespace Pirat.Model.Api.Resource
 {
@@ -27,6 +28,7 @@ namespace Pirat.Model.Api.Resource
 
         public Provider Build(OfferEntity o)
         {
+            NullCheck.ThrowIfNull<OfferEntity>(o);
             name = o.name;
             organisation = o.organisation;
             phone = o.phone;
@@ -46,6 +48,7 @@ namespace Pirat.Model.Api.Resource
 
         public Provider Build(Address a)
         {
+            NullCheck.ThrowIfNull<Address>(a);
             address = a;
             return this;
         }

@@ -2,6 +2,7 @@
 using Pirat.DatabaseContext;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
+using Pirat.Other;
 
 namespace Pirat.Model.Entity.Resource.Stock
 {
@@ -29,6 +30,7 @@ namespace Pirat.Model.Entity.Resource.Stock
 
         public PersonalEntity Build(Personal p)
         {
+            NullCheck.ThrowIfNull<Personal>(p);
             institution = p.institution;
             researchgroup = p.researchgroup;
             experience_rt_pcr = p.experience_rt_pcr;
@@ -40,29 +42,34 @@ namespace Pirat.Model.Entity.Resource.Stock
 
         public PersonalEntity Build(AddressEntity a)
         {
+            NullCheck.ThrowIfNull<AddressEntity>(a);
             address_id = a.id;
             return this;
         }
 
         public async Task<IFindable> FindAsync(ResourceContext context, int id)
         {
+            NullCheck.ThrowIfNull<ResourceContext>(context);
             return await context.personal.FindAsync(id);
         }
 
         public async Task DeleteAsync(ResourceContext context)
         {
+            NullCheck.ThrowIfNull<ResourceContext>(context);
             context.personal.Remove(this);
             await context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(ResourceContext context)
         {
+            NullCheck.ThrowIfNull<ResourceContext>(context);
             context.personal.Update(this);
             await context.SaveChangesAsync();
         }
 
         public async Task<IInsertable> InsertAsync(ResourceContext context)
         {
+            NullCheck.ThrowIfNull<ResourceContext>(context);
             context.personal.Add(this);
             await context.SaveChangesAsync();
             return this;

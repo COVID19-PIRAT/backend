@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Pirat.DatabaseContext;
+using Pirat.Other;
 
 namespace Pirat.Model.Entity.Resource.Common
 {
@@ -22,6 +23,7 @@ namespace Pirat.Model.Entity.Resource.Common
 
         public async Task<IInsertable> InsertAsync(ResourceContext context)
         {
+            NullCheck.ThrowIfNull<ResourceContext>(context);
             context.change.Add(this);
             await context.SaveChangesAsync();
             return this;

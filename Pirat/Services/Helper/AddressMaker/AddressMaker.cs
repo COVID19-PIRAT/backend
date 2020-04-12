@@ -7,6 +7,7 @@ using Pirat.Codes;
 using Pirat.Exceptions;
 using Pirat.Model;
 using Pirat.Model.Entity.Resource.Common;
+using Pirat.Other;
 
 namespace Pirat.Services.Helper.AddressMaker
 {
@@ -14,11 +15,12 @@ namespace Pirat.Services.Helper.AddressMaker
 	{
 		public void SetCoordinates(AddressEntity address)
 		{
+            NullCheck.ThrowIfNull<AddressEntity>(address);
 			string apiKey = Environment.GetEnvironmentVariable("PIRAT_GOOGLE_API_KEY");
 			string addressString = address.ToString();
-			string url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + addressString + "&key=" + apiKey;
+			Uri uri = new Uri("https://maps.googleapis.com/maps/api/geocode/json?address=" + addressString + "&key=" + apiKey);
 
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
 			request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 			string responseString;
 			using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())

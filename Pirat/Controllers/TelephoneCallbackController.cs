@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Pirat.Codes;
 using Pirat.Extensions.Swagger.SwaggerConfiguration;
 using Pirat.Model;
+using Pirat.Model.Api.Resource;
+using Pirat.Other;
 using Pirat.Services;
 using Pirat.Services.Mail;
 using Swashbuckle.AspNetCore.Annotations;
@@ -38,6 +40,8 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public IActionResult Post([FromBody] TelephoneCallbackRequest telephoneCallbackRequest)
         {
+            NullCheck.ThrowIfNull<TelephoneCallbackRequest>(telephoneCallbackRequest);
+
             try
             {
                 _mailInputValidatorService.validateMail(telephoneCallbackRequest.email);

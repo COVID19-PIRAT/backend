@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Pirat.Model.Entity.Resource.Demands;
 using Pirat.Model.Entity.Resource.Stock;
+using Pirat.Other;
 
 namespace Pirat.Model.Api.Resource
 {
@@ -15,6 +16,7 @@ namespace Pirat.Model.Api.Resource
 
         public Consumable build(ConsumableEntity c)
         {
+            NullCheck.ThrowIfNull<ConsumableEntity>(c);
             id = c.id;
             category = c.category;
             name = c.name;
@@ -28,6 +30,7 @@ namespace Pirat.Model.Api.Resource
 
         public Consumable build(ConsumableDemandEntity c)
         {
+            NullCheck.ThrowIfNull<ConsumableDemandEntity>(c);
             id = c.id;
             category = c.category;
             name = c.name;
@@ -103,6 +106,7 @@ namespace Pirat.Model.Api.Resource
 
         public bool Equals(Consumable other)
         {
+            NullCheck.ThrowIfNull<Consumable>(other);
             return base.Equals(other) && unit == other.unit;
         }
 

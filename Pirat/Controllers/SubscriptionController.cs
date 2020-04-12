@@ -7,6 +7,7 @@ using Pirat.Codes;
 using Pirat.Exceptions;
 using Pirat.Extensions.Swagger.SwaggerConfiguration;
 using Pirat.Model;
+using Pirat.Other;
 using Pirat.Services;
 using Pirat.Services.Mail;
 using Swashbuckle.AspNetCore.Annotations;
@@ -41,6 +42,8 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public IActionResult Post([FromBody] RegionSubscription regionsubscription)
         {
+            NullCheck.ThrowIfNull<RegionSubscription>(regionsubscription);
+
             try
             {
                 _mailInputValidatorService.validateMail(regionsubscription.email);

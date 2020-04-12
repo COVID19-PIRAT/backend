@@ -36,12 +36,10 @@ namespace Pirat.Services.Schedule
 
                     if (!cancellationToken.IsCancellationRequested)
                     {
-                        using (IServiceScope scope = _scopeFactory.CreateScope())
-                        {
-                            ISubscriptionService subscriptionService =
-                                scope.ServiceProvider.GetRequiredService<ISubscriptionService>();
-                            await subscriptionService.SendEmailsAsync();
-                        }
+                        using IServiceScope scope = _scopeFactory.CreateScope();
+                        ISubscriptionService subscriptionService =
+                            scope.ServiceProvider.GetRequiredService<ISubscriptionService>();
+                        await subscriptionService.SendEmailsAsync();
                     }
 
                     if (!cancellationToken.IsCancellationRequested)

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection.Metadata;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
@@ -14,6 +17,7 @@ using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Model.Entity.Resource.Stock;
+using Pirat.Other;
 
 namespace Pirat.Services.Resource
 {
@@ -110,6 +114,8 @@ namespace Pirat.Services.Resource
 
         public async Task<string> InsertAsync(Offer offer)
         {
+            NullCheck.ThrowIfNull<Offer>(offer);
+
             var provider = offer.provider;
 
             //Build as entities
@@ -174,6 +180,7 @@ namespace Pirat.Services.Resource
 
         public async Task<int> ChangeInformationAsync(string token, Provider provider)
         {
+            NullCheck.ThrowIfNull<Provider>(provider);
 
             AddressEntity location = new AddressEntity().build(provider.address);
             _addressMaker.SetCoordinates(location);
@@ -205,6 +212,8 @@ namespace Pirat.Services.Resource
 
         public async Task<int> ChangeInformationAsync(string token, Consumable consumable)
         {
+            NullCheck.ThrowIfNull<Consumable>(consumable);
+
             AddressEntity location = new AddressEntity().build(consumable.address);
             _addressMaker.SetCoordinates(location);
 
@@ -237,6 +246,8 @@ namespace Pirat.Services.Resource
 
         public async Task<int> ChangeInformationAsync(string token, Device device)
         {
+            NullCheck.ThrowIfNull<Device>(device);
+
             AddressEntity location = new AddressEntity().build(device.address);
             _addressMaker.SetCoordinates(location);
 
@@ -268,6 +279,8 @@ namespace Pirat.Services.Resource
 
         public async Task<int> ChangeInformationAsync(string token, Personal personal)
         {
+            NullCheck.ThrowIfNull<Personal>(personal);
+
             AddressEntity location = new AddressEntity().build(personal.address);
             _addressMaker.SetCoordinates(location);
 
@@ -306,6 +319,9 @@ namespace Pirat.Services.Resource
 
         public async Task ChangeConsumableAmountAsync(string token, int consumableId, int newAmount, string reason)
         {
+            NullCheck.ThrowIfNull<string>(token);
+            NullCheck.ThrowIfNull<string>(reason);
+
             // Get consumable from database
             var query = 
                 from o in _context.offer as IQueryable<OfferEntity>
@@ -380,6 +396,9 @@ namespace Pirat.Services.Resource
 
         public async Task ChangeDeviceAmountAsync(string token, int deviceId, int newAmount, string reason)
         {
+            NullCheck.ThrowIfNull<string>(token);
+            NullCheck.ThrowIfNull<string>(reason);
+
             // Get consumable from database
             var query = 
                 from o in _context.offer as IQueryable<OfferEntity>
@@ -451,6 +470,8 @@ namespace Pirat.Services.Resource
 
         public async Task AddResourceAsync(string token, Consumable consumable)
         {
+            NullCheck.ThrowIfNull<Consumable>(consumable);
+
             OfferEntity offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
 
             await InsertAsync(offerEntity.id, consumable);
@@ -458,6 +479,8 @@ namespace Pirat.Services.Resource
 
         public async Task AddResourceAsync(string token, Device device)
         {
+            NullCheck.ThrowIfNull<Device>(device);
+
             OfferEntity offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
 
             await InsertAsync(offerEntity.id, device);
@@ -465,6 +488,8 @@ namespace Pirat.Services.Resource
 
         public async Task AddResourceAsync(string token, Personal personal)
         {
+            NullCheck.ThrowIfNull<Personal>(personal);
+
             OfferEntity offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
 
             await InsertAsync(offerEntity.id, personal);
@@ -472,6 +497,8 @@ namespace Pirat.Services.Resource
 
         public async Task MarkConsumableAsDeletedAsync(string token, int consumableId, string reason)
         {
+            NullCheck.ThrowIfNull<string>(reason);
+
             if (reason.Trim().Length == 0)
             {
                 throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
@@ -510,6 +537,9 @@ namespace Pirat.Services.Resource
 
         public async Task MarkDeviceAsDeletedAsync(string token, int deviceId, string reason)
         {
+            NullCheck.ThrowIfNull<string>(token);
+            NullCheck.ThrowIfNull<string>(reason);
+
             if (reason.Trim().Length == 0)
             {
                 throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
@@ -548,6 +578,8 @@ namespace Pirat.Services.Resource
 
         public async Task MarkPersonalAsDeletedAsync(string token, int personalId, string reason)
         {
+            NullCheck.ThrowIfNull<string>(reason);
+
             if (reason.Trim().Length == 0)
             {
                 throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
@@ -587,10 +619,22 @@ namespace Pirat.Services.Resource
 
         private string createToken()
         {
-            Random random = new Random();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
-            return new string(Enumerable.Repeat(chars, Constants.TokenLength)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
+            StringBuilder sb = new StringBuilder();
+            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+            {
+                while (sb.Length != Constants.TokenLength)
+                {
+                    byte[] oneByte = new byte[1];
+                    rng.GetBytes(oneByte);
+                    char randomCharacter = (char)oneByte[0];
+                    if (chars.Contains(randomCharacter, StringComparison.Ordinal))
+                    {
+                        sb.Append(randomCharacter);
+                    }
+                }
+            }
+            return sb.ToString();
         }
     }
 }

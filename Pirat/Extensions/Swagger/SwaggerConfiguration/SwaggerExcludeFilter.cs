@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Pirat.Other;
 
 namespace Pirat.Helper
 {
@@ -13,6 +14,9 @@ namespace Pirat.Helper
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
+            NullCheck.ThrowIfNull<OperationFilterContext>(context);
+            NullCheck.ThrowIfNull<OpenApiOperation>(operation);
+
             var ignoredProperties = context.MethodInfo.GetParameters()
                 .SelectMany(p => p.ParameterType.GetProperties()
                                  .Where(prop => prop.GetCustomAttribute<SwaggerExcludeAttribute>() != null)

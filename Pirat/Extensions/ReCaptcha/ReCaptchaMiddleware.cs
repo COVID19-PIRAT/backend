@@ -12,6 +12,7 @@ using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using Pirat.Model;
+using Pirat.Other;
 using Pirat.Services;
 using Pirat.Services.Middleware;
 
@@ -47,6 +48,8 @@ namespace Pirat.Extensions
 
         public async Task InvokeAsync(HttpContext context)
         {
+            NullCheck.ThrowIfNull<HttpContext>(context);
+
             var path = context.Request.Path.ToString();
             var method = context.Request.Method;
             if ((blackList.Contains(path) && method.ToUpper().Equals(WebRequestMethods.Http.Post)) || isContactEnding(path) && method.ToUpper().Equals(WebRequestMethods.Http.Post))
