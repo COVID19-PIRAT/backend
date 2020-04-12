@@ -18,7 +18,6 @@ namespace Pirat.Model.Api.Resource
         public string streetnumber { get; set; } = string.Empty; 
 
         [JsonProperty]
-        [Required]
         [FromQuery(Name = "postalcode")]
         public string postalcode { get; set; } = string.Empty;
 
@@ -27,7 +26,6 @@ namespace Pirat.Model.Api.Resource
         public string city { get; set; } = string.Empty;
 
         [JsonProperty]
-        [Required]
         [FromQuery(Name = "country")]
         public string country { get; set; } = string.Empty;
 
