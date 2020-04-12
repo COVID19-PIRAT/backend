@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Pirat.Services.Resource
+namespace Pirat.Configuration
 {
     public class Language
     {
