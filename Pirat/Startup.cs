@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Pirat.DatabaseContext;
 using Pirat.Extensions;
 using Pirat.Extensions.Swagger;
+using Pirat.Services;
 using Pirat.Services.Helper.AddressMaking;
 using Pirat.Services.Mail;
 using Pirat.Services.Middleware;
