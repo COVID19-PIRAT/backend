@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using MimeKit;
 using Pirat.Codes;
 
@@ -14,7 +11,7 @@ namespace Pirat.Services.Mail
         {
             if (string.IsNullOrEmpty(mailAddress) || !verifyMailWithRegex(mailAddress) || !MailboxAddress.TryParse(mailAddress, out _))
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_MAIL);
+                throw new ArgumentException(FailureCodes.InvalidMail);
             }
         }
 

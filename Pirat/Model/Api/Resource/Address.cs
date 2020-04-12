@@ -40,6 +40,7 @@ namespace Pirat.Model.Api.Resource
 
         public Address Build(AddressEntity e)
         {
+            if (e == null) throw new ArgumentNullException($"{typeof(AddressEntity)} is null");
             street = e.street;
             streetnumber = e.streetnumber;
             postalcode = e.postalcode;

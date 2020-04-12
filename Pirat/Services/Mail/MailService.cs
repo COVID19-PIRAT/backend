@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +6,8 @@ using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using MimeKit;
 using Pirat.Model;
+using Pirat.Model.Api.Resource;
+using Pirat.Other;
 
 namespace Pirat.Services.Mail
 {
@@ -275,10 +276,10 @@ mail@pirat-tool.com
         }
 
         public async Task SendNotificationAboutNewOffersAsync(RegionSubscription regionSubscription,
-            SubscriptionService.ResourceList resourceList)
+            ResourceCompilation resourceCompilation)
         {
-            string offersDE = SummarizeResourcesToFormattedString(resourceList, "de");
-            string offersEN = SummarizeResourcesToFormattedString(resourceList, "en");
+            string offersDE = SummarizeResourcesToFormattedString(resourceCompilation, "de");
+            string offersEN = SummarizeResourcesToFormattedString(resourceCompilation, "en");
 
             await Task.Run(async () =>
             {
@@ -366,10 +367,12 @@ mail@pirat-tool.com
         }
 
         //TODO refactor this monstrosity of a method
-        public static string SummarizeResourcesToFormattedString(SubscriptionService.ResourceList resourceList,
+        public static string SummarizeResourcesToFormattedString(ResourceCompilation resourceCompilation,
             string language)
         {
-            var devices = resourceList.devices
+            NullCheck.ThrowIfNull<ResourceCompilation>(resourceCompilation);
+
+            var devices = resourceCompilation.devices
                 .GroupBy(device => device.GetCategoryLocalizedName(language))
                 .OrderBy(k=> k.Key)
                 .ToDictionary(
@@ -377,7 +380,7 @@ mail@pirat-tool.com
                     entry => entry.ToList().Sum(d => d.amount)
                     );
 
-            var consumables = resourceList.consumables
+            var consumables = resourceCompilation.consumables
                 .GroupBy(consumable => consumable.GetCategoryLocalizedName(language))
                 .OrderBy(key => key.Key)
                 .ToDictionary(
@@ -394,7 +397,7 @@ mail@pirat-tool.com
             
             StringBuilder newOffers = new StringBuilder();
             
-            var newOfferEntryCount = resourceList.personals.Count + resourceList.devices.Count + resourceList.consumables.Count;
+            var newOfferEntryCount = resourceCompilation.personals.Count + resourceCompilation.devices.Count + resourceCompilation.consumables.Count;
             if (language == "de")
             {
                 newOffers.AppendLine(newOfferEntryCount +
@@ -405,11 +408,11 @@ mail@pirat-tool.com
                 newOffers.AppendLine(newOfferEntryCount + (newOfferEntryCount == 1 ? " new offer found:" : " new offers found:"));
             }
 
-            if (resourceList.personals.Any())
+            if (resourceCompilation.personals.Any())
             {
                 newOffers.AppendLine("Personal:");
-                newOffers.AppendLine("+ " + resourceList.personals.Count + " " + (
-                    resourceList.personals.Count == 1 ?
+                newOffers.AppendLine("+ " + resourceCompilation.personals.Count + " " + (
+                    resourceCompilation.personals.Count == 1 ?
                         (language == "de" ? "Helfer" : "volunteer") :
                         (language == "de" ? "Helfer" : "volunteers")
                     ));

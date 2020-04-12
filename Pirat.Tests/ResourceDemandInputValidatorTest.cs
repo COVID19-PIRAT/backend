@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Pirat.Examples.TestExamples;
-using Pirat.Services.Resource.Demand;
+using Pirat.Services.Resource.Demands;
 using Xunit;
 
 namespace Pirat.Tests

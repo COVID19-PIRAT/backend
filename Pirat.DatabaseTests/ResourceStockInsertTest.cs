@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -8,10 +7,8 @@ using Moq;
 using Pirat.DatabaseContext;
 using Pirat.Examples.TestExamples;
 using Pirat.Exceptions;
-using Pirat.Model;
-using Pirat.Model.Entity;
 using Pirat.Model.Entity.Resource.Common;
-using Pirat.Services;
+using Pirat.Services.Helper.AddressMaking;
 using Pirat.Services.Resource;
 using Xunit;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Pirat.DatabaseContext;
+using Pirat.Other;
 
 namespace Pirat.Model.Entity.Resource.Common
 {
@@ -22,25 +23,26 @@ namespace Pirat.Model.Entity.Resource.Common
 
         public async Task<IInsertable> InsertAsync(ResourceContext context)
         {
+            NullCheck.ThrowIfNull<ResourceContext>(context);
             context.change.Add(this);
             await context.SaveChangesAsync();
             return this;
         }
 
-        public static class ElementType
-        {
-            public static string Device = "device";
-            public static string Consumable = "consumable";
-            public static string Personal = "personal";
-        }
+    }
 
-        public static class ChangeType
-        {
-            public static string IncreaseAmount = "INCREASE_AMOUNT";
-            public static string DecreaseAmount = "DECREASE_AMOUNT";
-            public static string DeleteResource = "DELETE_RESOURCE";
-        }
+    public static class ChangeEntityElementType
+    {
+        public const string Device = "device";
+        public const string Consumable = "consumable";
+        public const string Personal = "personal";
+    }
 
+    public static class ChangeEntityChangeType
+    {
+        public const string IncreaseAmount = "INCREASE_AMOUNT";
+        public const string DecreaseAmount = "DECREASE_AMOUNT";
+        public const string DeleteResource = "DELETE_RESOURCE";
     }
 
 }

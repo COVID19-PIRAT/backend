@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Globalization;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
-using Pirat.Model;
-using Pirat.Services;
+using Pirat.Other;
 using Pirat.Services.Middleware;
 
 namespace Pirat.Extensions
@@ -47,9 +40,12 @@ namespace Pirat.Extensions
 
         public async Task InvokeAsync(HttpContext context)
         {
+            NullCheck.ThrowIfNull<HttpContext>(context);
+
             var path = context.Request.Path.ToString();
             var method = context.Request.Method;
-            if ((blackList.Contains(path) && method.ToUpper().Equals(WebRequestMethods.Http.Post)) || isContactEnding(path) && method.ToUpper().Equals(WebRequestMethods.Http.Post))
+            if ((blackList.Contains(path) && method.ToUpper(CultureInfo.InvariantCulture).Equals(WebRequestMethods.Http.Post, StringComparison.Ordinal)) 
+                || isContactEnding(path) && method.ToUpper(CultureInfo.InvariantCulture).Equals(WebRequestMethods.Http.Post, StringComparison.Ordinal))
             {
 
                 var headerValue = context.Request.Headers[HeaderKey].ToString();
@@ -82,7 +78,10 @@ namespace Pirat.Extensions
             {
                 foreach (var r in resourceEndings)
                 {
-                    if (segments[0].Equals("resources") && resourceEndings.Contains(segments[1]) && int.TryParse(segments[2], out _) && segments[3].Equals("contact"))
+                    if (segments[0].Equals("resources", StringComparison.Ordinal) 
+                        && resourceEndings.Contains(segments[1]) 
+                        && int.TryParse(segments[2], out _) 
+                        && segments[3].Equals("contact", StringComparison.Ordinal))
                     {
                         return true;
                     }

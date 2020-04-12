@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Pirat.Exceptions
 {
@@ -10,5 +7,9 @@ namespace Pirat.Exceptions
         public UnknownAdressException(string message)
         : base(message)
         { }
+
+        public UnknownAdressException() { }
+
+        public UnknownAdressException(string message, Exception innerException) : base(message, innerException) { }
     }
 }

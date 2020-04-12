@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Pirat.Codes;
 using Pirat.Exceptions;
 using Pirat.Extensions.Swagger.SwaggerConfiguration;
 using Pirat.Model;
-using Pirat.Services;
+using Pirat.Other;
 using Pirat.Services.Mail;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
@@ -41,6 +38,8 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public IActionResult Post([FromBody] RegionSubscription regionsubscription)
         {
+            NullCheck.ThrowIfNull<RegionSubscription>(regionsubscription);
+
             try
             {
                 _mailInputValidatorService.validateMail(regionsubscription.email);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Pirat.Model.Entity.Resource.Demands;
 using Pirat.Model.Entity.Resource.Stock;
+using Pirat.Other;
 
 namespace Pirat.Model.Api.Resource
 {
@@ -10,6 +11,7 @@ namespace Pirat.Model.Api.Resource
 
         public Device Build(DeviceEntity d)
         {
+            NullCheck.ThrowIfNull<DeviceEntity>(d);
             id = d.id;
             category = d.category;
             name = d.name;
@@ -22,6 +24,7 @@ namespace Pirat.Model.Api.Resource
 
         public Device Build(DeviceDemandEntity d)
         {
+            NullCheck.ThrowIfNull<DeviceDemandEntity>(d);
             id = d.id;
             category = d.category;
             name = d.name;
@@ -33,6 +36,7 @@ namespace Pirat.Model.Api.Resource
 
         public Device Build(Address a)
         {
+            NullCheck.ThrowIfNull<Address>(a);
             address = a;
             return this;
         }

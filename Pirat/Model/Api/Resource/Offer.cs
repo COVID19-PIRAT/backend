@@ -22,12 +22,6 @@ namespace Pirat.Model.Api.Resource
 
     }
 
-    public class Compilation
-    {
-        [JsonProperty]
-        public List<Offer> offers { get; set; }
-    }
-
 
     public class OfferResource<T>
     {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Pirat.Model;
+﻿using System.Threading.Tasks;
 using Pirat.Model.Api.Resource;
 
 namespace Pirat.Services.Resource

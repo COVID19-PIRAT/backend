@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Pirat.Exceptions
 {
@@ -14,5 +11,9 @@ namespace Pirat.Exceptions
         public InvalidDataStateException(string message)
             : base(message)
         { }
+
+        public InvalidDataStateException() { }
+
+        public InvalidDataStateException(string message, Exception innerException) : base(message, innerException) { }
     }
 }

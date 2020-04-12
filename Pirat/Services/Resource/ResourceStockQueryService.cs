@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Pirat.Codes;
 using Pirat.DatabaseContext;
-using Pirat.Exceptions;
-using Pirat.Model;
 using Pirat.Model.Api.Resource;
-using Pirat.Model.Entity;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Model.Entity.Resource.Stock;
+using Pirat.Other;
 using Pirat.Services.Helper;
+using Pirat.Services.Helper.AddressMaking;
 
 namespace Pirat.Services.Resource
 {
@@ -39,6 +36,8 @@ namespace Pirat.Services.Resource
         }
         public async IAsyncEnumerable<OfferResource<Consumable>> QueryOffersAsync(Consumable con)
         {
+            NullCheck.ThrowIfNull<Consumable>(con);
+
             var consumable = new ConsumableEntity().Build(con);
             var maxDistance = con.kilometer;
             var consumableAddress = con.address;
@@ -49,16 +48,16 @@ namespace Pirat.Services.Resource
                         join c in _context.consumable on o.id equals c.offer_id
                         join ap in _context.address on o.address_id equals ap.id
                         join ac in _context.address on c.address_id equals ac.id
-                        where consumable.category.Equals(c.category) && !c.is_deleted
+                        where consumable.category == c.category && !c.is_deleted
                         select new { o, c, ap, ac };
 
             if (!string.IsNullOrEmpty(consumable.name))
             {
-                query = query.Where(collection => consumable.name.Equals(collection.c.name));
+                query = query.Where(collection => consumable.name == collection.c.name);
             }
             if (!string.IsNullOrEmpty(consumable.manufacturer))
             {
-                query = query.Where(collection => consumable.manufacturer.Equals(collection.c.manufacturer)); ;
+                query = query.Where(collection => consumable.manufacturer == collection.c.manufacturer); ;
             }
             if (consumable.amount > 0)
             {
@@ -109,6 +108,7 @@ namespace Pirat.Services.Resource
 
         public async IAsyncEnumerable<OfferResource<Device>> QueryOffersAsync(Device dev)
         {
+            NullCheck.ThrowIfNull<Device>(dev);
             var device = new DeviceEntity().Build(dev);
             var maxDistance = dev.kilometer;
             var deviceAddress = dev.address;
@@ -119,16 +119,16 @@ namespace Pirat.Services.Resource
                         join d in _context.device on o.id equals d.offer_id
                         join ap in _context.address on o.address_id equals ap.id
                         join ac in _context.address on d.address_id equals ac.id
-                        where device.category.Equals(d.category) && !d.is_deleted
+                        where device.category == d.category && !d.is_deleted
                         select new { o, d, ap, ac };
 
             if (!string.IsNullOrEmpty(device.name))
             {
-                query = query.Where(collection => device.name.Equals(collection.d.name));
+                query = query.Where(collection => device.name == collection.d.name);
             }
             if (!string.IsNullOrEmpty(device.manufacturer))
             {
-                query = query.Where(collection => device.manufacturer.Equals(collection.d.manufacturer)); ;
+                query = query.Where(collection => device.manufacturer == collection.d.manufacturer); ;
             }
             if (device.amount > 0)
             {
@@ -178,6 +178,8 @@ namespace Pirat.Services.Resource
 
         public async IAsyncEnumerable<OfferResource<Personal>> QueryOffersAsync(Manpower manpower)
         {
+            NullCheck.ThrowIfNull<Manpower>(manpower);
+
             var maxDistance = manpower.kilometer;
             var manpowerAddress = manpower.address;
             var location = new AddressEntity().build(manpowerAddress);
@@ -192,7 +194,7 @@ namespace Pirat.Services.Resource
 
             if (!string.IsNullOrEmpty(manpower.institution))
             {
-                query = query.Where(collection => manpower.institution.Equals(collection.personal.institution)); ;
+                query = query.Where(collection => manpower.institution == collection.personal.institution); ;
             }
 
             if (manpower.qualification.Any())
@@ -206,7 +208,7 @@ namespace Pirat.Services.Resource
 
             if (!string.IsNullOrEmpty(manpower.researchgroup))
             {
-                query = query.Where(collection => manpower.researchgroup.Equals(collection.personal.researchgroup)); ;
+                query = query.Where(collection => manpower.researchgroup == collection.personal.researchgroup); ;
             }
             if (manpower.experience_rt_pcr)
             {
@@ -256,6 +258,7 @@ namespace Pirat.Services.Resource
 
         public Task<IFindable> FindAsync(IFindable findable, int id)
         {
+            NullCheck.ThrowIfNull<IFindable>(findable);
             return findable.FindAsync(_context, id);
         }
 

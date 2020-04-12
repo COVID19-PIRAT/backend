@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Pirat.Codes;
-using Pirat.Model;
 using Pirat.Model.Api.Resource;
+using Pirat.Other;
 
 namespace Pirat.Services.Resource
 {
@@ -14,11 +14,13 @@ namespace Pirat.Services.Resource
     {
         #region Checks used by different scenarios
 
-        private void validateAddress(Address address)
+        private static void validateAddress(Address address)
         {
+            NullCheck.ThrowIfNull<Address>(address);
+
             if (string.IsNullOrEmpty(address.postalcode) || string.IsNullOrEmpty(address.country))
             {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_ADDRESS);
+                throw new ArgumentException(FailureCodes.IncompleteAddress);
             }
         }
 
@@ -26,7 +28,7 @@ namespace Pirat.Services.Resource
         {
             if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_TOKEN);
+                throw new ArgumentException(FailureCodes.InvalidToken);
             }
         }
 
@@ -39,7 +41,7 @@ namespace Pirat.Services.Resource
             if (string.IsNullOrEmpty(provider.name) || string.IsNullOrEmpty(provider.organisation) ||
                 string.IsNullOrEmpty(provider.mail))
             {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_PROVIDER);
+                throw new ArgumentException(FailureCodes.IncompleteProvider);
             }
 
             validateAddress(provider.address);
@@ -50,7 +52,7 @@ namespace Pirat.Services.Resource
             if (string.IsNullOrEmpty(consumable.category) || string.IsNullOrEmpty(consumable.name) ||
                 string.IsNullOrEmpty(consumable.unit))
             {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_CONSUMABLE);
+                throw new ArgumentException(FailureCodes.IncompleteConsumable);
             }
 
             validateAddress(consumable.address);
@@ -60,7 +62,7 @@ namespace Pirat.Services.Resource
         {
             if (string.IsNullOrEmpty(device.name) || string.IsNullOrEmpty(device.category))
             {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_DEVICE);
+                throw new ArgumentException(FailureCodes.IncompleteDevice);
             }
             validateAddress(device.address);
         }
@@ -69,7 +71,7 @@ namespace Pirat.Services.Resource
         {
             if (string.IsNullOrEmpty(personal.qualification) || string.IsNullOrEmpty(personal.area) || string.IsNullOrEmpty(personal.institution))
             {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_PERSONAL);
+                throw new ArgumentException(FailureCodes.IncompletePersonal);
             }
 
             validateAddress(personal.address);
@@ -82,40 +84,48 @@ namespace Pirat.Services.Resource
 
         public void ValidateForStockInsertion(Consumable consumable)
         {
+            NullCheck.ThrowIfNull<Consumable>(consumable);
+
             validateInformation(consumable);
 
             if (consumable.amount < 1)
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_CONSUMABLE);
+                throw new ArgumentException(FailureCodes.InvalidAmountConsumable);
             }
 
         }
 
         public void ValidateForStockInsertion(Device device)
         {
+            NullCheck.ThrowIfNull<Device>(device);
+
             validateInformation(device);
 
             if (device.amount < 1)
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_DEVICE);
+                throw new ArgumentException(FailureCodes.InvalidAmountDevice);
             }
 
         }
 
         public void ValidateForStockInsertion(Personal personal)
         {
+            NullCheck.ThrowIfNull<Personal>(personal);
+
             validateInformation(personal);
         }
 
         public void ValidateForStockInsertion(Offer offer)
         {
+            NullCheck.ThrowIfNull<Offer>(offer);
+
             validateInformation(offer.provider);
 
             if ((offer.consumables == null || !offer.consumables.Any()) &&
                 (offer.devices == null || !offer.devices.Any()) &&
                 (offer.personals == null || !offer.personals.Any()))
             {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_OFFER);
+                throw new ArgumentException(FailureCodes.IncompleteOffer);
             }
 
             offer.consumables?.ForEach(ValidateForStockInsertion);
@@ -131,9 +141,11 @@ namespace Pirat.Services.Resource
 
         public void ValidateForStockQuery(Device device)
         {
+            NullCheck.ThrowIfNull<Device>(device);
+
             if (string.IsNullOrEmpty(device.category))
             {
-                throw new ArgumentException(Codes.Error.ErrorCodes.INCOMPLETE_DEVICE);
+                throw new ArgumentException(FailureCodes.IncompleteDevice);
             }
 
             try
@@ -142,16 +154,18 @@ namespace Pirat.Services.Resource
             }
             catch (KeyNotFoundException)
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_CATEGORY_DEVICE);
+                throw new ArgumentException(FailureCodes.InvalidCategoryDevice);
             }
             validateAddress(device.address);
         }
 
         public void ValidateForStockQuery(Consumable consumable)
         {
+            NullCheck.ThrowIfNull<Consumable>(consumable);
+
             if (string.IsNullOrEmpty(consumable.category))
             {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_CONSUMABLE);
+                throw new ArgumentException(FailureCodes.IncompleteConsumable);
             }
 
             try
@@ -160,13 +174,15 @@ namespace Pirat.Services.Resource
             }
             catch (KeyNotFoundException)
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_CATEGORY_CONSUMABLE);
+                throw new ArgumentException(FailureCodes.InvalidCategoryConsumable);
             }
             validateAddress(consumable.address);
         }
 
         public void ValidateForStockQuery(Manpower manpower)
         {
+            NullCheck.ThrowIfNull<Manpower>(manpower);
+
             validateAddress(manpower.address);
         }
 
@@ -176,24 +192,32 @@ namespace Pirat.Services.Resource
 
         public void ValidateForChangeInformation(string token, Provider provider)
         {
+            NullCheck.ThrowIfNull<Provider>(provider);
+
             ValidateToken(token);
             validateInformation(provider);
         }
 
         public void ValidateForChangeInformation(string token, Consumable consumable)
         {
+            NullCheck.ThrowIfNull<Consumable>(consumable);
+
             ValidateToken(token);
             validateInformation(consumable);
         }
 
         public void ValidateForChangeInformation(string token, Device device)
         {
+            NullCheck.ThrowIfNull<Device>(device);
+
             ValidateToken(token);
             validateInformation(device);
         }
 
         public void ValidateForChangeInformation(string token, Personal personal)
         {
+            NullCheck.ThrowIfNull<Personal>(personal);
+
             ValidateToken(token);
             validateInformation(personal);
         }

@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Pirat.Exceptions;
 using Pirat.Model.Api.Resource;
+using Pirat.Other;
 using Pirat.Services.Resource;
-using Pirat.Services.Resource.Demand;
+using Pirat.Services.Resource.Demands;
 
 namespace Pirat.Controllers
 {
@@ -47,6 +48,9 @@ namespace Pirat.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetAsync([FromQuery] Consumable consumable, [FromQuery] Address address)
         {
+            NullCheck.ThrowIfNull<Consumable>(consumable);
+            NullCheck.ThrowIfNull<Address>(address);
+
             try
             {
                 consumable.address = address;
@@ -76,6 +80,9 @@ namespace Pirat.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetAsync([FromQuery] Device device, [FromQuery] Address address)
         {
+            NullCheck.ThrowIfNull<Device>(device);
+            NullCheck.ThrowIfNull<Address>(address);
+
             try
             {
                 device.address = address;

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Pirat.Model;
+﻿using Pirat.Model;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Pirat.Extensions.Swagger.SwaggerConfiguration

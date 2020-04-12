@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.Extensions.Logging;
 using Pirat.Codes;
 using Pirat.DatabaseContext;
 using Pirat.Exceptions;
-using Pirat.Model;
 using Pirat.Model.Api.Resource;
-using Pirat.Model.Entity;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Model.Entity.Resource.Stock;
+using Pirat.Other;
+using Pirat.Services.Helper.AddressMaking;
 
 namespace Pirat.Services.Resource
 {
@@ -110,6 +109,8 @@ namespace Pirat.Services.Resource
 
         public async Task<string> InsertAsync(Offer offer)
         {
+            NullCheck.ThrowIfNull<Offer>(offer);
+
             var provider = offer.provider;
 
             //Build as entities
@@ -163,7 +164,7 @@ namespace Pirat.Services.Resource
         {
             if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_TOKEN);
+                throw new ArgumentException(FailureCodes.InvalidToken);
             }
 
             var offer = await _queryHelper.RetrieveOfferFromTokenAsync(token);
@@ -174,6 +175,7 @@ namespace Pirat.Services.Resource
 
         public async Task<int> ChangeInformationAsync(string token, Provider provider)
         {
+            NullCheck.ThrowIfNull<Provider>(provider);
 
             AddressEntity location = new AddressEntity().build(provider.address);
             _addressMaker.SetCoordinates(location);
@@ -197,7 +199,7 @@ namespace Pirat.Services.Resource
 
             if (2 < changedRows)
             {
-                throw new InvalidDataStateException(Error.FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
+                throw new InvalidDataStateException(FatalCodes.UpdatesMadeInTooManyRows);
             }
 
             return changedRows;
@@ -205,6 +207,8 @@ namespace Pirat.Services.Resource
 
         public async Task<int> ChangeInformationAsync(string token, Consumable consumable)
         {
+            NullCheck.ThrowIfNull<Consumable>(consumable);
+
             AddressEntity location = new AddressEntity().build(consumable.address);
             _addressMaker.SetCoordinates(location);
 
@@ -229,7 +233,7 @@ namespace Pirat.Services.Resource
 
             if (2 < changedRows)
             {
-                throw new InvalidDataStateException(Error.FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
+                throw new InvalidDataStateException(FatalCodes.UpdatesMadeInTooManyRows);
             }
 
             return changedRows;
@@ -237,6 +241,8 @@ namespace Pirat.Services.Resource
 
         public async Task<int> ChangeInformationAsync(string token, Device device)
         {
+            NullCheck.ThrowIfNull<Device>(device);
+
             AddressEntity location = new AddressEntity().build(device.address);
             _addressMaker.SetCoordinates(location);
 
@@ -260,7 +266,7 @@ namespace Pirat.Services.Resource
 
             if (2 < changedRows)
             {
-                throw new InvalidDataStateException(Error.FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
+                throw new InvalidDataStateException(FatalCodes.UpdatesMadeInTooManyRows);
             }
 
             return changedRows;
@@ -268,6 +274,8 @@ namespace Pirat.Services.Resource
 
         public async Task<int> ChangeInformationAsync(string token, Personal personal)
         {
+            NullCheck.ThrowIfNull<Personal>(personal);
+
             AddressEntity location = new AddressEntity().build(personal.address);
             _addressMaker.SetCoordinates(location);
 
@@ -293,7 +301,7 @@ namespace Pirat.Services.Resource
 
             if (2 < changedRows)
             {
-                throw new InvalidDataStateException(Error.FatalCodes.UPDATES_MADE_IN_TOO_MANY_ROWS);
+                throw new InvalidDataStateException(FatalCodes.UpdatesMadeInTooManyRows);
             }
 
             return changedRows;
@@ -306,18 +314,20 @@ namespace Pirat.Services.Resource
 
         public async Task ChangeConsumableAmountAsync(string token, int consumableId, int newAmount, string reason)
         {
+            NullCheck.ThrowIfNull<string>(token);
+            NullCheck.ThrowIfNull<string>(reason);
+
             // Get consumable from database
             var query = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join c in _context.consumable on o.id equals c.offer_id
-                where token.Equals(o.token)
-                        && c.id == consumableId
+                where token == o.token && c.id == consumableId
                 select c;
             var foundConsumables = await query.ToListAsync();
 
             if (foundConsumables.Count == 0)
             {
-                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
+                throw new DataNotFoundException(FailureCodes.NotFoundConsumable);
             }
             ConsumableEntity consumable = foundConsumables[0];
             
@@ -352,11 +362,11 @@ namespace Pirat.Services.Resource
             // If amount has decreased: ensure that a reason is provided
             if (reason.Trim().Length == 0)
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
+                throw new ArgumentException(FailureCodes.InvalidReason);
             }
             if (newAmount < 1)
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_CONSUMABLE);
+                throw new ArgumentException(FailureCodes.InvalidAmountConsumable);
             }
             consumable.amount = newAmount;
             await consumable.UpdateAsync(_context);
@@ -380,19 +390,20 @@ namespace Pirat.Services.Resource
 
         public async Task ChangeDeviceAmountAsync(string token, int deviceId, int newAmount, string reason)
         {
+            NullCheck.ThrowIfNull<string>(token);
+
             // Get consumable from database
             var query = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join d in _context.device on o.id equals d.offer_id
-                where token.Equals(o.token)
-                      && d.id == deviceId
+                where token == o.token && d.id == deviceId
                 select d;
 
             var foundDevices = await query.ToListAsync();
 
             if (foundDevices.Count == 0)
             {
-                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
+                throw new DataNotFoundException(FailureCodes.NotFoundConsumable);
             }
 
             DeviceEntity device = foundDevices[0];
@@ -424,15 +435,17 @@ namespace Pirat.Services.Resource
                 
                 return;
             }
-            
+
+            NullCheck.ThrowIfNull<string>(reason);
+
             // If amount has decreased: ensure that a reason is provided
             if (reason.Trim().Length == 0)
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
+                throw new ArgumentException(FailureCodes.InvalidReason);
             }
             if (newAmount < 1)
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_AMOUNT_DEVICE);
+                throw new ArgumentException(FailureCodes.InvalidAmountDevice);
             }
             device.amount = newAmount;
             await device.UpdateAsync(_context);
@@ -451,6 +464,8 @@ namespace Pirat.Services.Resource
 
         public async Task AddResourceAsync(string token, Consumable consumable)
         {
+            NullCheck.ThrowIfNull<Consumable>(consumable);
+
             OfferEntity offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
 
             await InsertAsync(offerEntity.id, consumable);
@@ -458,6 +473,8 @@ namespace Pirat.Services.Resource
 
         public async Task AddResourceAsync(string token, Device device)
         {
+            NullCheck.ThrowIfNull<Device>(device);
+
             OfferEntity offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
 
             await InsertAsync(offerEntity.id, device);
@@ -465,6 +482,8 @@ namespace Pirat.Services.Resource
 
         public async Task AddResourceAsync(string token, Personal personal)
         {
+            NullCheck.ThrowIfNull<Personal>(personal);
+
             OfferEntity offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
 
             await InsertAsync(offerEntity.id, personal);
@@ -472,23 +491,25 @@ namespace Pirat.Services.Resource
 
         public async Task MarkConsumableAsDeletedAsync(string token, int consumableId, string reason)
         {
+            NullCheck.ThrowIfNull<string>(reason);
+
             if (reason.Trim().Length == 0)
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
+                throw new ArgumentException(FailureCodes.InvalidReason);
             }
 
             ConsumableEntity consumableEntity = (ConsumableEntity) await new ConsumableEntity().FindAsync(_context, consumableId);
 
             if (consumableEntity is null)
             {
-                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
+                throw new DataNotFoundException(FailureCodes.NotFoundConsumable);
             }
 
             AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, consumableEntity.address_id);
 
             if (addressEntity is null)
             {
-                throw new InvalidDataStateException(Error.FatalCodes.RESOURCE_WITHOUT_RELATED_ADDRESS);
+                throw new InvalidDataStateException(FatalCodes.ResourceWithoutRelatedAddress);
             }
 
             consumableEntity.is_deleted = true;
@@ -499,9 +520,9 @@ namespace Pirat.Services.Resource
 
             await new ChangeEntity()
             {
-                change_type = ChangeEntity.ChangeType.DeleteResource,
+                change_type = ChangeEntityChangeType.DeleteResource,
                 element_id = consumableEntity.id,
-                element_type = ChangeEntity.ElementType.Consumable,
+                element_type = ChangeEntityElementType.Consumable,
                 diff_amount = consumableEntity.amount,
                 reason = reason,
                 timestamp = DateTime.Now
@@ -510,23 +531,26 @@ namespace Pirat.Services.Resource
 
         public async Task MarkDeviceAsDeletedAsync(string token, int deviceId, string reason)
         {
+            NullCheck.ThrowIfNull<string>(token);
+            NullCheck.ThrowIfNull<string>(reason);
+
             if (reason.Trim().Length == 0)
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
+                throw new ArgumentException(FailureCodes.InvalidReason);
             }
 
             DeviceEntity deviceEntity = (DeviceEntity) await new DeviceEntity().FindAsync(_context, deviceId);
 
             if (deviceEntity is null)
             {
-                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_DEVICE);
+                throw new DataNotFoundException(FailureCodes.NotFoundDevice);
             }
 
             AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, deviceEntity.address_id);
             
             if (addressEntity is null)
             {
-                throw new InvalidDataStateException(Error.FatalCodes.RESOURCE_WITHOUT_RELATED_ADDRESS);
+                throw new InvalidDataStateException(FatalCodes.ResourceWithoutRelatedAddress);
             }
 
             deviceEntity.is_deleted = true;
@@ -537,9 +561,9 @@ namespace Pirat.Services.Resource
 
             await new ChangeEntity()
             {
-                change_type = ChangeEntity.ChangeType.DeleteResource,
+                change_type = ChangeEntityChangeType.DeleteResource,
                 element_id = deviceEntity.id,
-                element_type = ChangeEntity.ElementType.Device,
+                element_type = ChangeEntityElementType.Device,
                 diff_amount = deviceEntity.amount,
                 reason = reason,
                 timestamp = DateTime.Now
@@ -548,16 +572,18 @@ namespace Pirat.Services.Resource
 
         public async Task MarkPersonalAsDeletedAsync(string token, int personalId, string reason)
         {
+            NullCheck.ThrowIfNull<string>(reason);
+
             if (reason.Trim().Length == 0)
             {
-                throw new ArgumentException(Error.ErrorCodes.INVALID_REASON);
+                throw new ArgumentException(FailureCodes.InvalidReason);
             }
 
             PersonalEntity personalEntity = (PersonalEntity)await new PersonalEntity().FindAsync(_context, personalId);
 
             if (personalEntity is null)
             {
-                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_PERSONAL);
+                throw new DataNotFoundException(FailureCodes.NotFoundPersonal);
             }
 
             AddressEntity addressEntity = (AddressEntity)await new AddressEntity().FindAsync(_context, personalEntity.address_id);
@@ -565,7 +591,7 @@ namespace Pirat.Services.Resource
 
             if (addressEntity is null)
             {
-                throw new InvalidDataStateException(Error.FatalCodes.RESOURCE_WITHOUT_RELATED_ADDRESS);
+                throw new InvalidDataStateException(FatalCodes.ResourceWithoutRelatedAddress);
             }
 
             personalEntity.is_deleted = true;
@@ -576,9 +602,9 @@ namespace Pirat.Services.Resource
 
             await new ChangeEntity()
             {
-                change_type = ChangeEntity.ChangeType.DeleteResource,
+                change_type = ChangeEntityChangeType.DeleteResource,
                 element_id = personalEntity.id,
-                element_type = ChangeEntity.ElementType.Personal,
+                element_type = ChangeEntityElementType.Personal,
                 diff_amount = 1,
                 reason = reason,
                 timestamp = DateTime.Now
@@ -587,10 +613,22 @@ namespace Pirat.Services.Resource
 
         private string createToken()
         {
-            Random random = new Random();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
-            return new string(Enumerable.Repeat(chars, Constants.TokenLength)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
+            StringBuilder sb = new StringBuilder();
+            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+            {
+                while (sb.Length != Constants.TokenLength)
+                {
+                    byte[] oneByte = new byte[1];
+                    rng.GetBytes(oneByte);
+                    char randomCharacter = (char)oneByte[0];
+                    if (chars.Contains(randomCharacter, StringComparison.Ordinal))
+                    {
+                        sb.Append(randomCharacter);
+                    }
+                }
+            }
+            return sb.ToString();
         }
     }
 }

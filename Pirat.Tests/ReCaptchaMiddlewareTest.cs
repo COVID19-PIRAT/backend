@@ -1,16 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using Pirat.Extensions;
-using Pirat.Services;
 using Pirat.Services.Middleware;
 using Xunit;
 

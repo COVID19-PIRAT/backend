@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Pirat.Helper;
 using Pirat.Model.Entity.Resource.Stock;
+using Pirat.Other;
 
 namespace Pirat.Model.Api.Resource
 {
@@ -47,6 +48,7 @@ namespace Pirat.Model.Api.Resource
 
         public Personal build(PersonalEntity p)
         {
+            NullCheck.ThrowIfNull<PersonalEntity>(p);
             id = p.id;
             institution = p.institution;
             researchgroup = p.researchgroup;
@@ -59,6 +61,7 @@ namespace Pirat.Model.Api.Resource
 
         public Personal build(Address a)
         {
+            NullCheck.ThrowIfNull<Address>(a);
             address = a;
             return this;
         }

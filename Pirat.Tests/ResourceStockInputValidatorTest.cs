@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Pirat.Examples.TestExamples;
-using Pirat.Model;
 using Pirat.Model.Api.Resource;
 using Pirat.Services.Resource;
 using Xunit;

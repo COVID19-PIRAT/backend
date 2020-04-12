@@ -1,23 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Pirat.DatabaseContext;
 using Pirat.Exceptions;
 using Pirat.Model;
-using Pirat.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Pirat.Codes;
 using Pirat.Extensions.Swagger.SwaggerConfiguration;
 using Pirat.Model.Api.Resource;
-using Pirat.Model.Entity;
 using Pirat.Model.Entity.Resource.Stock;
+using Pirat.Other;
 using Pirat.Services.Mail;
 using Pirat.Services.Middleware;
 using Pirat.Services.Resource;
@@ -85,6 +79,9 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> GetAsync([FromQuery] Consumable consumable, [FromQuery] Address address)
         {
+            NullCheck.ThrowIfNull<Consumable>(consumable);
+            NullCheck.ThrowIfNull<Address>(address);
+
             try
             {
                 consumable.address = address;
@@ -119,6 +116,9 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> GetAsync([FromQuery] Device device, [FromQuery] Address address)
         {
+            NullCheck.ThrowIfNull<Device>(device);
+            NullCheck.ThrowIfNull<Address>(address);
+
             try
             {
                 device.address = address;
@@ -152,6 +152,9 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> GetAsync([FromQuery] Manpower manpower, [FromQuery] Address address)
         {
+            NullCheck.ThrowIfNull<Manpower>(manpower);
+            NullCheck.ThrowIfNull<Address>(address);
+
             try
             {
                 manpower.address = address;
@@ -223,6 +226,8 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> PostAsync([FromBody] Offer offer)
         {
+            NullCheck.ThrowIfNull<Offer>(offer);
+
             try
             {
                 _mailInputValidatorService.validateMail(offer.provider.mail);
@@ -262,6 +267,8 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> ConsumableAnonymousContactAsync([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
+            NullCheck.ThrowIfNull<ContactInformationDemand>(contactInformationDemand);
+
             try
             {
                 _mailInputValidatorService.validateMail(contactInformationDemand.senderEmail);
@@ -269,13 +276,13 @@ namespace Pirat.Controllers
                 var consumable = (ConsumableEntity) await _resourceStockQueryService.FindAsync(new ConsumableEntity(), id);
                 if (consumable is null)
                 {
-                    return NotFound(Error.ErrorCodes.NOTFOUND_CONSUMABLE);
+                    return NotFound(FailureCodes.NotFoundConsumable);
                 }
 
                 var offer = (OfferEntity) await _resourceStockQueryService.FindAsync(new OfferEntity(), consumable.offer_id);
                 if (offer is null)
                 {
-                    return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
+                    return NotFound(FailureCodes.NotFoundOffer);
                 }
 
                 var mailAddressReceiver = offer.mail;
@@ -312,19 +319,21 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> DeviceAnonymContactAsync([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
+            NullCheck.ThrowIfNull<ContactInformationDemand>(contactInformationDemand);
+
             try
             {
                 _mailInputValidatorService.validateMail(contactInformationDemand.senderEmail);
                 var device = (DeviceEntity) await _resourceStockQueryService.FindAsync(new DeviceEntity(), id);
                 if (device is null)
                 {
-                    return NotFound(Error.ErrorCodes.NOTFOUND_DEVICE);
+                    return NotFound(FailureCodes.NotFoundDevice);
                 }
 
                 var offer = (OfferEntity) await _resourceStockQueryService.FindAsync(new OfferEntity(), device.offer_id);
                 if (offer is null)
                 {
-                    return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
+                    return NotFound(FailureCodes.NotFoundOffer);
                 }
 
                 var mailAddressReceiver = offer.mail;
@@ -361,19 +370,21 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> PersonalAnonymContactAsync([FromBody] ContactInformationDemand contactInformationDemand, int id)
         {
+            NullCheck.ThrowIfNull<ContactInformationDemand>(contactInformationDemand);
+
             try
             {
                 _mailInputValidatorService.validateMail(contactInformationDemand.senderEmail);
                 var personal = (PersonalEntity) await _resourceStockQueryService.FindAsync(new PersonalEntity(), id);
                 if (personal is null)
                 {
-                    return NotFound(Error.ErrorCodes.NOTFOUND_PERSONAL);
+                    return NotFound(FailureCodes.NotFoundPersonal);
                 }
 
                 var offer = (OfferEntity) await _resourceStockQueryService.FindAsync(new OfferEntity(), personal.offer_id);
                 if (offer is null)
                 {
-                    return NotFound(Error.ErrorCodes.NOTFOUND_OFFER);
+                    return NotFound(FailureCodes.NotFoundOffer);
                 }
 
                 var mailAddressReceiver = offer.mail;
@@ -445,6 +456,8 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> ChangeResourceAsync(string token, int id, [FromBody] Consumable consumable)
         {
+            NullCheck.ThrowIfNull<Consumable>(consumable);
+
             try
             {
                 consumable.id = id;
@@ -482,6 +495,8 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> ChangeResourceAsync(string token, int id, [FromBody] Device device)
         {
+            NullCheck.ThrowIfNull<Device>(device);
+
             try
             {
                 device.id = id;
@@ -519,6 +534,8 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> ChangeResourceAsync(string token, int id, [FromBody] Personal personal)
         {
+            NullCheck.ThrowIfNull<Personal>(personal);
+
             try
             {
                 personal.id = id;
@@ -556,6 +573,8 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> ChangeAmountConsumableAsync(string token, int id, [FromBody] AmountChange amountChange)
         {
+            NullCheck.ThrowIfNull<AmountChange>(amountChange);
+
             try
             {
                 await _resourceStockUpdateService.ChangeConsumableAmountAsync(token, id, amountChange.amount, amountChange.reason);
@@ -591,6 +610,8 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(ErrorCodeResponseExample))]
         public async Task<IActionResult> ChangeAmountDeviceAsync(string token, int id, [FromBody] AmountChange amountChange)
         {
+            NullCheck.ThrowIfNull<AmountChange>(amountChange);
+
             try
             {
                 await _resourceStockUpdateService.ChangeDeviceAmountAsync(token, id, amountChange.amount, amountChange.reason);

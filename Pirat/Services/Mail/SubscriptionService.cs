@@ -6,13 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using Pirat.DatabaseContext;
 using Pirat.Model;
 using Pirat.Model.Api.Resource;
-using Pirat.Model.Entity;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Model.Entity.Resource.Stock;
+using Pirat.Other;
+using Pirat.Services.Helper.AddressMaking;
 
 namespace Pirat.Services.Mail
 {
-    public class SubscriptionService : ISubscriptionService
+    public partial class SubscriptionService : ISubscriptionService
     {
         private readonly ResourceContext _context;
 
@@ -30,6 +31,7 @@ namespace Pirat.Services.Mail
 
         public async Task SubscribeRegionAsync(RegionSubscription subscription)
         {
+            NullCheck.ThrowIfNull<RegionSubscription>(subscription);
             AddressEntity addressEntity = new AddressEntity()
             {
                 postalcode = subscription.postalcode,
@@ -77,7 +79,7 @@ namespace Pirat.Services.Mail
             var allRecentPersonnel = await queryAllRecentPersonnel.ToListAsync();
 
             var postalCodeToSubscriptionsDictionary = new Dictionary<string, List<RegionSubscription>>();
-            var postalCodeToResources = new Dictionary<string, ResourceList>();
+            var postalCodeToResources = new Dictionary<string, ResourceCompilation>();
 
             // Group subscriptions by postal code
             foreach (RegionSubscription subscription in allSubscriptions)
@@ -91,7 +93,7 @@ namespace Pirat.Services.Mail
             // Prepare data structures
             foreach (var (postalCode, _) in postalCodeToSubscriptionsDictionary)
             {
-                postalCodeToResources[postalCode] = new ResourceList();
+                postalCodeToResources[postalCode] = new ResourceCompilation();
             }
 
             // Compute the distance between all recently offered resources to the relevant postal codes
@@ -136,7 +138,7 @@ namespace Pirat.Services.Mail
             // Send emails
             foreach (RegionSubscription subscription in allSubscriptions)
             {
-                ResourceList resources = postalCodeToResources[subscription.postalcode];
+                ResourceCompilation resources = postalCodeToResources[subscription.postalcode];
                 if (!resources.isEmpty())
                 {
                     await this._mailService.SendNotificationAboutNewOffersAsync(subscription, postalCodeToResources[subscription.postalcode]);
@@ -168,22 +170,6 @@ namespace Pirat.Services.Mail
         {
             double radians = (Math.PI / 180) * degrees;
             return (radians);
-        }
-
-
-        public class ResourceList
-        {
-            public List<Device> devices { get; set; } = new List<Device>();
-
-            public List<Consumable> consumables { get; set; } = new List<Consumable>();
-
-            public List<Personal> personals { get; set; } = new List<Personal>();
-
-
-            public bool isEmpty()
-            {
-                return (devices.Count == 0) && (consumables.Count == 0) && (personals.Count == 0);
-            }
         }
     }
 }

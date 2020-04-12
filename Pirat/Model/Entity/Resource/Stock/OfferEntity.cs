@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Pirat.DatabaseContext;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
+using Pirat.Other;
 
 namespace Pirat.Model.Entity.Resource.Stock
 {
@@ -36,6 +37,7 @@ namespace Pirat.Model.Entity.Resource.Stock
 
         public OfferEntity Build(Provider p)
         {
+            NullCheck.ThrowIfNull<Provider>(p);
             name = p.name;
             organisation = p.organisation;
             phone = p.phone;
@@ -46,23 +48,27 @@ namespace Pirat.Model.Entity.Resource.Stock
 
         public async Task<IFindable> FindAsync(ResourceContext context, int id)
         {
+            NullCheck.ThrowIfNull<ResourceContext>(context);
             return await context.offer.FindAsync(id);
         }
 
         public async Task DeleteAsync(ResourceContext context)
         {
+            NullCheck.ThrowIfNull<ResourceContext>(context);
             context.offer.Remove(this);
             await context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(ResourceContext context)
         {
+            NullCheck.ThrowIfNull<ResourceContext>(context);
             context.offer.Update(this);
             await context.SaveChangesAsync();
         }
 
         public async Task<IInsertable> InsertAsync(ResourceContext context)
         {
+            NullCheck.ThrowIfNull<ResourceContext>(context);
             context.offer.Add(this);
             await context.SaveChangesAsync();
             return this;

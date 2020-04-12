@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Pirat.DatabaseContext;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
+using Pirat.Other;
 
 namespace Pirat.Model.Entity.Resource.Demands
 {
@@ -33,6 +34,7 @@ namespace Pirat.Model.Entity.Resource.Demands
 
         public DemandEntity Build(Provider p)
         {
+            NullCheck.ThrowIfNull<Provider>(p);
             name = p.name;
             institution = p.organisation;
             phone = p.phone;
@@ -42,23 +44,27 @@ namespace Pirat.Model.Entity.Resource.Demands
 
         public async Task<IFindable> FindAsync(ResourceContext context, int id)
         {
+            NullCheck.ThrowIfNull<ResourceContext>(context);
             return await context.demand.FindAsync(id);
         }
 
         public async Task DeleteAsync(ResourceContext context)
         {
+            NullCheck.ThrowIfNull<ResourceContext>(context);
             context.demand.Remove(this);
             await context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(ResourceContext context)
         {
+            NullCheck.ThrowIfNull<ResourceContext>(context);
             context.demand.Update(this);
             await context.SaveChangesAsync();
         }
 
         public async Task<IInsertable> InsertAsync(ResourceContext context)
         {
+            NullCheck.ThrowIfNull<ResourceContext>(context);
             context.demand.Add(this);
             await context.SaveChangesAsync();
             return this;

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Pirat.DatabaseContext;
 using Pirat.Model.Api.Resource;
+using Pirat.Other;
 
 namespace Pirat.Model.Entity.Resource.Common
 {
@@ -17,6 +18,7 @@ namespace Pirat.Model.Entity.Resource.Common
 
 		public AddressEntity build(Address a)
 		{
+            NullCheck.ThrowIfNull<Address>(a);
 			street = a.street;
 			streetnumber = a.streetnumber;
 			postalcode = a.postalcode;
@@ -29,7 +31,8 @@ namespace Pirat.Model.Entity.Resource.Common
 
         public void OverwriteWith(AddressEntity other)
         {
-            postalcode = other.postalcode;
+            NullCheck.ThrowIfNull<AddressEntity>(other);
+			postalcode = other.postalcode;
             country = other.country;
             city = other.city;
             street = other.street;
@@ -69,25 +72,29 @@ namespace Pirat.Model.Entity.Resource.Common
 
         public async Task<IInsertable> InsertAsync(ResourceContext context)
         {
-            context.address.Add(this);
+            NullCheck.ThrowIfNull<ResourceContext>(context);
+			context.address.Add(this);
 			await context.SaveChangesAsync();
             return this;
         }
 
         public async Task<IFindable> FindAsync(ResourceContext context, int id)
         {
-            return await context.address.FindAsync(id);
+            NullCheck.ThrowIfNull<ResourceContext>(context);
+			return await context.address.FindAsync(id);
         }
 
         public async Task UpdateAsync(ResourceContext context)
         {
-            context.address.Update(this);
+            NullCheck.ThrowIfNull<ResourceContext>(context);
+			context.address.Update(this);
             await context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(ResourceContext context)
         {
-            context.address.Remove(this);
+            NullCheck.ThrowIfNull<ResourceContext>(context);
+			context.address.Remove(this);
             await context.SaveChangesAsync();
         }
 	}

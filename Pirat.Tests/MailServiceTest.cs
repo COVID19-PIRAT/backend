@@ -1,9 +1,8 @@
 using System;
-using System.Threading.Tasks;
 using Pirat.Services.Mail;
 using Pirat.DatabaseTests.Examples;
 using Pirat.Examples.TestExamples;
-using Pirat.Model;
+using Pirat.Model.Api.Resource;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -47,7 +46,7 @@ namespace Pirat.Tests
         public void SummarizeResourcesToFormattedString_OneDeviceDE_PrintsInCorrectFormat()
         {
             var device = _captainHookGenerator.GenerateDevice();
-            var resourcesList = new SubscriptionService.ResourceList();
+            var resourcesList = new ResourceCompilation();
             resourcesList.devices.Add(device);
             var summary = MailService.SummarizeResourcesToFormattedString(resourcesList, "de");
             Assert.Equal("1 neues Angebot gefunden:" + Environment.NewLine +
@@ -60,7 +59,7 @@ namespace Pirat.Tests
         public void SummarizeResourcesToFormattedString_OneConsumableDE_PrintsInCorrectFormat()
         {
             var consumable = _captainHookGenerator.GenerateConsumable();
-            var resourcesList = new SubscriptionService.ResourceList();
+            var resourcesList = new ResourceCompilation();
             resourcesList.consumables.Add(consumable);
             var summary = MailService.SummarizeResourcesToFormattedString(resourcesList, "de");
             Assert.Equal(
@@ -79,7 +78,7 @@ namespace Pirat.Tests
             var device3 = _captainHookGenerator.GenerateDevice();
             var consumable1 = _captainHookGenerator.GenerateConsumable();
             var consumable2 = _captainHookGenerator.GenerateConsumable();
-            var resourcesList = new SubscriptionService.ResourceList();
+            var resourcesList = new ResourceCompilation();
             resourcesList.personals.Add(personal1);
             resourcesList.devices.Add(device1);
             resourcesList.devices.Add(device2);
@@ -110,7 +109,7 @@ namespace Pirat.Tests
             var device3 = _captainHookGenerator.GenerateDevice();
             var consumable1 = _anneBonnyGenerator.GenerateConsumable();
             var consumable2 = _captainHookGenerator.GenerateConsumable();
-            var resourcesList = new SubscriptionService.ResourceList();
+            var resourcesList = new ResourceCompilation();
             resourcesList.personals.Add(personal1);
             resourcesList.personals.Add(personal2);
             resourcesList.devices.Add(device1);

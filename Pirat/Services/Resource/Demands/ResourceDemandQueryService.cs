@@ -7,9 +7,11 @@ using Pirat.DatabaseContext;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Model.Entity.Resource.Demands;
+using Pirat.Other;
 using Pirat.Services.Helper;
+using Pirat.Services.Helper.AddressMaking;
 
-namespace Pirat.Services.Resource.Demand
+namespace Pirat.Services.Resource.Demands
 {
     public class ResourceDemandQueryService : IResourceDemandQueryService
     {
@@ -34,8 +36,9 @@ namespace Pirat.Services.Resource.Demand
 
         public async IAsyncEnumerable<DemandResource<Consumable>> QueryDemandsAsync(Consumable con)
         {
-            var consumable = new ConsumableDemandEntity().Build(con);
+            NullCheck.ThrowIfNull<Consumable>(con);
 
+            var consumable = new ConsumableDemandEntity().Build(con);
 
             var maxDistance = con.kilometer;
             AddressEntity locationOfDemandedConsumable = null;
@@ -50,18 +53,18 @@ namespace Pirat.Services.Resource.Demand
                 join c in _context.demand_consumable on demand.id equals c.demand_id
                 join ad in _context.address on demand.address_id equals ad.id into tmp
                 from ad in tmp.DefaultIfEmpty()
-                where consumable.category.Equals(c.category) && !c.is_deleted
+                where consumable.category == c.category && !c.is_deleted
                 select new {demand, c, ad};
 
 
             if (!string.IsNullOrEmpty(consumable.name))
             {
-                query = query.Where(collection => consumable.name.Equals(collection.c.name));
+                query = query.Where(collection => consumable.name == collection.c.name);
             }
 
             if (!string.IsNullOrEmpty(consumable.manufacturer))
             {
-                query = query.Where(collection => consumable.manufacturer.Equals(collection.c.manufacturer));
+                query = query.Where(collection => consumable.manufacturer == collection.c.manufacturer);
             }
 
             if (consumable.amount > 0)
@@ -113,8 +116,9 @@ namespace Pirat.Services.Resource.Demand
 
         public async IAsyncEnumerable<DemandResource<Device>> QueryDemandsAsync(Device dev)
         {
-            var device = new DeviceDemandEntity().Build(dev);
+            NullCheck.ThrowIfNull<Device>(dev);
 
+            var device = new DeviceDemandEntity().Build(dev);
 
             var maxDistance = dev.kilometer;
             AddressEntity locationOfDemandedDevice = null;
@@ -130,17 +134,17 @@ namespace Pirat.Services.Resource.Demand
                 join d in _context.demand_device on demand.id equals d.demand_id
                 join ad in _context.address on demand.address_id equals ad.id into tmp
                 from ad in tmp.DefaultIfEmpty()
-                where device.category.Equals(d.category) && !d.is_deleted
+                where device.category == d.category && !d.is_deleted
                 select new {demand, d, ad};
 
             if (!string.IsNullOrEmpty(device.name))
             {
-                query = query.Where(collection => device.name.Equals(collection.d.name));
+                query = query.Where(collection => device.name == collection.d.name);
             }
 
             if (!string.IsNullOrEmpty(device.manufacturer))
             {
-                query = query.Where(collection => device.manufacturer.Equals(collection.d.manufacturer));
+                query = query.Where(collection => device.manufacturer == collection.d.manufacturer);
             }
 
             if (device.amount > 0)

@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Pirat.Codes;
 using Pirat.DatabaseContext;
 using Pirat.Exceptions;
-using Pirat.Model;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Model.Entity.Resource.Demands;
@@ -33,17 +32,17 @@ namespace Pirat.Services.Resource
         internal async Task<OfferEntity> RetrieveOfferFromTokenAsync(string token)
         {
             var query = from o in _context.offer as IQueryable<OfferEntity>
-                        where o.token.Equals(token)
+                        where o.token == token
                         select o;
             var offers = await query.Select(o => o).ToListAsync();
 
             if (!offers.Any())
             {
-                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_OFFER);
+                throw new DataNotFoundException(FailureCodes.NotFoundOffer);
             }
             if (1 < offers.Count)
             {
-                throw new InvalidDataStateException(Error.FatalCodes.MORE_THAN_ONE_OFFER_FROM_TOKEN);
+                throw new InvalidDataStateException(FatalCodes.MoreThanOneOfferFromToken);
             }
             return offers.First();
         }
@@ -51,17 +50,17 @@ namespace Pirat.Services.Resource
         internal async Task<DemandEntity> RetrieveDemandFromTokenAsync(string token)
         {
             var query = from o in _context.demand as IQueryable<DemandEntity>
-                where o.token.Equals(token)
+                where o.token== token
                 select o;
             var demands = await query.Select(o => o).ToListAsync();
 
             if (!demands.Any())
             {
-                throw new DataNotFoundException(Error.ErrorCodes.NOTFOUND_DEMAND);
+                throw new DataNotFoundException(FailureCodes.NotFoundDemand);
             }
             if (1 < demands.Count)
             {
-                throw new InvalidDataStateException(Error.FatalCodes.MORE_THAN_ONE_DEMAND_FROM_TOKEN);
+                throw new InvalidDataStateException(FatalCodes.MoreThanOneDemandFromToken);
             }
             return demands.First();
         }
