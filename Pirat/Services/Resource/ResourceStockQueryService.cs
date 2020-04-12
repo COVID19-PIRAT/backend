@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Pirat.Codes;
 using Pirat.DatabaseContext;
-using Pirat.Exceptions;
-using Pirat.Model;
 using Pirat.Model.Api.Resource;
-using Pirat.Model.Entity;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Model.Entity.Resource.Stock;
 using Pirat.Other;

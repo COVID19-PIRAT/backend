@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Pirat.Codes;
 using Pirat.DatabaseContext;
 using Pirat.Exceptions;
-using Pirat.Model;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Model.Entity.Resource.Demands;

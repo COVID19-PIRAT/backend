@@ -1,20 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
-using Pirat.Model;
 using Pirat.Other;
-using Pirat.Services;
 using Pirat.Services.Middleware;
 
 namespace Pirat.Extensions

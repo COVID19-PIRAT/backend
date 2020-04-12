@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Pirat.Codes;
 using Pirat.Extensions.Swagger.SwaggerConfiguration;
 using Pirat.Model;
-using Pirat.Model.Api.Resource;
 using Pirat.Other;
-using Pirat.Services;
 using Pirat.Services.Mail;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;

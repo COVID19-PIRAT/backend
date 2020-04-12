@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Pirat.DatabaseContext;
-using Pirat.Model.Entity;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Other;
 

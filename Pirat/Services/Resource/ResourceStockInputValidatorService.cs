@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Pirat.Codes;
-using Pirat.Model;
 using Pirat.Model.Api.Resource;
 using Pirat.Other;
 

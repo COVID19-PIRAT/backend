@@ -1,34 +1,21 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using Npgsql;
 using Pirat.DatabaseContext;
 using Pirat.Extensions;
 using Pirat.Extensions.Swagger;
-using Pirat.Helper;
-using Pirat.Services;
 using Pirat.Services.Helper.AddressMaking;
 using Pirat.Services.Mail;
 using Pirat.Services.Middleware;
 using Pirat.Services.Resource;
 using Pirat.Services.Resource.Demand;
 using Pirat.Services.Schedule;
-using Pirat.SwaggerConfiguration;
-using Swashbuckle.AspNetCore.Filters;
 
 namespace Pirat
 {

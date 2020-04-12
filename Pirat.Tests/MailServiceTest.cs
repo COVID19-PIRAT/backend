@@ -1,9 +1,7 @@
 using System;
-using System.Threading.Tasks;
 using Pirat.Services.Mail;
 using Pirat.DatabaseTests.Examples;
 using Pirat.Examples.TestExamples;
-using Pirat.Model;
 using Pirat.Model.Api.Resource;
 using Xunit;
 using Xunit.Abstractions;
