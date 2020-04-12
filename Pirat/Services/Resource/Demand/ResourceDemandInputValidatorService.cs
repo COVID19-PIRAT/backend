@@ -16,7 +16,7 @@ namespace Pirat.Services.Resource.Demand
             if (string.IsNullOrEmpty(address.country) || string.IsNullOrEmpty(address.postalcode) ||
                 kilometer <= 0)
             {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_ADDRESS);
+                throw new ArgumentException(FailureCodes.IncompleteAddress);
             }
         }
 
@@ -24,7 +24,7 @@ namespace Pirat.Services.Resource.Demand
         {
             if (string.IsNullOrEmpty(device.category))
             {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_DEVICE);
+                throw new ArgumentException(FailureCodes.IncompleteDevice);
             }
             ValidateForDemandQuery(device.address, device.kilometer);
         }
@@ -33,7 +33,7 @@ namespace Pirat.Services.Resource.Demand
         {
             if (string.IsNullOrEmpty(consumable.category))
             {
-                throw new ArgumentException(Error.ErrorCodes.INCOMPLETE_CONSUMABLE);
+                throw new ArgumentException(FailureCodes.IncompleteConsumable);
             }
             ValidateForDemandQuery(consumable.address, consumable.kilometer);
         }
