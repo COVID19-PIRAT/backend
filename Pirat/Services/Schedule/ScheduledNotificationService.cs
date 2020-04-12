@@ -7,7 +7,7 @@ using Pirat.Services.Mail;
 
 namespace Pirat.Services.Schedule
 {
-    public class ScheduledNotificationService : IScheduledNotificationService
+    public class ScheduledNotificationService : IScheduledNotificationService, IDisposable
     {
         private readonly IServiceScopeFactory _scopeFactory;
 
@@ -56,6 +56,20 @@ namespace Pirat.Services.Schedule
         {
             _timer?.Stop();
             await Task.CompletedTask;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _timer?.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }
