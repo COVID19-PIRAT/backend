@@ -4,11 +4,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Pirat.Codes;
+using Pirat.Configuration;
 using Pirat.Exceptions;
 using Pirat.Extensions.Swagger.SwaggerConfiguration;
+using Pirat.Model;
 using Pirat.Model.Api.Admin;
 using Pirat.Model.Api.Resource;
+using Pirat.Model.Entity.Resource.Demands;
+using Pirat.Model.Entity.Resource.Stock;
 using Pirat.Other;
+using Pirat.Services;
 using Pirat.Services.Mail;
 using Pirat.Services.Resource;
 using Pirat.Services.Resource.Demands;
@@ -31,6 +37,15 @@ namespace Pirat.Controllers
         private readonly IResourceDemandUpdateService _resourceDemandUpdateService;
 
         private readonly IMailInputValidatorService _mailInputValidatorService;
+        
+        private readonly IMailService _mailService;
+        
+        private readonly IConfigurationService _configurationService;
+
+        private Language _languageDE;
+
+        private Language _languageEN;
+
         private readonly string _adminKey;
 
 
@@ -39,7 +54,9 @@ namespace Pirat.Controllers
             IResourceDemandQueryService resourceDemandQueryService,
             IResourceDemandInputValidatorService resourceDemandInputValidatorService,
             IResourceDemandUpdateService resourceDemandUpdateService,
-            IMailInputValidatorService mailInputValidatorService
+            IMailInputValidatorService mailInputValidatorService,
+            IMailService mailService,
+            IConfigurationService configurationService
         )
         {
             _logger = logger;
@@ -47,7 +64,9 @@ namespace Pirat.Controllers
             _resourceDemandInputValidatorService = resourceDemandInputValidatorService;
             _resourceDemandUpdateService = resourceDemandUpdateService;
             _mailInputValidatorService = mailInputValidatorService;
-            
+            _mailService = mailService;
+            _configurationService = configurationService;
+
             _adminKey = Environment.GetEnvironmentVariable("PIRAT_ADMIN_KEY");
         }
 
@@ -151,6 +170,132 @@ namespace Pirat.Controllers
                 return BadRequest(e.Message);
             }
             catch (UnknownAdressException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        
+        
+        /// <summary>
+        /// Sending a offer request for the device with the given id to the non-public demander.
+        /// </summary>
+        /// <param name="contactInformationDemand"></param>
+        /// <param name="id">The id of the device</param>
+        /// <returns>Empty string</returns>
+        /// <response code="200">Empty string - device with provider found and mail has been sent</response>
+        /// <response code="404">Resource does not exist</response>
+        /// <response code="400">Invalid contact data</response>
+        [HttpPost("devices/{id:int}/contact")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [SwaggerRequestExample(typeof(ContactInformationDemand), typeof(ContactInformationDemandExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> DeviceAnonymousContactAsync([FromBody] ContactInformationDemand contactInformationDemand, int id)
+        {
+            NullCheck.ThrowIfNull<ContactInformationDemand>(contactInformationDemand);
+
+            try
+            {
+                _mailInputValidatorService.validateMail(contactInformationDemand.senderEmail);
+                DeviceDemandEntity device = await _resourceDemandQueryService.FindAsync(new DeviceDemandEntity(), id);
+                if (device is null)
+                {
+                    return NotFound(FailureCodes.NotFoundDevice);
+                }
+
+                DemandEntity demand = await _resourceDemandQueryService.FindAsync(new DemandEntity(), device.demand_id);
+                if (demand is null)
+                {
+                    return NotFound(FailureCodes.NotFoundOffer);
+                }
+
+                if (_languageDE == null)
+                {
+                    // TODO Why is this async?! Why is the configuration service not caching the configs??
+                    // Because it is async, I cannot run it in the constructor...
+                    _languageDE = (await _configurationService.GetConfigForRegionAsync("de")).Languages["de"];
+                    _languageEN = (await _configurationService.GetConfigForRegionAsync("de")).Languages["en"];
+                }
+
+                var resourceNameDE = _languageDE.Device[device.category];
+                var resourceNameEN = _languageEN.Device[device.category];
+
+                var mailAddressReceiver = demand.mail;
+                var mailUserNameReceiver = demand.name;
+                await _mailService.SendOfferMailToDemanderAsync(contactInformationDemand, mailAddressReceiver,
+                    mailUserNameReceiver, resourceNameDE, resourceNameEN);
+                await _mailService.SendDemandConformationMailToDemanderAsync(contactInformationDemand);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        
+        
+                /// <summary>
+        /// Sending a offer request for the device with the given id to the non-public demander.
+        /// </summary>
+        /// <param name="contactInformationDemand"></param>
+        /// <param name="id">The id of the device</param>
+        /// <returns>Empty string</returns>
+        /// <response code="200">Empty string - consumable with provider found and mail has been sent</response>
+        /// <response code="404">Resource does not exist</response>
+        /// <response code="400">Invalid contact data</response>
+        [HttpPost("consumables/{id:int}/contact")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [SwaggerRequestExample(typeof(ContactInformationDemand), typeof(ContactInformationDemandExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
+        public async Task<IActionResult> ConsumableAnonymousContactAsync([FromBody] ContactInformationDemand contactInformationDemand, int id)
+        {
+            NullCheck.ThrowIfNull<ContactInformationDemand>(contactInformationDemand);
+
+            try
+            {
+                _mailInputValidatorService.validateMail(contactInformationDemand.senderEmail);
+                ConsumableDemandEntity consumable = await _resourceDemandQueryService.FindAsync(new ConsumableDemandEntity(), id);
+                if (consumable is null)
+                {
+                    return NotFound(FailureCodes.NotFoundDevice);
+                }
+
+                DemandEntity demand = await _resourceDemandQueryService.FindAsync(new DemandEntity(), consumable.demand_id);
+                if (demand is null)
+                {
+                    return NotFound(FailureCodes.NotFoundOffer);
+                }
+
+                if (_languageDE == null)
+                {
+                    // TODO Why is this async?! Why is the configuration service not caching the configs??
+                    // Because it is async, I cannot run it in the constructor...
+                    _languageDE = (await _configurationService.GetConfigForRegionAsync("de")).Languages["de"];
+                    _languageEN = (await _configurationService.GetConfigForRegionAsync("de")).Languages["en"];
+                }
+
+                var resourceNameDE = _languageDE.Consumable[consumable.category];
+                var resourceNameEN = _languageEN.Consumable[consumable.category];
+
+                var mailAddressReceiver = demand.mail;
+                var mailUserNameReceiver = demand.name;
+                await _mailService.SendOfferMailToDemanderAsync(contactInformationDemand, mailAddressReceiver,
+                    mailUserNameReceiver, resourceNameDE, resourceNameEN);
+                await _mailService.SendDemandConformationMailToDemanderAsync(contactInformationDemand);
+                return Ok();
+            }
+            catch (ArgumentException e)
             {
                 return BadRequest(e.Message);
             }

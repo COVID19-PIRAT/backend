@@ -13,7 +13,12 @@ namespace Pirat.Services.Mail
         public Task SendDemandMailToProviderAsync(ContactInformationDemand demandInformation, string mailAddressReceiver, string receiverMailUserName);
 
         public Task SendDemandConformationMailToDemanderAsync(ContactInformationDemand demandInformation);
+        
+        public Task SendOfferMailToDemanderAsync(ContactInformationDemand contactInformation, string mailAddressReceiver,
+            string nameReceiver, string resourceNameDE, string resourceNameEN);
 
+        public Task SendOfferConformationMailToProviderAsync(ContactInformationDemand contactInformation);
+        
         public Task SendRegionSubscriptionConformationMailAsync(RegionSubscription regionSubscription);
 
         public Task SendNotificationAboutNewOffersAsync(RegionSubscription regionSubscription, ResourceCompilation resourceCompilation);

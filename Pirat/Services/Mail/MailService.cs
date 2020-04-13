@@ -156,6 +156,123 @@ mail@pirat-tool.com
             });
         }
 
+        public async Task SendOfferMailToDemanderAsync(ContactInformationDemand contactInformation, string mailAddressReceiver, string nameReceiver,
+            string resourceNameDE, string resourceNameEN)
+        { 
+            await Task.Run(async () =>
+            {
+                var subject = "PIRAT: Es gibt ein Angebot für Sie / There is an offer for you";
+                
+                var content = $@"
+--- Please scroll down for the English version ---
+
+
+Liebe/r {nameReceiver},
+
+es gibt ein Angebot für eine von Ihnen angebotene Ressource: {resourceNameDE}.
+
+Im Folgenden finden Sie die Kontaktdaten des Anfragenden:
+
+Name: {contactInformation.senderName}
+Email: {contactInformation.senderEmail}
+{(!string.IsNullOrEmpty(contactInformation.senderPhone) ? ("Telefonnummer: " + contactInformation.senderPhone) : "")}
+Institution: {contactInformation.senderInstitution}
+
+Folgende Nachricht wurde für Sie hinterlassen:
+
+{contactInformation.message}
+
+Bitte nehmen Sie Kontakt zum Anfragenden auf und klären Sie alle weiteren Details des Austausches direkt miteinander.
+
+Vielen Dank, dass Sie unser Angebot genutzt haben. Falls Sie noch Fragen zu PIRAT haben, melden Sie sich gerne jederzeit unter mail@pirat-tool.com.
+
+
+Beste Grüße,
+Ihr PIRAT-Team
+
+
+---
+
+Dear {nameReceiver},
+
+An offer was registered for a resource you requested via PIRAT: {resourceNameEN}.
+
+In the following you can see the contact details of the person interested in an exchange:
+
+Name: {contactInformation.senderName}
+Email: {contactInformation.senderEmail}
+{(!string.IsNullOrEmpty(contactInformation.senderPhone) ? ("Phone: " + contactInformation.senderPhone) : "")}
+Institution: {contactInformation.senderInstitution}
+
+The following message was sent:
+
+{contactInformation.message}
+
+Please contact the requesting person and arrange the terms of the resource interchange in direct agreement.
+
+Thank you for using our service. If you have any questions regarding PIRAT, please contact us at mail@pirat-tool.com.
+
+
+Best regards,
+your PIRAT-Team
+
+
+---
+
+pirat-tool.com
+mail@pirat-tool.com
+";
+                content = content.Trim();
+                await SendMailAsync(mailAddressReceiver, subject, content);
+            });
+        }
+
+        public async Task SendOfferConformationMailToProviderAsync(ContactInformationDemand contactInformation)
+        {
+            await Task.Run(async () =>
+            {
+                var subject = "PIRAT: Danke für Ihr Angebot / Thank you for your offer";
+
+                var content = $@"
+--- Please scroll down for the English version ---
+
+
+Liebe/r {contactInformation.senderName},
+
+vielen Dank für Ihre Anfrage! Diese wurde an das Testlabor weitergeleitet, der sich in Kürze bei Ihnen melden wird.
+
+PIRAT stellt nur den Kontakt zwischen Anbietern und Suchenden her, alle weiteren Absprachen treffen Sie also bitte direkt mit dem Testlabor.
+
+Vielen Dank, dass Sie unser Angebot genutzt haben. Falls Sie noch Fragen zu PIRAT haben, melden Sie sich gerne jederzeit unter mail@pirat-tool.com.
+
+Beste Grüße,
+Ihr PIRAT-Team
+
+---
+
+Dear {contactInformation.senderName},
+
+Thank you very much for your request! It was forwarded to the test laboratory, who will contact you soon.
+
+PIRAT only offers to bring providers and seekers in contact, please arrange the terms of the exchange directly with the test laboratory.
+
+Thank you for using our service. If you have any questions regarding PIRAT, please contact us at mail@pirat-tool.com.
+
+
+Best regards,
+your PIRAT-Team
+
+
+---
+
+pirat-tool.com
+mail@pirat-tool.com
+";
+                content = content.Trim();
+                await SendMailAsync(contactInformation.senderEmail, subject, content);
+            });
+        }
+
         public async Task SendNewOfferConfirmationMailAsync(string token, 
             string receiverMailAddress, string receiverMailUserName)
         {

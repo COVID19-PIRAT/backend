@@ -78,9 +78,10 @@ namespace Pirat.Extensions
             {
                 foreach (var r in resourceEndings)
                 {
-                    if (segments[0].Equals("resources", StringComparison.Ordinal) 
-                        && resourceEndings.Contains(segments[1]) 
-                        && int.TryParse(segments[2], out _) 
+                    if ((segments[0].Equals("resources", StringComparison.Ordinal)
+                        || segments[0].Equals("demands", StringComparison.Ordinal))
+                        && resourceEndings.Contains(segments[1])
+                        && int.TryParse(segments[2], out _)
                         && segments[3].Equals("contact", StringComparison.Ordinal))
                     {
                         return true;
