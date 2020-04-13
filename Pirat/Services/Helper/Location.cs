@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Pirat.Model.Entity.Resource.Common;
+using Pirat.Model.Entity.Resource.Demands;
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Linq.Expressions;
 using static System.Math;
 
 namespace Pirat.Services.Helper
@@ -10,10 +14,14 @@ namespace Pirat.Services.Helper
     /// </summary>
     public struct Location : IEquatable<Location>
     {
+
         /// <summary>
         /// The radius of the Earth in kilometers
         /// </summary>
         public const double EarthRadius = 6371.0;
+
+        public static readonly Location NorthPole = new Location(QuaterCircelDegree, 0);
+        public static readonly Location SouthPole = new Location(-QuaterCircelDegree, 0);
 
         private const double FullCircelDegree = 360.0;
         private const double HalfCircelDegree = FullCircelDegree / 2.0;
@@ -27,6 +35,13 @@ namespace Pirat.Services.Helper
             this.Latitude = latitude;
         }
 
+        public Location(decimal latitude, decimal longitude) 
+            : this(
+                    decimal.ToDouble(latitude),
+                    decimal.ToDouble(longitude)
+                )
+        { }
+
         public double Latitude { get; }
 
         public double LatitudeInRadian => Latitude / RadianToDegreeFactor;
@@ -34,6 +49,71 @@ namespace Pirat.Services.Helper
         public double Longitude { get; }
 
         public double LongitudeInRadian => Longitude / RadianToDegreeFactor;
+
+        public static bool operator !=(Location left, Location right)
+            => !(left == right);
+
+        public static bool operator ==(Location left, Location right)
+            => left.Equals(right);
+
+        public double Distance(Location other)
+                            => DistanceCalculator.ComputeDistance(
+                this.Latitude, this.Longitude,
+                other.Latitude, other.Longitude
+            );
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Location other)
+            {
+                return this.Latitude == other.Latitude
+                    && this.Longitude == other.Longitude;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool Equals([AllowNull] Location other)
+            => this.Equals(obj: other);
+
+        public override int GetHashCode()
+            => (119 * this.Longitude.GetHashCode())
+                + (107 * this.Latitude.GetHashCode());
+
+        public Location Move(double horizontal, double vertical)
+                                            => this.MoveVerticly(vertical).MoveHorizontal(horizontal);
+
+        /// <summary>
+        /// Creates a new <see cref="Location"/> that is
+        /// <paramref name="distance"/> kilometer to the east from the current
+        /// <see cref="Location"/>. If the <paramref name="distance"/> is
+        /// negativ the position will be moved to the west.
+        /// </summary>
+        /// <param name="distance">the distance in kilometer</param>
+        /// <returns>the new <see cref="Location"/></returns>
+        public Location MoveHorizontal(double distance)
+        {
+            if (this.Latitude == QuaterCircelDegree || this.Latitude == -QuaterCircelDegree)
+            {
+                return this;
+            }
+            else
+            {
+                var newLongitude = Longitude + (distance / EarthRadius * RadianToDegreeFactor / Cos(Latitude / RadianToDegreeFactor));
+                if (newLongitude <= -HalfCircelDegree)
+                {
+                    newLongitude = HalfCircelDegree - (newLongitude + HalfCircelDegree);
+                }
+                else if (newLongitude > HalfCircelDegree)
+                {
+                    newLongitude -= FullCircelDegree;
+                }
+
+                return new Location(this.Latitude, newLongitude);
+            }
+        }
 
         /// <summary>
         /// Creates a new <see cref="Location"/> that is
@@ -76,75 +156,8 @@ namespace Pirat.Services.Helper
 
             return new Location(newLatitude, newLongitude);
         }
-
-        /// <summary>
-        /// Creates a new <see cref="Location"/> that is
-        /// <paramref name="distance"/> kilometer to the east from the current
-        /// <see cref="Location"/>. If the <paramref name="distance"/> is
-        /// negativ the position will be moved to the west.
-        /// </summary>
-        /// <param name="distance">the distance in kilometer</param>
-        /// <returns>the new <see cref="Location"/></returns>
-        public Location MoveHorizontal(double distance)
-        {
-            if (this.Latitude == QuaterCircelDegree || this.Latitude == -QuaterCircelDegree)
-            {
-                return this;
-            }
-            else
-            {
-                var newLongitude = Longitude + (distance / EarthRadius * RadianToDegreeFactor / Cos(Latitude / RadianToDegreeFactor));
-                if (newLongitude <= -HalfCircelDegree)
-                {
-                    newLongitude = HalfCircelDegree - (newLongitude + HalfCircelDegree);
-                }
-                else if (newLongitude > HalfCircelDegree)
-                {
-                    newLongitude -= FullCircelDegree;
-                }
-
-                return new Location(this.Latitude, newLongitude);
-            }
-        }
-
-        public Location Move(double horizontal, double vertical)
-            => this.MoveVerticly(vertical).MoveHorizontal(horizontal);
-
-        #region common overrides
-
-        #region Equality
-
-        public override bool Equals(object obj)
-        {
-            if (obj is Location other)
-            {
-                return this.Latitude == other.Latitude
-                    && this.Longitude == other.Longitude;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool Equals([AllowNull] Location other)
-            => this.Equals(obj: other);
-
-        public static bool operator ==(Location left, Location right)
-            => left.Equals(right);
-
-        public static bool operator !=(Location left, Location right)
-            => !(left == right);
-
-        #endregion Equality
-
-        public override int GetHashCode()
-            => (119 * this.Longitude.GetHashCode())
-                + (107 * this.Latitude.GetHashCode());
-
         public override string ToString()
             => $"{{ lat = {Latitude}, long = {Longitude} }}";
 
-        #endregion common overrides
     }
 }
