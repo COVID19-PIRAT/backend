@@ -29,7 +29,9 @@ namespace Pirat
                 "PIRAT_HOST",
                 "PIRAT_CONNECTION",
                 "PIRAT_GOOGLE_API_KEY",
-                "PIRAT_GOOGLE_RECAPTCHA_SECRET"
+                "PIRAT_GOOGLE_RECAPTCHA_SECRET",
+                
+                "PIRAT_ADMIN_KEY"
             };
             foreach (var requiredEnvironmentVariable in requiredEnvironmentVariables)
             {
