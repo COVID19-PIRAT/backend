@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Pirat.DatabaseContext;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Model.Entity.Resource.Demands;
+using Pirat.Model.Entity.Resource.Stock;
 using Pirat.Other;
 using Pirat.Services.Helper;
 using Pirat.Services.Helper.AddressMaking;
@@ -193,6 +195,12 @@ namespace Pirat.Services.Resource.Demands
 
                 yield return demand;
             }
+        }
+
+        public async Task<T> FindAsync<T>(T findable, int id) where T : IFindable
+        {
+            NullCheck.ThrowIfNull<IFindable>(findable);
+            return (T) await findable.FindAsync(_context, id);
         }
     }
 }
