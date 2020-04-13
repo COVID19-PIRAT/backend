@@ -12,6 +12,16 @@ namespace Pirat.Tests
 {
     public class ReCaptchaMiddlewareTest
     {
+        private readonly ReCaptchaMiddleware _reCaptchaMiddleware;
+        
+        public ReCaptchaMiddlewareTest()
+        {
+            var recaptchaServiceMock = new Mock<IReCaptchaService>();
+            recaptchaServiceMock.Setup(m => m.ValidateResponseAsync(It.IsAny<string>())).Returns(Task.FromResult(false));
+            _reCaptchaMiddleware = new ReCaptchaMiddleware(next: (innerHttpContext) => Task.FromResult(0),
+                recaptchaServiceMock.Object);
+        }
+
 
         private HttpContext CreateHttpContext( string method, string path, string recaptchaValue = null)
         {
@@ -32,14 +42,11 @@ namespace Pirat.Tests
         [Fact]
         public async Task Test_MissingReCaptcha()
         {
-            var recaptchaServiceMock = new Mock<IReCaptchaService>();
-            recaptchaServiceMock.Setup(m => m.ValidateResponseAsync(It.IsAny<string>())).Returns(Task.FromResult(false));
-            var reCaptchaMiddleware = new ReCaptchaMiddleware(next: (innerHttpContext) => Task.FromResult(0),
-                recaptchaServiceMock.Object);
+
 
             var context = CreateHttpContext("POST", "/resources");
 
-            await reCaptchaMiddleware.InvokeAsync(context);
+            await _reCaptchaMiddleware.InvokeAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             var result = new StreamReader(context.Response.Body).ReadToEnd();
             Assert.Equal("Missing ReCaptcha", result);
@@ -49,11 +56,6 @@ namespace Pirat.Tests
         [Fact]
         public async Task Test_Blacklist_WrongReCaptcha()
         {
-            var recaptchaServiceMock = new Mock<IReCaptchaService>();
-            recaptchaServiceMock.Setup(m => m.ValidateResponseAsync(It.IsAny<string>())).Returns(Task.FromResult(false));
-            var reCaptchaMiddleware = new ReCaptchaMiddleware(next: (innerHttpContext) => Task.FromResult(0),
-                recaptchaServiceMock.Object);
-
             var blackList = new List<string>()
             {
                 "/resources",
@@ -68,7 +70,7 @@ namespace Pirat.Tests
             {
                 var context = CreateHttpContext("POST", path, "nothingSpecial");
 
-                await reCaptchaMiddleware.InvokeAsync(context);
+                await _reCaptchaMiddleware.InvokeAsync(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
                 var result = new StreamReader(context.Response.Body).ReadToEnd();
                 Assert.Equal("Wrong ReCaptcha", result);
@@ -79,11 +81,6 @@ namespace Pirat.Tests
         [Fact]
         public async Task Test_ShouldPass()
         {
-            var recaptchaServiceMock = new Mock<IReCaptchaService>();
-            recaptchaServiceMock.Setup(m => m.ValidateResponseAsync(It.IsAny<string>())).Returns(Task.FromResult(false));
-            var reCaptchaMiddleware = new ReCaptchaMiddleware(next: (innerHttpContext) => Task.FromResult(0),
-                recaptchaServiceMock.Object);
-
             var whiteList = new List<string>()
             {
                 "/resources/devices",
@@ -95,7 +92,7 @@ namespace Pirat.Tests
             {
                 var context = CreateHttpContext("POST", path);
 
-                await reCaptchaMiddleware.InvokeAsync(context);
+                await _reCaptchaMiddleware.InvokeAsync(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
                 var result = new StreamReader(context.Response.Body).ReadToEnd();
                 Assert.True(result.Length == 0);

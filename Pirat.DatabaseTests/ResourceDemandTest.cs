@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Pirat.DatabaseContext;
@@ -11,7 +12,7 @@ using Xunit;
 
 namespace Pirat.DatabaseTests
 {
-    public class ResourceDemandTest
+    public class ResourceDemandTest : IDisposable
     {
         private const string connectionString =
             "Server=localhost;Port=5432;Database=postgres;User ID=postgres;Password=postgres";
