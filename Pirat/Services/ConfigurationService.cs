@@ -49,7 +49,8 @@ namespace Pirat.Services
         public Lazy<IReadOnlyDictionary<string, AsyncLazy<RegionServerConfig>>> Regions { get; private set; }
 
         private static string ConfigDataDirPath
-                            => Path.Combine(Directory.GetCurrentDirectory(), "Configuration");
+                            => Environment.GetEnvironmentVariable("PIRAT_CONFIG_DIR") ?? 
+                               Path.Combine(Directory.GetCurrentDirectory(), "Configuration");
 
         public async Task<RegionClientConfig> GetConfigForRegionAsync(string regionCode)
         {
