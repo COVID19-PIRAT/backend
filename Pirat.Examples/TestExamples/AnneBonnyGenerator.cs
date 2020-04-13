@@ -39,19 +39,6 @@ namespace Pirat.DatabaseTests.Examples
             };
         }
 
-        public Manpower GenerateManpower()
-        {
-            return new Manpower()
-            {
-                institution = "RevengeInstitute",
-                researchgroup = "Rackham Group",
-                experience_rt_pcr = false,
-                qualification = new List<string>() { "Heart Surgeon" },
-                area = new List<string>() { "Piraten" },
-                address = generateAddress()
-            };
-        }
-
         public Consumable GenerateConsumable()
         {
             return new Consumable()
