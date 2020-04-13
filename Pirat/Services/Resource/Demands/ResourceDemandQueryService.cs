@@ -88,7 +88,7 @@ namespace Pirat.Services.Resource.Demands
                 {
                     var yLatitude = data.ad.latitude;
                     var yLongitude = data.ad.longitude;
-                    var distance = DistanceCalculator.computeDistance(
+                    var distance = DistanceCalculator.ComputeDistance(
                         locationOfDemandedConsumable.latitude, locationOfDemandedConsumable.longitude,
                         yLatitude, yLongitude);
                     if (distance > maxDistance && maxDistance != 0)
@@ -169,7 +169,7 @@ namespace Pirat.Services.Resource.Demands
                 {
                     var yLatitude = data.ad.latitude;
                     var yLongitude = data.ad.longitude;
-                    var distance = DistanceCalculator.computeDistance(
+                    var distance = DistanceCalculator.ComputeDistance(
                         locationOfDemandedDevice.latitude, locationOfDemandedDevice.longitude,
                         yLatitude, yLongitude);
                     if (distance > maxDistance && maxDistance != 0)
