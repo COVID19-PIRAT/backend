@@ -5,12 +5,12 @@
     "SCHUTZBRILLE": "Schutzbrille",
     "HANDSCHUHE": "Handschuhe",
     "DESINFEKTIONSMITTEL": "Desinfektionsmittel",
-    "REAKTIONSGEFAESSE": "Reaktionsgef‰ﬂe",
+    "REAKTIONSGEFAESSE": "Reaktionsgef√§√üe",
     "READOUTPLATES": "Readoutplates",
     "PIPETTENSPITZEN": "Pipettenspitze",
     "SONSTIGES": "Sonstiges"
   },
-  "devices": {
+  "device": {
     "PCR_THERMOCYCLER": "PCR Thermocycler",
     "RT_PCR_THERMOCYCLER": "Real-Time PCR Thermocycler",
     "ZENTRIFUGE": "Zentrifuge",

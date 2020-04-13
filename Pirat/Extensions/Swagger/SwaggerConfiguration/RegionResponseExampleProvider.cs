@@ -15,7 +15,7 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                 {
                     ["consumable_key"] = "name_de"
                 },
-                Devices = new Dictionary<string, string>
+                Device = new Dictionary<string, string>
                 {
                     ["devices_key"] = "name_de"
                 }
@@ -27,7 +27,7 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                 {
                     ["consumable_key"] = "name_en"
                 },
-                Devices = new Dictionary<string, string>
+                Device = new Dictionary<string, string>
                 {
                     ["devices_key"] = "name_en"
                 }
