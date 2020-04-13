@@ -99,16 +99,9 @@ namespace Pirat.Services.Resource.Demands
                     }
                     resource.kilometer = (int) Math.Round(distance);
                 }
-                
-                var provider = new Provider().Build(data.demand);
-                if (data.ad != null)
-                {
-                    provider.address = new Address().Build(data.ad);
-                }
 
                 var demand = new DemandResource<Consumable>()
                 {
-                    provider = provider,
                     resource = resource
                 };
 
@@ -180,16 +173,9 @@ namespace Pirat.Services.Resource.Demands
                     }
                     resource.kilometer = (int) Math.Round(distance);
                 }
-                
-                var provider = new Provider().Build(data.demand);
-                if (data.ad != null)
-                {
-                    provider.address = new Address().Build(data.ad);
-                }
 
                 var demand = new DemandResource<Device>()
                 {
-                    provider = provider,
                     resource = resource
                 };
 
