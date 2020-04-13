@@ -100,5 +100,18 @@ namespace Pirat.Examples.TestExamples
             };
         }
 
+        public Demand GenerateDemand()
+        {
+            return new Demand()
+            {
+                provider = GenerateProvider(),
+                devices = new List<Device>(){
+                    GenerateDevice()
+                },
+                consumables = new List<Consumable>(){
+                    GenerateConsumable()
+                }
+            };
+        }
     }
 }

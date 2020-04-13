@@ -26,7 +26,7 @@ namespace Pirat.Services.Resource
 
         public void ValidateToken(string token)
         {
-            if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
+            if (string.IsNullOrEmpty(token) || token.Length != Constants.OfferTokenLength)
             {
                 throw new ArgumentException(FailureCodes.InvalidToken);
             }

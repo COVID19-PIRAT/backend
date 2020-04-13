@@ -51,6 +51,18 @@ namespace Pirat.Model.Api.Resource
             return this;
         }
 
+        /// <summary>
+        /// Returns whether the object contains only non-whitespace data.
+        /// </summary>
+        public bool IsEmpty()
+        {
+            return string.IsNullOrWhiteSpace(street) &&
+                   string.IsNullOrWhiteSpace(streetnumber) &&
+                   string.IsNullOrWhiteSpace(postalcode) &&
+                   string.IsNullOrWhiteSpace(city) &&
+                   string.IsNullOrWhiteSpace(country);
+        }
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Pirat.DatabaseContext;
 using Pirat.Examples.TestExamples;
+using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Services.Helper.AddressMaking;
 using Pirat.Services.Resource.Demands;
@@ -22,6 +23,8 @@ namespace Pirat.DatabaseTests
 
         private readonly ResourceDemandQueryService _resourceDemandQueryService;
 
+        private readonly IResourceDemandUpdateService _resourceDemandUpdateService;
+
         private readonly CaptainHookGenerator _captainHookGenerator;
 
         //TODO INSERTION API NEEDED
@@ -40,7 +43,25 @@ namespace Pirat.DatabaseTests
                 a.hascoordinates = false;
             });
             _resourceDemandQueryService = new ResourceDemandQueryService(loggerDemand.Object, ResourceContext, addressMaker.Object);
+            _resourceDemandUpdateService = new ResourceDemandUpdateService(ResourceContext, addressMaker.Object);
             _captainHookGenerator = new CaptainHookGenerator();
+        }
+
+        [Fact]
+        public async void Insert_AllowedInputs()
+        {
+            // With an address
+            Demand demand = _captainHookGenerator.GenerateDemand();
+            var token = await _resourceDemandUpdateService.InsertAsync(demand);
+            Assert.True(!string.IsNullOrEmpty(token));
+            // TODO Querying by token and check for equality (after query by token is possible)
+
+            // Without an address
+            Demand demand2 = _captainHookGenerator.GenerateDemand();
+            demand.provider.address = null;
+            var token2 = await _resourceDemandUpdateService.InsertAsync(demand2);
+            Assert.True(!string.IsNullOrEmpty(token2));
+            // TODO Querying by token and check for equality (after query by token is possible)
         }
 
         /// <summary>

@@ -162,7 +162,7 @@ namespace Pirat.Services.Resource
 
         public async Task DeleteAsync(string token)
         {
-            if (string.IsNullOrEmpty(token) || token.Length != Constants.TokenLength)
+            if (string.IsNullOrEmpty(token) || token.Length != Constants.OfferTokenLength)
             {
                 throw new ArgumentException(FailureCodes.InvalidToken);
             }
@@ -617,7 +617,7 @@ namespace Pirat.Services.Resource
             StringBuilder sb = new StringBuilder();
             using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
             {
-                while (sb.Length != Constants.TokenLength)
+                while (sb.Length != Constants.OfferTokenLength)
                 {
                     byte[] oneByte = new byte[1];
                     rng.GetBytes(oneByte);

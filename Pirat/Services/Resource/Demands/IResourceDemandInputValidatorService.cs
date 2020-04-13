@@ -7,5 +7,7 @@ namespace Pirat.Services.Resource.Demands
         public void ValidateForDemandQuery(Device device);
 
         public void ValidateForDemandQuery(Consumable consumable);
+        
+        public void ValidateForDemandInsertion(Demand demand);
     }
 }

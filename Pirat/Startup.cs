@@ -40,6 +40,7 @@ namespace Pirat
             services.AddTransient<IResourceStockQueryService, ResourceStockQueryService>();
             services.AddTransient<IResourceStockUpdateService, ResourceStockUpdateService>();
             services.AddTransient<IResourceDemandQueryService, ResourceDemandQueryService>();
+            services.AddTransient<IResourceDemandUpdateService, ResourceDemandUpdateService>();
             services.AddTransient<IMailService, MailService>();
             services.AddTransient<IReCaptchaService, ReCaptchaService>(s => 
                 new ReCaptchaService(Environment.GetEnvironmentVariable("PIRAT_GOOGLE_RECAPTCHA_SECRET")));
