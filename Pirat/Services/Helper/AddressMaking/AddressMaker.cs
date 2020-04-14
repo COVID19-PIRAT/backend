@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Pirat.Codes;
 using Pirat.Exceptions;
+using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Other;
 
@@ -12,6 +13,25 @@ namespace Pirat.Services.Helper.AddressMaking
 {
 	public class AddressMaker : IAddressMaker
 	{
+		public Location? CreateLocationForAddress(Address address)
+		{
+			NullCheck.ThrowIfNull(address);
+
+			if (!string.IsNullOrEmpty(address.country)
+				&& !string.IsNullOrEmpty(address.postalcode))
+			{
+				var locationOfDemandedConsumable = new AddressEntity().build(address);
+				this.SetCoordinates(locationOfDemandedConsumable);
+
+				return new Location(
+					decimal.ToDouble(locationOfDemandedConsumable.latitude),
+					decimal.ToDouble(locationOfDemandedConsumable.longitude)
+				);
+			}
+
+			return null;
+		}
+
 		public void SetCoordinates(AddressEntity address)
 		{
             NullCheck.ThrowIfNull<AddressEntity>(address);
