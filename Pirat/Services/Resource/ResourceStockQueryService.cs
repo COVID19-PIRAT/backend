@@ -34,15 +34,14 @@ namespace Pirat.Services.Resource
             _queryHelper = new QueryHelper(context);
 
         }
-        public async IAsyncEnumerable<OfferResource<Consumable>> QueryOffersAsync(Consumable con)
+        public IAsyncEnumerable<OfferResource<Consumable>> QueryOffersAsync(Consumable con)
         {
-            NullCheck.ThrowIfNull<Consumable>(con);
+            NullCheck.ThrowIfNull(con);
 
             var consumable = new ConsumableEntity().Build(con);
-            var maxDistance = con.kilometer;
-            var consumableAddress = con.address;
-            var location = new AddressEntity().build(consumableAddress);
-            _addressMaker.SetCoordinates(location);
+            var maxDistance = con.kilometer; 
+            
+            var centerLocation = _addressMaker.CreateLocationForAddress(con.address);
 
             var query = from o in _context.offer as IQueryable<OfferEntity>
                         join c in _context.consumable on o.id equals c.offer_id
@@ -64,56 +63,19 @@ namespace Pirat.Services.Resource
                 query = query.Where(collection => consumable.amount <= collection.c.amount);
             }
 
-            List<OfferResource<Consumable>> resources = new List<OfferResource<Consumable>>();
-            var results = await query.ToListAsync();
-            foreach (var data in results)
-            {
+            var results = query.AsAsyncEnumerable()
+                .Select(data => (data.o, new Consumable().build(data.c), data.ap, data.ac));
 
-                var resource = new Consumable().build(data.c);
-
-                var yLatitude = data.ac.latitude;
-                var yLongitude = data.ac.longitude;
-                var distance = DistanceCalculator.ComputeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
-                if (distance > maxDistance && maxDistance != 0)
-                {
-                    continue;
-                }
-                resource.kilometer = (int)Math.Round(distance);
-
-                var provider = new Provider().Build(data.o);
-                var providerAddress = new Address().Build(data.ap);
-                var resourceAddress = new Address().Build(data.ac);
-
-                provider.address = providerAddress;
-                resource.address = resourceAddress;
-
-                var offer = new OfferResource<Consumable>()
-                {
-                    resource = resource
-                };
-
-                // ---- HOTFIX
-                // Vorerst sollen keine persönliche Daten veröffentlicht werden.
-                provider.ispublic = false;
-                // ---- END HOTFIX
-
-                if (provider.ispublic)
-                {
-                    offer.provider = provider;
-                }
-
-                yield return offer;
-            }
+            return CreateOfferResourceAsync(results, maxDistance, centerLocation);
         }
 
-        public async IAsyncEnumerable<OfferResource<Device>> QueryOffersAsync(Device dev)
+        public IAsyncEnumerable<OfferResource<Device>> QueryOffersAsync(Device dev)
         {
             NullCheck.ThrowIfNull<Device>(dev);
             var device = new DeviceEntity().Build(dev);
             var maxDistance = dev.kilometer;
-            var deviceAddress = dev.address;
-            var location = new AddressEntity().build(deviceAddress);
-            _addressMaker.SetCoordinates(location);
+
+            var centerLocation = _addressMaker.CreateLocationForAddress(dev.address);
 
             var query = from o in _context.offer as IQueryable<OfferEntity>
                         join d in _context.device on o.id equals d.offer_id
@@ -135,55 +97,20 @@ namespace Pirat.Services.Resource
                 query = query.Where(collection => device.amount <= collection.d.amount);
             }
 
-            List<OfferResource<Device>> resources = new List<OfferResource<Device>>();
-            var results = await query.ToListAsync();
-            foreach (var data in results)
-            {
-                var resource = new Device().Build(data.d);
+            var results = query.AsAsyncEnumerable()
+                .Select(data => (data.o, new Device().Build(data.d), data.ap, data.ac));
 
-                var yLatitude = data.ac.latitude;
-                var yLongitude = data.ac.longitude;
-                var distance = DistanceCalculator.ComputeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
-
-                if (distance > maxDistance && maxDistance != 0)
-                {
-                    continue;
-                }
-                resource.kilometer = (int)Math.Round(distance);
-
-                var provider = new Provider().Build(data.o);
-                var providerAddress = new Address().Build(data.ap);
-                var resourceAddress = new Address().Build(data.ac);
-
-                provider.address = providerAddress;
-                resource.address = resourceAddress;
-                var offer = new OfferResource<Device>()
-                {
-                    resource = resource
-                };
-
-                // ---- HOTFIX
-                // Vorerst sollen keine persönliche Daten veröffentlicht werden.
-                provider.ispublic = false;
-                // ---- END HOTFIX
-
-                if (provider.ispublic)
-                {
-                    offer.provider = provider;
-                }
-
-                yield return offer;
-            }
+            return CreateOfferResourceAsync(results, maxDistance, centerLocation);
         }
 
-        public async IAsyncEnumerable<OfferResource<Personal>> QueryOffersAsync(Manpower manpower)
+        public IAsyncEnumerable<OfferResource<Personal>> QueryOffersAsync(Manpower manpower)
         {
-            NullCheck.ThrowIfNull<Manpower>(manpower);
+            NullCheck.ThrowIfNull(manpower);
 
-            var maxDistance = manpower.kilometer;
             var manpowerAddress = manpower.address;
-            var location = new AddressEntity().build(manpowerAddress);
-            _addressMaker.SetCoordinates(location);
+            var maxDistance = manpower.kilometer;
+
+            var centerLocation = _addressMaker.CreateLocationForAddress(manpower.address);
 
             var query = from o in _context.offer as IQueryable<OfferEntity>
                         join personal in _context.personal on o.id equals personal.offer_id
@@ -215,45 +142,10 @@ namespace Pirat.Services.Resource
                 query = query.Where(collection => collection.personal.experience_rt_pcr); ;
             }
 
-            List<OfferResource<Personal>> resources = new List<OfferResource<Personal>>();
-            var results = await query.ToListAsync();
-            foreach (var data in results)
-            {
-                var resource = new Personal().build(data.personal);
+            var results = query.AsAsyncEnumerable()
+                .Select(data => (data.o, new Personal().build(data.personal), data.ap, data.ac));
 
-                var yLatitude = data.ac.latitude;
-                var yLongitude = data.ac.longitude;
-                var distance = DistanceCalculator.ComputeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
-                if (distance > maxDistance && maxDistance != 0)
-                {
-                    continue;
-                }
-                resource.kilometer = (int)Math.Round(distance);
-
-                var provider = new Provider().Build(data.o);
-                var providerAddress = new Address().Build(data.ap);
-                var resourceAddress = new Address().Build(data.ac);
-
-                provider.address = providerAddress;
-                resource.address = resourceAddress;
-
-                var offer = new OfferResource<Personal>()
-                {
-                    resource = resource
-                };
-
-                // ---- HOTFIX
-                // Vorerst sollen keine persönliche Daten veröffentlicht werden.
-                provider.ispublic = false;
-                // ---- END HOTFIX
-
-                if (provider.ispublic)
-                {
-                    offer.provider = provider;
-                }
-
-                yield return offer;
-            }
+            return CreateOfferResourceAsync(results, maxDistance, centerLocation);
         }
 
         public Task<IFindable> FindAsync(IFindable findable, int id)
@@ -302,6 +194,58 @@ namespace Pirat.Services.Resource
             return offer;
         }
 
+        private async IAsyncEnumerable<OfferResource<TR>> CreateOfferResourceAsync<TR>(
+            IAsyncEnumerable<(OfferEntity, TR, AddressEntity, AddressEntity)> asyncEnumerable,
+            double maxDistance,
+            Location? centerLocation
+        ) where TR : IHasDistance
+        {
+            await foreach (var data in asyncEnumerable)
+            {
+                var offerEntity = data.Item1;
+                var resource = data.Item2;
+                var providerAddress = data.Item3;
+                var conAddress = data.Item4;
 
+                if (providerAddress != null)
+                {
+                    if (centerLocation.HasValue)
+                    {
+                        var location = new Location(
+                            conAddress.latitude,
+                            conAddress.longitude
+                        );
+                        var distance = location.Distance(centerLocation.Value);
+                        if (distance > maxDistance && maxDistance != 0)
+                        {
+                            continue;
+                        }
+                        resource.kilometer = (int)Math.Round(distance);
+                    }
+                    resource.address = new Address().Build(conAddress);
+                }
+
+                var provider = new Provider().Build(offerEntity);
+
+                provider.address = new Address().Build(providerAddress);
+
+                var offer = new OfferResource<TR>()
+                {
+                    resource = resource
+                };
+
+                // ---- HOTFIX
+                // Vorerst sollen keine persönliche Daten veröffentlicht werden.
+                provider.ispublic = false;
+                // ---- END HOTFIX
+
+                if (provider.ispublic)
+                {
+                    offer.provider = provider;
+                }
+
+                yield return offer;
+            }
+        }
     }
 }
