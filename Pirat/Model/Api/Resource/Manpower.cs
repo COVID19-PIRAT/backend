@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Pirat.Model.Api.Resource
 {
-    public class Manpower
+    public class Manpower : IHasDistance
     {
         [JsonProperty]
         [FromQuery(Name = "qualification")]

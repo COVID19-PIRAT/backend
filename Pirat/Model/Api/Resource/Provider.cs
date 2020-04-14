@@ -8,7 +8,7 @@ using Pirat.Other;
 
 namespace Pirat.Model.Api.Resource
 {
-    public class Provider
+    public class Provider : IHasDistance
     {
         [JsonProperty] [Required] public string name { get; set; } = string.Empty;
 

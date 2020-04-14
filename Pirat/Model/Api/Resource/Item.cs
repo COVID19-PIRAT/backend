@@ -6,7 +6,7 @@ using Pirat.Helper;
 
 namespace Pirat.Model.Api.Resource
 {
-    public abstract class Item
+    public abstract class Item : IHasDistance
     {
         [JsonProperty] [SwaggerExclude] public int id { get; set; }
 

@@ -9,7 +9,7 @@ using Pirat.Other;
 namespace Pirat.Model.Api.Resource
 {
 
-    public class Personal
+    public class Personal : IHasDistance
     {
         [JsonProperty]
         [SwaggerExclude]
