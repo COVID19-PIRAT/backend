@@ -45,7 +45,7 @@ jobs:
       - name: set tag to stable
         if: endsWith(github.ref, '/master')
         run: |
-          echo "::set-env name=TAG::stable"
+          echo "::set-env name=IMAGE_TAG::stable"
 
       - name: list env variables
         run: |
