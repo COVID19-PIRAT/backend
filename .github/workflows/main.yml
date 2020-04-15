@@ -42,16 +42,20 @@ jobs:
         run: |
           echo "::set-env name=BRANCH::${GITHUB_REF##*/}"
 
-      - name: set tag to stable
+      - name: set image tag to stable
         if: endsWith(github.ref, '/master')
         run: |
           echo "::set-env name=IMAGE_TAG::stable"
 
-      - name: list env variables
+      - name: set image tag to integration
+        if: endsWith(github.ref, '/integration')
         run: |
-          echo "IMAGE_NAME: ${{ env.IMAGE_NAME }}"
-          echo "IMAGE_TAG: ${{ env.IMAGE_TAG }}"
-          echo "BRANCH: ${{ env.BRANCH }}"
+          echo "::set-env name=IMAGE_TAG::integration"
+
+      - name: set image tag to testing
+        if: endsWith(github.ref, '/testing')
+        run: |
+          echo "::set-env name=IMAGE_TAG::testing"
 
       - name: login
         run: docker login -u ${{ secrets.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_TOKEN }}
