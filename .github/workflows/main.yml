@@ -77,3 +77,12 @@ jobs:
           docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
           docker push ${{ env.IMAGE_NAME }}:${{ env.BRANCH }}
           docker push ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
+      - name: Slack notification
+        uses: Ilshidur/action-slack@master
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          SLACK_USERNAME: backend
+        with:
+          args: "New Images available:\n- {{ GITHUB_SHA }}\n- {{ IMAGE_TAG }}\n- {{ BRANCH }}"
