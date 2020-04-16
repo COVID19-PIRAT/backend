@@ -1,6 +1,9 @@
 name: Build and test application and push to Docker Hub
 
-on: push
+on:
+  push:
+  schedule:
+    - cron: '0 7 */7 * *'
 
 env:
   IMAGE_NAME: covid19pirat/pirat-backend
