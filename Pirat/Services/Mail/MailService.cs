@@ -281,9 +281,8 @@ mail@pirat-tool.com
             {
                 var piratHostServer = Environment.GetEnvironmentVariable("PIRAT_HOST");
 
-                var fullLink = $"{piratHostServer}/change/{token}";
-
                 var subject = "PIRAT: Ihr Bearbeitungslink / Your link for editing";
+                // TODO The link to the change page is not correct for localhost / local development.
                 var content = $@"
 --- Please scroll down for the English version ---
 
@@ -292,7 +291,7 @@ Liebe/r {receiverMailUserName},
 
 vielen Dank, dass Sie sich entschieden haben, Laborressourcen und/oder personelle Unterstützung für den Kampf gegen Corona zur Verfügung zu stellen.
 
-Unter folgendem Link können Sie Ihr Angebot einsehen: {fullLink}. Wenn Sie es bearbeiten oder löschen möchten, kontaktieren Sie uns bitte direkt unter mail@pirat-tool.com.
+Unter folgendem Link können Sie Ihr Angebot einsehen: {piratHostServer}/de/change/{token}. Wenn Sie es bearbeiten oder löschen möchten, kontaktieren Sie uns bitte direkt unter mail@pirat-tool.com.
 
 Sobald es Interessenten für einen Austausch gibt, werden diese sich direkt bei Ihnen melden.
 
@@ -307,7 +306,7 @@ Dear {receiverMailUserName},
 
 Thank you very much for providing lab resources and/or staff to support the fight against Corona.
 
-You can use the following link to see the details of your offer: {fullLink}. If you want to edit or delete it, please contact us directly at mail@pirat-tool.com.
+You can use the following link to see the details of your offer: {piratHostServer}/en/change/{token}. If you want to edit or delete it, please contact us directly at mail@pirat-tool.com.
 
 As soon as someone is interested in your offer, you will be contacted directly.
 
@@ -408,7 +407,7 @@ mail@pirat-tool.com
 
 Liebe/r {regionSubscription.name},
 
-wir haben neue Angebote für Sie auf PIRAT in der Nähe von {regionSubscription.postalcode}. Sie können sie unter https://pirat-tool.com/suchanfrage finden.
+wir haben neue Angebote für Sie auf PIRAT in der Nähe von {regionSubscription.postalcode}. Sie können sie unter https://pirat-tool.com/de/suchanfrage finden.
 
 {offersDE}
 
@@ -422,7 +421,7 @@ Ihr PIRAT-Team
 
 Dear {regionSubscription.name},
 
-There are new offers on PIRAT for you in the region {regionSubscription.postalcode}. You can find them under https://en.pirat-tool.com/suchanfrage.
+There are new offers on PIRAT for you in the region {regionSubscription.postalcode}. You can find them under https://pirat-tool.com/en/suchanfrage.
 
 {offersEN}
 
