@@ -351,6 +351,8 @@ namespace Pirat.Services.Resource
                     change_type = "INCREASE_AMOUNT",
                     element_id = consumable.id,
                     element_type = "consumable",
+                    element_category = consumable.category,
+                    element_name = consumable.name,
                     diff_amount = diffAmount,
                     reason = reason,
                     timestamp = DateTime.Now
@@ -377,6 +379,8 @@ namespace Pirat.Services.Resource
                 change_type = "DECREASE_AMOUNT",
                 element_id = consumable.id,
                 element_type = "consumable",
+                element_category = consumable.category,
+                element_name = consumable.name,
                 diff_amount = diffAmount,
                 reason = reason,
                 timestamp = DateTime.Now
@@ -428,6 +432,8 @@ namespace Pirat.Services.Resource
                     change_type = "INCREASE_AMOUNT",
                     element_id = device.id,
                     element_type = "device",
+                    element_category = device.category,
+                    element_name = device.name,
                     diff_amount = diffAmount,
                     reason = reason,
                     timestamp = DateTime.Now
@@ -456,6 +462,8 @@ namespace Pirat.Services.Resource
                 change_type = "DECREASE_AMOUNT",
                 element_id = device.id,
                 element_type = "device",
+                element_category = device.category,
+                element_name = device.name,
                 diff_amount = diffAmount,
                 reason = reason,
                 timestamp = DateTime.Now
@@ -523,6 +531,8 @@ namespace Pirat.Services.Resource
                 change_type = ChangeEntityChangeType.DeleteResource,
                 element_id = consumableEntity.id,
                 element_type = ChangeEntityElementType.Consumable,
+                element_category = consumableEntity.category,
+                element_name = consumableEntity.name,
                 diff_amount = consumableEntity.amount,
                 reason = reason,
                 timestamp = DateTime.Now
@@ -564,6 +574,8 @@ namespace Pirat.Services.Resource
                 change_type = ChangeEntityChangeType.DeleteResource,
                 element_id = deviceEntity.id,
                 element_type = ChangeEntityElementType.Device,
+                element_category = deviceEntity.category,
+                element_name = deviceEntity.name,
                 diff_amount = deviceEntity.amount,
                 reason = reason,
                 timestamp = DateTime.Now
@@ -605,6 +617,8 @@ namespace Pirat.Services.Resource
                 change_type = ChangeEntityChangeType.DeleteResource,
                 element_id = personalEntity.id,
                 element_type = ChangeEntityElementType.Personal,
+                element_category = personalEntity.qualification,
+                element_name = null,
                 diff_amount = 1,
                 reason = reason,
                 timestamp = DateTime.Now

@@ -136,7 +136,9 @@ create table change
 	change_type text not null,
 	timestamp timestamp not null,
 	reason text,
-	diff_amount integer default 0 not null
+	diff_amount integer default 0 not null,
+	element_category text,
+	element_name text
 );
 
 create table demand
