@@ -13,6 +13,10 @@ namespace Pirat.Model.Entity.Resource.Common
         
         public int element_id { get; set; }
         
+        public string element_category { get; set; }
+        
+        public string element_name { get; set; }
+        
         public string change_type { get; set; }
 
         public int diff_amount { get; set; }
