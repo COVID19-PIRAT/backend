@@ -1,5 +1,6 @@
 {
   "consumable": {
+    "N95_MASK": "N95 mask",
     "MASKE": "Face mask",
     "SCHUTZKLEIDUNG": "Protective suit",
     "SCHUTZBRILLE": "Safety goggle",
@@ -8,6 +9,10 @@
     "REAKTIONSGEFAESSE": "Reaction tube",
     "READOUTPLATES": "Readoutplate",
     "PIPETTENSPITZEN": "Pipette tip",
+    "PCR_TUBE_RACK": "PCR tube rack",
+    "PCR_REACTION_PLATE": "PCR reaction plate",
+    "MICROCENTRIFUGE_TUBE": "Microcentrifuge tube (1-2 ml)",
+    "CENTRIFUGE_TUBE": "Centrifuge tubes (15&50 ml)",
     "SONSTIGES": "Others"
   },
   "device": {
@@ -16,6 +21,7 @@
     "ZENTRIFUGE": "Centrifuge",
     "VORTEXER": "Vortex mixing device",
     "PIPETTE": "Pipette",
+    "MULTICHANNEL_PIPETTE": "Multichannel Pipette",
     "SONSTIGES": "Others"
   }
 }

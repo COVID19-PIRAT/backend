@@ -1,0 +1,30 @@
+{
+  "languages": [ "en" ],
+  "categories": {
+    "device": [
+      "PCR_THERMOCYCLER",
+      "RT_PCR_THERMOCYCLER",
+      "ZENTRIFUGE",
+      "VORTEXER",
+      "MULTICHANNEL_PIPETTE",
+      "PIPETTE",
+      "SONSTIGES"
+    ],
+    "consumable": [
+      "N95_MASK",
+      "MASKE",
+      "SCHUTZKLEIDUNG",
+      "SCHUTZBRILLE",
+      "HANDSCHUHE",
+      "DESINFEKTIONSMITTEL",
+      "REAKTIONSGEFAESSE",
+      "READOUTPLATES",
+      "PIPETTENSPITZEN",
+      "PCR_TUBE_RACK",
+      "PCR_REACTION_PLATE",
+      "MICROCENTRIFUGE_TUBE",
+      "CENTRIFUGE_TUBE",
+      "SONSTIGES"
+    ]
+  }
+}

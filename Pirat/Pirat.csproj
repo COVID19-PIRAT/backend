@@ -9,6 +9,11 @@
     <Content Remove="Helper\**" />
     <EmbeddedResource Remove="Helper\**" />
     <None Remove="Helper\**" />
+    <Content Update="Configuration\config.region.my.json">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
