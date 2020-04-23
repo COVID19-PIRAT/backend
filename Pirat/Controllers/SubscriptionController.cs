@@ -54,7 +54,7 @@ namespace Pirat.Controllers
                 _configurationService.ThrowIfUnknownRegion(region);
                 _mailInputValidatorService.validateMail(regionsubscription.email);
                 this._subscriptionService.SubscribeRegionAsync(regionsubscription, region);
-                this._mailService.SendRegionSubscriptionConformationMailAsync(regionsubscription);
+                this._mailService.SendRegionSubscriptionConformationMailAsync(region, regionsubscription);
             }
             catch (ArgumentException e)
             {

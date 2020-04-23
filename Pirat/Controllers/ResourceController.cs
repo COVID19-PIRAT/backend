@@ -243,7 +243,8 @@ namespace Pirat.Controllers
                 _mailInputValidatorService.validateMail(offer.provider.mail);
                 _resourceStockInputValidatorService.ValidateForStockInsertion(offer);
                 var token = await _resourceStockUpdateService.InsertAsync(offer, region);
-                await _mailService.SendNewOfferConfirmationMailAsync(token, offer.provider.mail, offer.provider.name);
+                await _mailService.SendNewOfferConfirmationMailAsync(region, token, offer.provider.mail,
+                    offer.provider.name);
                 return Ok(token);
             }
             catch (UnknownAdressException e)
@@ -298,9 +299,9 @@ namespace Pirat.Controllers
 
                 var mailAddressReceiver = offer.mail;
                 var mailUserNameReceiver = offer.name;
-                await _mailService.SendDemandMailToProviderAsync(contactInformationDemand, mailAddressReceiver,
+                await _mailService.SendDemandMailToProviderAsync(offer.region, contactInformationDemand, mailAddressReceiver,
                     mailUserNameReceiver);
-                await _mailService.SendDemandConformationMailToDemanderAsync(contactInformationDemand);
+                await _mailService.SendDemandConformationMailToDemanderAsync(offer.region, contactInformationDemand);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -349,9 +350,9 @@ namespace Pirat.Controllers
 
                 var mailAddressReceiver = offer.mail;
                 var mailUserNameReceiver = offer.name;
-                await _mailService.SendDemandMailToProviderAsync(contactInformationDemand, mailAddressReceiver,
+                await _mailService.SendDemandMailToProviderAsync(offer.region, contactInformationDemand, mailAddressReceiver,
                     mailUserNameReceiver);
-                await _mailService.SendDemandConformationMailToDemanderAsync(contactInformationDemand);
+                await _mailService.SendDemandConformationMailToDemanderAsync(offer.region, contactInformationDemand);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -400,9 +401,9 @@ namespace Pirat.Controllers
 
                 var mailAddressReceiver = offer.mail;
                 var mailUserNameReceiver = offer.name;
-                await _mailService.SendDemandMailToProviderAsync(contactInformationDemand, mailAddressReceiver,
+                await _mailService.SendDemandMailToProviderAsync(offer.region, contactInformationDemand, mailAddressReceiver,
                     mailUserNameReceiver);
-                await _mailService.SendDemandConformationMailToDemanderAsync(contactInformationDemand);
+                await _mailService.SendDemandConformationMailToDemanderAsync(offer.region, contactInformationDemand);
                 return Ok();
             }
             catch (ArgumentException e)

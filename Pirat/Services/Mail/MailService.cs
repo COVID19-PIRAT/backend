@@ -37,19 +37,16 @@ namespace Pirat.Services.Mail
         }
 
 
-        public async Task SendDemandMailToProviderAsync(ContactInformationDemand demandInformation, 
+        public async Task SendDemandMailToProviderAsync(string region, ContactInformationDemand demandInformation, 
             string mailAddressReceiver, string receiverMailUserName)
         {
             await Task.Run(async () =>
             {
-                var subject = "PIRAT: Ihre Ressource wurde angefragt / Your resource was requested";
+                var subject = ConstructSubjectText(region, "Ihre Ressource wurde angefragt", 
+                    "Your resource was requested");
 
                 // TODO Add details to the resource that was demanded.
-                var content = $@"
---- Please scroll down for the English version ---
-
-
-Liebe/r {receiverMailUserName},
+                var germanText = $@"Liebe/r {receiverMailUserName},
 
 es gibt eine Anfrage für eine von Ihnen angebotene Ressource.
 
@@ -70,12 +67,8 @@ Vielen Dank, dass Sie unser Angebot genutzt haben. Falls Sie noch Fragen zu PIRA
 
 
 Beste Grüße,
-Ihr PIRAT-Team
-
-
----
-
-Dear {receiverMailUserName},
+Ihr PIRAT-Team";
+                    var englishText = $@"Dear {receiverMailUserName},
 
 A request was registered for a resource you offered via PIRAT.
 
@@ -96,31 +89,20 @@ Thank you for using our service. If you have any questions regarding PIRAT, plea
 
 
 Best regards,
-your PIRAT-Team
-
-
----
-
-pirat-tool.com
-mail@pirat-tool.com
-";
-                content = content.Trim();
+your PIRAT-Team";
+                    var content = ConstructEmailText(region, germanText, englishText);
                 await SendMailAsync(mailAddressReceiver, subject, content);
             });
         }
 
 
-        public async Task SendDemandConformationMailToDemanderAsync(ContactInformationDemand demandInformation)
+        public async Task SendDemandConformationMailToDemanderAsync(string region, ContactInformationDemand demandInformation)
         {
             await Task.Run(async () =>
             {
-                var subject = "PIRAT: Danke für Ihre Anfrage / Thank you for your request";
+                var subject = ConstructSubjectText(region, "Danke für Ihre Anfrage", "Thank you for your request");
 
-                var content = $@"
---- Please scroll down for the English version ---
-
-
-Liebe/r {demandInformation.senderName},
+                var germanText = $@"Liebe/r {demandInformation.senderName},
 
 vielen Dank für Ihre Anfrage! Diese wurde an den Anbieter weitergeleitet, der sich in Kürze bei Ihnen melden wird.
 
@@ -129,11 +111,8 @@ PIRAT stellt nur den Kontakt zwischen Anbietern und Suchenden her, alle weiteren
 Vielen Dank, dass Sie unser Angebot genutzt haben. Falls Sie noch Fragen zu PIRAT haben, melden Sie sich gerne jederzeit unter mail@pirat-tool.com.
 
 Beste Grüße,
-Ihr PIRAT-Team
-
----
-
-Dear {demandInformation.senderName},
+Ihr PIRAT-Team";
+                var englishText = $@"Dear {demandInformation.senderName},
 
 Thank you very much for your request! It was forwarded to the provider, who will contact you soon.
 
@@ -143,31 +122,21 @@ Thank you for using our service. If you have any questions regarding PIRAT, plea
 
 
 Best regards,
-your PIRAT-Team
-
-
----
-
-pirat-tool.com
-mail@pirat-tool.com
-";
-                content = content.Trim();
+your PIRAT-Team";
+                var content = ConstructEmailText(region, germanText, englishText);
                 await SendMailAsync(demandInformation.senderEmail, subject, content);
             });
         }
 
-        public async Task SendOfferMailToDemanderAsync(ContactInformationDemand contactInformation, string mailAddressReceiver, string nameReceiver,
-            string resourceNameDE, string resourceNameEN)
+        public async Task SendOfferMailToDemanderAsync(string region, ContactInformationDemand contactInformation,
+            string mailAddressReceiver, string nameReceiver, string resourceNameDE, string resourceNameEN)
         { 
             await Task.Run(async () =>
             {
-                var subject = "PIRAT: Es gibt ein Angebot für Sie / There is an offer for you";
+                var subject = ConstructSubjectText(region, "Es gibt ein Angebot für Sie",
+                    "There is an offer for you");
                 
-                var content = $@"
---- Please scroll down for the English version ---
-
-
-Liebe/r {nameReceiver},
+                var germanText = $@"Liebe/r {nameReceiver},
 
 es gibt ein Angebot für eine von Ihnen angebotene Ressource: {resourceNameDE}.
 
@@ -188,12 +157,8 @@ Vielen Dank, dass Sie unser Angebot genutzt haben. Falls Sie noch Fragen zu PIRA
 
 
 Beste Grüße,
-Ihr PIRAT-Team
-
-
----
-
-Dear {nameReceiver},
+Ihr PIRAT-Team";
+                var englishText = $@"Dear {nameReceiver},
 
 An offer was registered for a resource you requested via PIRAT: {resourceNameEN}.
 
@@ -214,30 +179,19 @@ Thank you for using our service. If you have any questions regarding PIRAT, plea
 
 
 Best regards,
-your PIRAT-Team
-
-
----
-
-pirat-tool.com
-mail@pirat-tool.com
-";
-                content = content.Trim();
+your PIRAT-Team";
+                var content = ConstructEmailText(region, germanText, englishText);
                 await SendMailAsync(mailAddressReceiver, subject, content);
             });
         }
 
-        public async Task SendOfferConformationMailToProviderAsync(ContactInformationDemand contactInformation)
+        public async Task SendOfferConformationMailToProviderAsync(string region, ContactInformationDemand contactInformation)
         {
             await Task.Run(async () =>
             {
-                var subject = "PIRAT: Danke für Ihr Angebot / Thank you for your offer";
+                var subject = ConstructSubjectText(region, "Danke für Ihr Angebot", "Thank you for your offer");
 
-                var content = $@"
---- Please scroll down for the English version ---
-
-
-Liebe/r {contactInformation.senderName},
+                var germanText = $@"Liebe/r {contactInformation.senderName},
 
 vielen Dank für Ihre Anfrage! Diese wurde an das Testlabor weitergeleitet, der sich in Kürze bei Ihnen melden wird.
 
@@ -246,11 +200,8 @@ PIRAT stellt nur den Kontakt zwischen Anbietern und Suchenden her, alle weiteren
 Vielen Dank, dass Sie unser Angebot genutzt haben. Falls Sie noch Fragen zu PIRAT haben, melden Sie sich gerne jederzeit unter mail@pirat-tool.com.
 
 Beste Grüße,
-Ihr PIRAT-Team
-
----
-
-Dear {contactInformation.senderName},
+Ihr PIRAT-Team";
+                var englishText = $@"Dear {contactInformation.senderName},
 
 Thank you very much for your request! It was forwarded to the test laboratory, who will contact you soon.
 
@@ -260,20 +211,13 @@ Thank you for using our service. If you have any questions regarding PIRAT, plea
 
 
 Best regards,
-your PIRAT-Team
-
-
----
-
-pirat-tool.com
-mail@pirat-tool.com
-";
-                content = content.Trim();
+your PIRAT-Team";
+                var content = ConstructEmailText(region, germanText, englishText);
                 await SendMailAsync(contactInformation.senderEmail, subject, content);
             });
         }
 
-        public async Task SendNewOfferConfirmationMailAsync(string token, 
+        public async Task SendNewOfferConfirmationMailAsync(string region, string token, 
             string receiverMailAddress, string receiverMailUserName)
         {
 
@@ -281,62 +225,46 @@ mail@pirat-tool.com
             {
                 var piratHostServer = Environment.GetEnvironmentVariable("PIRAT_HOST");
 
-                var subject = "PIRAT: Ihr Bearbeitungslink / Your link for editing";
+                var subject = ConstructSubjectText(region, "Ihr Bearbeitungslink", "Your link for editing");
                 // TODO The link to the change page is not correct for localhost / local development.
-                var content = $@"
---- Please scroll down for the English version ---
-
-
-Liebe/r {receiverMailUserName},
+                var germanText = $@"Liebe/r {receiverMailUserName},
 
 vielen Dank, dass Sie sich entschieden haben, Laborressourcen und/oder personelle Unterstützung für den Kampf gegen Corona zur Verfügung zu stellen.
 
-Unter folgendem Link können Sie Ihr Angebot einsehen: {piratHostServer}/de/change/{token}. Wenn Sie es bearbeiten oder löschen möchten, kontaktieren Sie uns bitte direkt unter mail@pirat-tool.com.
+Unter folgendem Link können Sie Ihr Angebot einsehen und bearbeiten: {piratHostServer}/{region}/de/change/{token}.
 
 Sobald es Interessenten für einen Austausch gibt, werden diese sich direkt bei Ihnen melden.
 
 
 Beste Grüße,
-Ihr PIRAT-Team
-
-
----
-
-Dear {receiverMailUserName},
+Ihr PIRAT-Team";
+                var englishText = $@"Dear {receiverMailUserName},
 
 Thank you very much for providing lab resources and/or staff to support the fight against Corona.
 
-You can use the following link to see the details of your offer: {piratHostServer}/en/change/{token}. If you want to edit or delete it, please contact us directly at mail@pirat-tool.com.
+You can use the following link to see and edit the details of your offer: {piratHostServer}/{region}/en/change/{token}.
 
 As soon as someone is interested in your offer, you will be contacted directly.
 
 
 Best regards,
-your PIRAT-Team
-
-
----
-
-pirat-tool.com
-mail@pirat-tool.com
-";
-                content = content.Trim();
+your PIRAT-Team";
+                var content = ConstructEmailText(region, germanText, englishText);
                 await SendMailAsync(receiverMailAddress, subject, content);
             });
         }
 
-        public async Task SendTelephoneCallbackMailAsync(TelephoneCallbackRequest telephoneCallbackRequest)
+        public async Task SendTelephoneCallbackMailAsync(string region, TelephoneCallbackRequest telephoneCallbackRequest)
         {
             await Task.Run(async () =>
             {
-                var mailInternalReceiverMail = Environment.GetEnvironmentVariable("PIRAT_INTERNAL_RECEIVER_MAIL");
-
                 // Substring() to prevent too long subjects.
                 string subject = $"[Rückrufanfrage] " +
-                                 $"[Thema: {telephoneCallbackRequest.topic.Substring(0, Math.Min(telephoneCallbackRequest.topic.Length, 20))}] " +
+                                 $"[Region: {region}] [Thema: {telephoneCallbackRequest.topic.Substring(0, Math.Min(telephoneCallbackRequest.topic.Length, 20))}] " +
                                  $"von {telephoneCallbackRequest.name.Substring(0, Math.Min(telephoneCallbackRequest.name.Length, 30))}";
                 string content = $"Eine Rückrufanfrage:\n\nVon: {telephoneCallbackRequest.name}\n" +
                                  $"Datum: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}\n" +
+                                 $"Region: {region}\n" +
                                  $"Thema: {telephoneCallbackRequest.topic}\n" +
                                  $"Telefonnummer: {telephoneCallbackRequest.phone}\n" +
                                  $"Email: {telephoneCallbackRequest.email}\n" +
@@ -348,17 +276,14 @@ mail@pirat-tool.com
         }
 
 
-        public async Task SendRegionSubscriptionConformationMailAsync(RegionSubscription regionSubscription)
+        public async Task SendRegionSubscriptionConformationMailAsync(string region, RegionSubscription regionSubscription)
         {
             await Task.Run(async () =>
             {
-                var subject = "PIRAT: Danke für Ihr Interesse / Thank you for your interest";
+                var subject = ConstructSubjectText(region, "Danke für Ihr Interesse", 
+                    "Thank you for your interest");
 
-                var content = $@"
---- Please scroll down for the English version ---
-
-
-Liebe/r {regionSubscription.name},
+                var germanText = $@"Liebe/r {regionSubscription.name},
 
 vielen Dank für Ihr Interesse an PIRAT. Sie werden von nun an über neue Angebote in der Nähe von {regionSubscription.postalcode} benachrichtigt.
 
@@ -366,11 +291,8 @@ Falls Sie die Benachrichtigung beenden wollen oder noch Fragen zu PIRAT haben, m
 
 
 Beste Grüße,
-Ihr PIRAT-Team
-
----
-
-Dear {regionSubscription.name},
+Ihr PIRAT-Team";
+                var englishText = $@"Dear {regionSubscription.name},
 
 Thank you very much for your interest in PIRAT. You will now get notifications about new offers in the region {regionSubscription.postalcode}.
 
@@ -378,20 +300,13 @@ If you wish to cancel the subscription or have any questions regarding PIRAT, pl
 
 
 Best regards,
-your PIRAT-Team
-
-
----
-
-pirat-tool.com
-mail@pirat-tool.com
-";
-                content = content.Trim();
+your PIRAT-Team";
+                var content = ConstructEmailText(region, germanText, englishText);
                 await SendMailAsync(regionSubscription.email, subject, content);
             });
         }
 
-        public async Task SendNotificationAboutNewOffersAsync(RegionSubscription regionSubscription,
+        public async Task SendNotificationAboutNewOffersAsync(string region, RegionSubscription regionSubscription,
             ResourceCompilation resourceCompilation)
         {
             string offersDE = SummarizeResourcesToFormattedString(resourceCompilation, "de");
@@ -399,15 +314,11 @@ mail@pirat-tool.com
 
             await Task.Run(async () =>
             {
-                var subject = "PIRAT: Neue Angebote / New Offers";
+                var subject = ConstructSubjectText(region, "Neue Angebote", "New Offers");
 
-                var content = $@"
---- Please scroll down for the English version ---
+                var germanText = $@"Liebe/r {regionSubscription.name},
 
-
-Liebe/r {regionSubscription.name},
-
-wir haben neue Angebote für Sie auf PIRAT in der Nähe von {regionSubscription.postalcode}. Sie können sie unter https://pirat-tool.com/de/suchanfrage finden.
+wir haben neue Angebote für Sie auf PIRAT in der Nähe von {regionSubscription.postalcode}. Sie können sie unter https://pirat-tool.com/{region}/de/suchanfrage finden.
 
 {offersDE}
 
@@ -415,13 +326,10 @@ Falls Sie die Benachrichtigung beenden wollen oder noch Fragen zu PIRAT haben, m
 
 
 Beste Grüße,
-Ihr PIRAT-Team
+Ihr PIRAT-Team";
+                var englishText = $@"Dear {regionSubscription.name},
 
----
-
-Dear {regionSubscription.name},
-
-There are new offers on PIRAT for you in the region {regionSubscription.postalcode}. You can find them under https://pirat-tool.com/en/suchanfrage.
+There are new offers on PIRAT for you in the region {regionSubscription.postalcode}. You can find them under https://pirat-tool.com/{region}/en/suchanfrage.
 
 {offersEN}
 
@@ -429,15 +337,8 @@ If you wish to cancel the subscription or have any questions regarding PIRAT, pl
 
 
 Best regards,
-your PIRAT-Team
-
-
----
-
-pirat-tool.com
-mail@pirat-tool.com
-";
-                content = content.Trim();
+your PIRAT-Team";
+                var content = ConstructEmailText(region, germanText, englishText);
                 await SendMailAsync(regionSubscription.email, subject, content);
             });
         }
@@ -565,6 +466,37 @@ mail@pirat-tool.com
             }
 
             return newOffers.ToString();
+        }
+
+        /// <summary>
+        /// This function returns a text with both german and english if the region is "de", otherwise only the english text.
+        /// Furthermore, this function add "PIRAT: " at the beginning.
+        /// </summary>
+        private static string ConstructSubjectText(string region, string germanText, string englishText)
+        {
+            var text = "PIRAT: ";
+            if (region.Equals("de", StringComparison.Ordinal))
+            {
+                text += germanText + " / ";
+            }
+            text += englishText;
+            return text;
+        }
+
+        /// <summary>
+        /// This function returns a text with both german and english if the region is "de", otherwise only the english text.
+        /// Furthermore, this function adds a signature.
+        /// </summary>
+        private static string ConstructEmailText(string region, string germanText, string englishText)
+        {
+            var text = "";
+            if (region.Equals("de", StringComparison.Ordinal))
+            {
+                text += "--- Please scroll down for the English version ---\n\n\n" + germanText + "\n\n---\n\n";
+            }
+            text += englishText
+                    + $"\n\n\n---\n\nhttps://pirat-tool.com/{region}/\nmail@pirat-tool.com\n";
+            return text;
         }
     }
 
