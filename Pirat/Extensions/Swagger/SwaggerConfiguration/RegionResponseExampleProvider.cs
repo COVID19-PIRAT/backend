@@ -50,6 +50,7 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
             };
             var region = new RegionClientConfig
             {
+                CountryName = "Deutschland",
                 Languages = new Dictionary<string, Language>
                 {
                     ["de"] = lang_de,

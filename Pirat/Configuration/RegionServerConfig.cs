@@ -9,6 +9,9 @@ namespace Pirat.Configuration
 {
     public class RegionServerConfig
     {
+        [JsonProperty("countryName", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+        public string CountryName { get; set; }
+        
         [JsonProperty("languages", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Needed for parsing")]
         public List<string> Languages { get; set; }

@@ -1,5 +1,6 @@
 {
   "languages": [ "en" ],
+  "countryName": "Malaysia",
   "categories": {
     "device": [
       "PCR_THERMOCYCLER",

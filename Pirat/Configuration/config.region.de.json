@@ -1,5 +1,6 @@
 {
   "languages": [ "de", "en" ],
+  "countryName": "Deutschland",
   "categories": {
     "device": [
       "PCR_THERMOCYCLER",
