@@ -1,10 +1,12 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pirat.Exceptions;
 using Pirat.Extensions.Swagger.SwaggerConfiguration;
 using Pirat.Model;
 using Pirat.Other;
+using Pirat.Services;
 using Pirat.Services.Mail;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
@@ -20,12 +22,19 @@ namespace Pirat.Controllers
         private readonly IMailInputValidatorService _mailInputValidatorService;
 
         private readonly ISubscriptionService _subscriptionService;
+        
+        private readonly IConfigurationService _configurationService;
 
-        public SubscriptionController(IMailService mailService, IMailInputValidatorService mailInputValidatorService, ISubscriptionService subscriptionService)
+        public SubscriptionController(
+            IMailService mailService,
+            IMailInputValidatorService mailInputValidatorService, 
+            ISubscriptionService subscriptionService,
+            IConfigurationService configurationService)
         {
             _mailService = mailService;
             _mailInputValidatorService = mailInputValidatorService;
             _subscriptionService = subscriptionService;
+            _configurationService = configurationService;
         }
 
         [HttpPost]
@@ -36,14 +45,15 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(EmptyResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
-        public IActionResult Post([FromBody] RegionSubscription regionsubscription)
+        public IActionResult Post([FromQuery] [Required] string region, [FromBody] RegionSubscription regionsubscription)
         {
             NullCheck.ThrowIfNull<RegionSubscription>(regionsubscription);
 
             try
             {
+                _configurationService.ThrowIfUnknownRegion(region);
                 _mailInputValidatorService.validateMail(regionsubscription.email);
-                this._subscriptionService.SubscribeRegionAsync(regionsubscription);
+                this._subscriptionService.SubscribeRegionAsync(regionsubscription, region);
                 this._mailService.SendRegionSubscriptionConformationMailAsync(regionsubscription);
             }
             catch (ArgumentException e)

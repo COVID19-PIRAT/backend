@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Pirat.Model.Api.Resource;
 
 namespace Pirat.Services.Resource
@@ -9,7 +9,7 @@ namespace Pirat.Services.Resource
     public interface IResourceStockUpdateService
     {
 
-        public Task<string> InsertAsync(Offer offer);
+        public Task<string> InsertAsync(Offer offer, string region);
         
         public Task DeleteAsync(string link);
 

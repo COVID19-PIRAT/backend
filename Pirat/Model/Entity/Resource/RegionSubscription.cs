@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Pirat.DatabaseContext;
+using Pirat.Helper;
 using Pirat.Model.Entity.Resource.Common;
 using Pirat.Other;
 
@@ -32,6 +33,9 @@ namespace Pirat.Model
         public decimal longitude { get; set; }
 
         public bool active { get; set; }
+        
+        [SwaggerExclude]
+        public string region { get; set; }
 
         public async Task<IInsertable> InsertAsync(ResourceContext context)
         {

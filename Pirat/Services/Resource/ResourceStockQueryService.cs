@@ -34,7 +34,7 @@ namespace Pirat.Services.Resource
             _queryHelper = new QueryHelper(context);
 
         }
-        public async IAsyncEnumerable<OfferResource<Consumable>> QueryOffersAsync(Consumable con)
+        public async IAsyncEnumerable<OfferResource<Consumable>> QueryOffersAsync(Consumable con, string region)
         {
             NullCheck.ThrowIfNull<Consumable>(con);
 
@@ -48,7 +48,7 @@ namespace Pirat.Services.Resource
                         join c in _context.consumable on o.id equals c.offer_id
                         join ap in _context.address on o.address_id equals ap.id
                         join ac in _context.address on c.address_id equals ac.id
-                        where consumable.category == c.category && !c.is_deleted
+                        where consumable.category == c.category && !c.is_deleted && o.region == region
                         select new { o, c, ap, ac };
 
             if (!string.IsNullOrEmpty(consumable.name))
@@ -106,7 +106,7 @@ namespace Pirat.Services.Resource
             }
         }
 
-        public async IAsyncEnumerable<OfferResource<Device>> QueryOffersAsync(Device dev)
+        public async IAsyncEnumerable<OfferResource<Device>> QueryOffersAsync(Device dev, string region)
         {
             NullCheck.ThrowIfNull<Device>(dev);
             var device = new DeviceEntity().Build(dev);
@@ -119,7 +119,7 @@ namespace Pirat.Services.Resource
                         join d in _context.device on o.id equals d.offer_id
                         join ap in _context.address on o.address_id equals ap.id
                         join ac in _context.address on d.address_id equals ac.id
-                        where device.category == d.category && !d.is_deleted
+                        where device.category == d.category && !d.is_deleted && o.region == region
                         select new { o, d, ap, ac };
 
             if (!string.IsNullOrEmpty(device.name))
@@ -176,7 +176,7 @@ namespace Pirat.Services.Resource
             }
         }
 
-        public async IAsyncEnumerable<OfferResource<Personal>> QueryOffersAsync(Manpower manpower)
+        public async IAsyncEnumerable<OfferResource<Personal>> QueryOffersAsync(Manpower manpower, string region)
         {
             NullCheck.ThrowIfNull<Manpower>(manpower);
 
@@ -189,7 +189,7 @@ namespace Pirat.Services.Resource
                         join personal in _context.personal on o.id equals personal.offer_id
                         join ap in _context.address on o.address_id equals ap.id
                         join ac in _context.address on personal.address_id equals ac.id
-                        where !personal.is_deleted
+                        where !personal.is_deleted && o.region == region
                         select new { o, personal, ap, ac };
 
             if (!string.IsNullOrEmpty(manpower.institution))

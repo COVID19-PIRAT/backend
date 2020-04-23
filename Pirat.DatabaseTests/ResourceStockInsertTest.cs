@@ -74,7 +74,7 @@ namespace Pirat.DatabaseTests
         {
             //Insert the offer
             var offer = _captainHookGenerator.generateOffer();
-            var token = await _resourceStockUpdateService.InsertAsync(offer);
+            var token = await _resourceStockUpdateService.InsertAsync(offer, "de");
             Assert.True(token.Length == 30);
 
             //Query the link
@@ -85,7 +85,7 @@ namespace Pirat.DatabaseTests
 
             //Get device
             var queryDevice = _captainHookGenerator.GenerateDevice();
-            var resultDevices = await _resourceStockQueryService.QueryOffersAsync(queryDevice)
+            var resultDevices = await _resourceStockQueryService.QueryOffersAsync(queryDevice, "de")
                 .ToListAsync();
             Assert.NotNull(resultDevices);
             Assert.NotEmpty(resultDevices);
@@ -106,7 +106,7 @@ namespace Pirat.DatabaseTests
 
             //Get consumable
             var queryConsumable = _captainHookGenerator.GenerateConsumable();
-            var resultConsumables = await _resourceStockQueryService.QueryOffersAsync(queryConsumable)
+            var resultConsumables = await _resourceStockQueryService.QueryOffersAsync(queryConsumable, "de")
                 .ToListAsync();
             Assert.NotNull(resultConsumables);
             Assert.NotEmpty(resultDevices);
@@ -118,7 +118,7 @@ namespace Pirat.DatabaseTests
 
             //Get personal
             var manpowerQuery = _captainHookGenerator.GenerateManpower();
-            var resultPersonal = await _resourceStockQueryService.QueryOffersAsync(manpowerQuery)
+            var resultPersonal = await _resourceStockQueryService.QueryOffersAsync(manpowerQuery, "de")
                 .ToListAsync();
             Assert.NotNull(resultPersonal);
             Assert.NotEmpty(resultPersonal);
@@ -138,11 +138,11 @@ namespace Pirat.DatabaseTests
         public async Task InsertPrivateOffer_QueryNoProvider()
         {
             var offer = _shyPirateGenerator.generateOffer();
-            var token = await _resourceStockUpdateService.InsertAsync(offer);
+            var token = await _resourceStockUpdateService.InsertAsync(offer, "de");
 
             //Get device
             var queryDevice = _shyPirateGenerator.GenerateDevice();
-            var resultDevices = await _resourceStockQueryService.QueryOffersAsync(queryDevice)
+            var resultDevices = await _resourceStockQueryService.QueryOffersAsync(queryDevice, "de")
                 .ToListAsync();
             Assert.NotNull(resultDevices);
             Assert.NotEmpty(resultDevices);

@@ -24,10 +24,10 @@ namespace Pirat.Services.Tests
 
         [Theory]
         [InlineData("de")]
-        public async Task GetConfigForRegionAsyncTestAsync_validRegion(
+        public void GetConfigForRegionTest_validRegion(
             string regionCode)
         {
-            var region = await this.service.GetConfigForRegionAsync(regionCode);
+            var region = this.service.GetConfigForRegion(regionCode);
             Assert.NotNull(region);
             Assert.NotEmpty(region.Languages);
             Assert.NotEmpty(region.Categories.Consumable);
@@ -36,29 +36,29 @@ namespace Pirat.Services.Tests
 
         [Theory]
         [InlineData("xxx")]
-        public async Task GetConfigForRegionAsyncTestAsync_inValidRegion(
+        public void GetConfigForRegionTest_inValidRegion(
             string regionCode)
         {
-            var region = await this.service.GetConfigForRegionAsync(regionCode);
+            var region = this.service.GetConfigForRegion(regionCode);
             Assert.Null(region);
         }
 
         [Theory]
         [InlineData("de")]
-        public async Task GetLanguagesInRegionAsyncTest_validRegion(
+        public void GetLanguagesInRegionTest_validRegion(
             string regionCode)
         {
-            var langs = await this.service.GetLanguagesInRegionAsync(regionCode);
+            var langs = this.service.GetLanguagesInRegion(regionCode);
             Assert.NotNull(langs);
             Assert.NotEmpty(langs);
         }
 
         [Theory]
         [InlineData("xxx")]
-        public async Task GetLanguagesInRegionAsyncTest_inValidRegion(
+        public void GetLanguagesInRegionTest_inValidRegion(
             string regionCode)
         {
-            var langs = await this.service.GetLanguagesInRegionAsync(regionCode);
+            var langs = this.service.GetLanguagesInRegion(regionCode);
             Assert.Null(langs);
         }
 

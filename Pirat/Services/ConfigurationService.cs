@@ -1,13 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Nito.AsyncEx;
 using Pirat.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Pirat.Services
 {
@@ -29,14 +27,10 @@ namespace Pirat.Services
             );
 
             // reading all language configs
-            this.Languages = new Lazy<IReadOnlyDictionary<string, AsyncLazy<Language>>>(
-                () => GetData<Language>("config.lang.*.json")
-            );
+            this.Languages = GetData<Language>("config.lang.*.json");
 
             // reading all region configs
-            this.Regions = new Lazy<IReadOnlyDictionary<string, AsyncLazy<RegionServerConfig>>>(
-                () => GetData<RegionServerConfig>("config.region.*.json")
-            );
+            this.Regions = GetData<RegionServerConfig>("config.region.*.json");
 
             _logger.LogInformation(
                 "{0}: ends initialization",
@@ -44,112 +38,78 @@ namespace Pirat.Services
             );
         }
 
-        public Lazy<IReadOnlyDictionary<string, AsyncLazy<Language>>> Languages { get; private set; }
+        public IReadOnlyDictionary<string, Language> Languages { get; private set; }
 
-        public Lazy<IReadOnlyDictionary<string, AsyncLazy<RegionServerConfig>>> Regions { get; private set; }
+        public IReadOnlyDictionary<string, RegionServerConfig> Regions { get; private set; }
 
         private static string ConfigDataDirPath
                             => Environment.GetEnvironmentVariable("PIRAT_CONFIG_DIR") ?? 
                                Path.Combine(Directory.GetCurrentDirectory(), "Configuration");
 
-        public async Task<RegionClientConfig> GetConfigForRegionAsync(string regionCode)
+        public RegionClientConfig GetConfigForRegion(string regionCode)
         {
-            try
+            if (this.Regions.ContainsKey(regionCode))
             {
-                var regions = this.Regions.Value;
-                var languages = this.Languages.Value;
+                var region = this.Regions[regionCode];
 
-                if (regions.ContainsKey(regionCode))
+                var langDic = new Dictionary<string, Language>(region.Languages.Count);
+                foreach (var langCode in region.Languages)
                 {
-                    var region = await regions[regionCode];
-
-                    var langDic = new Dictionary<string, Language>(region.Languages.Count);
-                    foreach (var langCode in region.Languages)
-                    {
-                        var language = await languages[langCode];
-                        langDic[langCode] = language;
-                    }
-
-                    return new RegionClientConfig()
-                    {
-                        Categories = region.Categories,
-                        Languages = langDic
-                    };
+                    var language = this.Languages[langCode];
+                    langDic[langCode] = language;
                 }
-                else
+
+                return new RegionClientConfig()
                 {
-                    using var scope = _logger.BeginScope("Unknown region-code");
-                    _logger.LogWarning(
-                        "Tried to access configuration for invalid region-code: {0}",
-                        regionCode
-                    );
-
-                    return null;
-                }
+                    Categories = region.Categories,
+                    Languages = langDic
+                };
             }
-            catch (Exception ex)
+            else
             {
-                using var scope = _logger.BeginScope($"Exception: {nameof(GetLanguagesInRegionAsync)}");
-                _logger.LogError(
-                    ex,
-                    "Error while collecting determining the configuration: {0}",
+                using var scope = _logger.BeginScope("Unknown region-code");
+                _logger.LogWarning(
+                    "Tried to access configuration for invalid region-code: {0}",
                     regionCode
                 );
-                throw;
+
+                return null;
             }
         }
 
-        public async Task<List<string>> GetLanguagesInRegionAsync(string regionCode)
+        public List<string> GetLanguagesInRegion(string regionCode)
         {
-            try
+        var regions = this.Regions;
+            if (regions.ContainsKey(regionCode))
             {
-                var regions = this.Regions.Value;
-                if (regions.ContainsKey(regionCode))
-                {
-                    return (await regions[regionCode]).Languages;
-                }
-                else
-                {
-                    using var scope = _logger.BeginScope("Unknown region-code");
-                    _logger.LogWarning(
-                        "Tried to access languages for invalid region-code: {0}",
-                        regionCode
-                    );
-
-                    return null;
-                }
+                return (regions[regionCode]).Languages;
             }
-            catch (Exception ex)
+            else
             {
-                using var scope = _logger.BeginScope($"Exception: {nameof(GetLanguagesInRegionAsync)}");
-                _logger.LogError(
-                    ex,
-                    "Error while collecting languages: {0}",
+                using var scope = _logger.BeginScope("Unknown region-code");
+                _logger.LogWarning(
+                    "Tried to access languages for invalid region-code: {0}",
                     regionCode
                 );
-                throw;
+
+                return null;
             }
         }
 
         public List<string> GetRegionCodes()
         {
-            try
+            return this.Regions.Keys.ToList();
+        }
+
+        public void ThrowIfUnknownRegion(string regionCode)
+        {
+            if (!GetRegionCodes().Contains(regionCode))
             {
-                var regions = this.Regions.Value;
-                return regions.Keys.ToList();
-            }
-            catch (Exception ex)
-            {
-                using var scope = _logger.BeginScope($"Exception: {nameof(GetRegionCodes)}");
-                _logger.LogError(
-                    ex,
-                    "Unexpected error while collecting region-codes"
-                );
-                throw;
+                throw new ArgumentException($"Unknown region code: {regionCode}");
             }
         }
 
-        private static IEnumerable<(string path, string code)> GetAllPathCodeTupels(string filter)
+        private static IEnumerable<(string path, string code)> GetAllPathCodeTuples(string filter)
         {
             var dataDir = ConfigDataDirPath;
             foreach (var path in Directory.GetFiles(dataDir, filter))
@@ -160,18 +120,15 @@ namespace Pirat.Services
             }
         }
 
-        private IReadOnlyDictionary<string, AsyncLazy<T>> GetData<T>(string filter)
+        private IReadOnlyDictionary<string, T> GetData<T>(string filter)
         {
-            var builder = ImmutableDictionary.CreateBuilder<string, AsyncLazy<T>>();
+            ImmutableDictionary<string, T>.Builder builder = ImmutableDictionary.CreateBuilder<string, T>();
 
-            foreach ((var path, var code) in GetAllPathCodeTupels(filter))
+            foreach (var (path, code) in GetAllPathCodeTuples(filter))
             {
-                var lazy = new AsyncLazy<T>(async () =>
-                {
-                    var content = await File.ReadAllTextAsync(path);
-                    return JsonConvert.DeserializeObject<T>(content);
-                });
-                builder.Add(code, lazy);
+                var content = File.ReadAllText(path);
+                T dataEntry = JsonConvert.DeserializeObject<T>(content);
+                builder.Add(code, dataEntry);
             }
 
             return builder.ToImmutable();
