@@ -23,5 +23,28 @@
     "PIPETTE": "Pipette",
     "MULTICHANNEL_PIPETTE": "Multichannel Pipette",
     "SONSTIGES": "Others"
+  },
+  "personnelArea": {
+    "CHEMISTRY": "Chemistry",
+    "BIOCHEMISTRY": "Biochemistry",
+    "GENETICS": "Genetics",
+    "CELL_BIOLOGY": "Cell biology",
+    "BIOLOGY": "Biology",
+    "VIROLOGY": "Virology",
+    "MICRO_BIOLOGY": "Microbiology",
+    "MOLECULAR_BIOLOGY": "Molecular biology",
+    "PHARMACOLOGY": "Pharmacology",
+    "MEDICINE": "Medicine",
+    "OTHERS": "Others"
+  },
+  "personnelQualification": {
+    "TA": "TA",
+    "LAB_ASSISTANT": "Lab assistant",
+    "PHARMACIST": "Pharmacist",
+    "POSTDOC": "Postdoc",
+    "PHD_STUDENT": "PhD Student",
+    "MSC_STUDENT": "MSc Student",
+    "BSC_STUDENT": "BSc Student",
+    "SONSTIGES": "Others"
   }
 }

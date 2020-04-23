@@ -25,6 +25,27 @@
       "MICROCENTRIFUGE_TUBE",
       "CENTRIFUGE_TUBE",
       "SONSTIGES"
+    ],
+    "personnelArea": [
+      "CHEMISTRY",
+      "BIOCHEMISTRY",
+      "GENETICS",
+      "CELL_BIOLOGY",
+      "BIOLOGY",
+      "VIROLOGY",
+      "MICRO_BIOLOGY",
+      "MOLECULAR_BIOLOGY",
+      "PHARMACOLOGY",
+      "MEDICINE",
+      "OTHERS"
+    ],
+    "personnelQualification": [
+      "TA",
+      "LAB_ASSISTANT",
+      "POSTDOC",
+      "PHD_STUDENT",
+      "PHARMACIST",
+      "SONSTIGES"
     ]
   }
 }

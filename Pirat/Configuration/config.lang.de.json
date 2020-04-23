@@ -17,5 +17,27 @@
     "VORTEXER": "Vortexer",
     "PIPETTE": "Pipette",
     "SONSTIGES": "Sonstiges"
+  },
+  "personnelArea": {
+    "CHEMISTRY": "Chemie",
+    "BIOCHEMISTRY": "Biochemie",
+    "GENETICS": "Genetik",
+    "CELL_BIOLOGY": "Zellbiologie",
+    "BIOLOGY": "Biologie",
+    "VIROLOGY": "Virologie",
+    "MICRO_BIOLOGY": "Mikrobiologie",
+    "MOLECULAR_BIOLOGY": "Molekularbiologie",
+    "PHARMACOLOGY": "Pharmakologie",
+    "MEDICINE": "Medizin",
+    "OTHERS": "Sonstiges"
+  },
+  "personnelQualification": {
+    "TA": "TA",
+    "LAB_ASSISTANT": "Laborassistent",
+    "POSTDOC": "Postdoc",
+    "PHD_STUDENT": "PhD-Student",
+    "MSC_STUDENT": "MSc Student",
+    "BSC_STUDENT": "BSc Student",
+    "SONSTIGES": "Sonstiges"
   }
 }
