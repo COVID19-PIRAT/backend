@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -396,7 +396,7 @@ namespace Pirat.Services.Resource
         {
             NullCheck.ThrowIfNull<string>(token);
 
-            // Get consumable from database
+            // Get device from database
             var query = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join d in _context.device on o.id equals d.offer_id
@@ -407,7 +407,7 @@ namespace Pirat.Services.Resource
 
             if (foundDevices.Count == 0)
             {
-                throw new DataNotFoundException(FailureCodes.NotFoundConsumable);
+                throw new DataNotFoundException(FailureCodes.NotFoundDevice);
             }
 
             DeviceEntity device = foundDevices[0];
@@ -505,13 +505,22 @@ namespace Pirat.Services.Resource
             {
                 throw new ArgumentException(FailureCodes.InvalidReason);
             }
+            
+            // Get consumable from database
+            var query = 
+                from o in _context.offer as IQueryable<OfferEntity>
+                join c in _context.consumable on o.id equals c.offer_id
+                where token == o.token && c.id == consumableId
+                select c;
 
-            ConsumableEntity consumableEntity = (ConsumableEntity) await new ConsumableEntity().FindAsync(_context, consumableId);
+            var foundConsumables = await query.ToListAsync();
 
-            if (consumableEntity is null)
+            if (foundConsumables.Count == 0)
             {
                 throw new DataNotFoundException(FailureCodes.NotFoundConsumable);
             }
+
+            ConsumableEntity consumableEntity = foundConsumables[0];
 
             AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, consumableEntity.address_id);
 
@@ -549,12 +558,21 @@ namespace Pirat.Services.Resource
                 throw new ArgumentException(FailureCodes.InvalidReason);
             }
 
-            DeviceEntity deviceEntity = (DeviceEntity) await new DeviceEntity().FindAsync(_context, deviceId);
+            // Get device from database
+            var query = 
+                from o in _context.offer as IQueryable<OfferEntity>
+                join d in _context.device on o.id equals d.offer_id
+                where token == o.token && d.id == deviceId
+                select d;
 
-            if (deviceEntity is null)
+            var foundDevices = await query.ToListAsync();
+
+            if (foundDevices.Count == 0)
             {
-                throw new DataNotFoundException(FailureCodes.NotFoundDevice);
+                throw new DataNotFoundException(FailureCodes.NotFoundConsumable);
             }
+
+            DeviceEntity deviceEntity = foundDevices[0];
 
             AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, deviceEntity.address_id);
             
@@ -591,12 +609,21 @@ namespace Pirat.Services.Resource
                 throw new ArgumentException(FailureCodes.InvalidReason);
             }
 
-            PersonalEntity personalEntity = (PersonalEntity)await new PersonalEntity().FindAsync(_context, personalId);
+            // Get personal from database
+            var query = 
+                from o in _context.offer as IQueryable<OfferEntity>
+                join p in _context.personal on o.id equals p.offer_id
+                where token == o.token && p.id == personalId
+                select p;
 
-            if (personalEntity is null)
+            var foundPersonals = await query.ToListAsync();
+
+            if (foundPersonals.Count == 0)
             {
                 throw new DataNotFoundException(FailureCodes.NotFoundPersonal);
             }
+
+            PersonalEntity personalEntity = foundPersonals[0];
 
             AddressEntity addressEntity = (AddressEntity)await new AddressEntity().FindAsync(_context, personalEntity.address_id);
 
