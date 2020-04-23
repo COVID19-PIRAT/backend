@@ -68,6 +68,8 @@ namespace Pirat.Controllers
             _configurationService = configurationService;
 
             _adminKey = Environment.GetEnvironmentVariable("PIRAT_ADMIN_KEY");
+            _languageDE = configurationService.GetConfigForRegion("de").Languages["de"];
+            _languageEN = configurationService.GetConfigForRegion("de").Languages["en"];
         }
 
         /// <summary>
@@ -214,14 +216,6 @@ namespace Pirat.Controllers
                     return NotFound(FailureCodes.NotFoundOffer);
                 }
 
-                if (_languageDE == null)
-                {
-                    // TODO Why is this async?! Why is the configuration service not caching the configs??
-                    // Because it is async, I cannot run it in the constructor...
-                    _languageDE = (await _configurationService.GetConfigForRegionAsync("de")).Languages["de"];
-                    _languageEN = (await _configurationService.GetConfigForRegionAsync("de")).Languages["en"];
-                }
-
                 var resourceNameDE = _languageDE.Device[device.category];
                 var resourceNameEN = _languageEN.Device[device.category];
 
@@ -275,14 +269,6 @@ namespace Pirat.Controllers
                 if (demand is null)
                 {
                     return NotFound(FailureCodes.NotFoundOffer);
-                }
-
-                if (_languageDE == null)
-                {
-                    // TODO Why is this async?! Why is the configuration service not caching the configs??
-                    // Because it is async, I cannot run it in the constructor...
-                    _languageDE = (await _configurationService.GetConfigForRegionAsync("de")).Languages["de"];
-                    _languageEN = (await _configurationService.GetConfigForRegionAsync("de")).Languages["en"];
                 }
 
                 var resourceNameDE = _languageDE.Consumable[consumable.category];

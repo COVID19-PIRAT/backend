@@ -5,6 +5,7 @@ using Pirat.Exceptions;
 using Pirat.Model;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Pirat.Codes;
@@ -21,12 +22,10 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace Pirat.Controllers
 {
-
     [ApiController]
     [Route("/resources")]
     public class ResourceController : ControllerBase
     {
-
         private readonly ILogger<ResourceController> _logger;
 
         private readonly IResourceStockQueryService _resourceStockQueryService;
@@ -49,7 +48,7 @@ namespace Pirat.Controllers
             IMailService mailService,
             IMailInputValidatorService mailInputValidatorService,
             IReCaptchaService reCaptchaService
-            )
+        )
         {
             _logger = logger;
             _resourceStockQueryService = resourceStockQueryService;
@@ -59,7 +58,7 @@ namespace Pirat.Controllers
             _mailInputValidatorService = mailInputValidatorService;
             _reCaptchaService = reCaptchaService;
         }
-        
+
         //***********GET REQUESTS
 
         /// <summary>
@@ -77,7 +76,8 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OfferConsumableResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> GetAsync([FromQuery] Consumable consumable, [FromQuery] Address address)
+        public async Task<IActionResult> GetAsync([FromQuery] [Required] string region,
+            [FromQuery] Consumable consumable, [FromQuery] Address address)
         {
             NullCheck.ThrowIfNull<Consumable>(consumable);
             NullCheck.ThrowIfNull<Address>(address);
@@ -169,7 +169,6 @@ namespace Pirat.Controllers
             {
                 return BadRequest(e.Message);
             }
-           
         }
 
         /// <summary>
@@ -265,7 +264,8 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
         [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> ConsumableAnonymousContactAsync([FromBody] ContactInformationDemand contactInformationDemand, int id)
+        public async Task<IActionResult> ConsumableAnonymousContactAsync([FromBody] ContactInformationDemand contactInformationDemand,
+            int id)
         {
             NullCheck.ThrowIfNull<ContactInformationDemand>(contactInformationDemand);
 
@@ -807,7 +807,5 @@ namespace Pirat.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, e);
             }
         }
-
-
     }
 }

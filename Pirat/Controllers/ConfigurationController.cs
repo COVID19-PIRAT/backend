@@ -50,8 +50,7 @@ namespace Pirat.Controllers
                 return BadRequest(FailureCodes.InvalidRegionCode);
             }
 
-            var region = await _configurationManager
-                .GetConfigForRegionAsync(regionCode);
+            var region = _configurationManager.GetConfigForRegion(regionCode);
 
             if (region != null)
             {
@@ -88,8 +87,7 @@ namespace Pirat.Controllers
                 return BadRequest(FailureCodes.InvalidRegionCode);
             }
 
-            var languages = await _configurationManager
-                .GetLanguagesInRegionAsync(regionCode);
+            var languages = _configurationManager.GetLanguagesInRegion(regionCode);
 
             if (languages != null)
             {

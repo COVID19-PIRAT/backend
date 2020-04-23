@@ -15,7 +15,7 @@ namespace Pirat.Services
         /// for which the configuration should be fetched
         /// </param>
         /// <returns>the configuration for the given region-code</returns>
-        Task<RegionClientConfig> GetConfigForRegionAsync(string regionCode);
+        RegionClientConfig GetConfigForRegion(string regionCode);
 
         /// <summary>
         /// Gets a list of all language codes that are supported for the given
@@ -29,7 +29,7 @@ namespace Pirat.Services
         /// A list of all languages for the given region if the region-code is
         /// recognized, null otherwise
         /// </returns>
-        Task<List<string>> GetLanguagesInRegionAsync(string regionCode);
+        List<string> GetLanguagesInRegion(string regionCode);
 
         /// <summary>
         /// Gets a List of the code for all currently supported regions.
