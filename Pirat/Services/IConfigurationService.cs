@@ -39,5 +39,10 @@ namespace Pirat.Services
         /// </returns>
         List<string> GetRegionCodes();
 
+        /// <summary>
+        /// This function throws an ArgumentException if the region-code is not recognized.
+        /// </summary>
+        /// <param name="regionCode"></param>
+        void ThrowIfUnknownRegion(string regionCode);
     }
 }

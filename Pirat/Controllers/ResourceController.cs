@@ -13,6 +13,7 @@ using Pirat.Extensions.Swagger.SwaggerConfiguration;
 using Pirat.Model.Api.Resource;
 using Pirat.Model.Entity.Resource.Stock;
 using Pirat.Other;
+using Pirat.Services;
 using Pirat.Services.Mail;
 using Pirat.Services.Middleware;
 using Pirat.Services.Resource;
@@ -40,6 +41,8 @@ namespace Pirat.Controllers
 
         private readonly IReCaptchaService _reCaptchaService;
 
+        private readonly IConfigurationService _configurationService;
+
         public ResourceController(
             ILogger<ResourceController> logger,
             IResourceStockQueryService resourceStockQueryService,
@@ -47,7 +50,8 @@ namespace Pirat.Controllers
             IResourceStockInputValidatorService resourceStockInputValidatorService,
             IMailService mailService,
             IMailInputValidatorService mailInputValidatorService,
-            IReCaptchaService reCaptchaService
+            IReCaptchaService reCaptchaService,
+            IConfigurationService configurationService
         )
         {
             _logger = logger;
@@ -57,6 +61,7 @@ namespace Pirat.Controllers
             _mailService = mailService;
             _mailInputValidatorService = mailInputValidatorService;
             _reCaptchaService = reCaptchaService;
+            _configurationService = configurationService;
         }
 
         //***********GET REQUESTS
@@ -84,9 +89,10 @@ namespace Pirat.Controllers
 
             try
             {
+                _configurationService.ThrowIfUnknownRegion(region);
                 consumable.address = address;
                 _resourceStockInputValidatorService.ValidateForStockQuery(consumable);
-                return Ok(await _resourceStockQueryService.QueryOffersAsync(consumable).ToListAsync());
+                return Ok(await _resourceStockQueryService.QueryOffersAsync(consumable, region).ToListAsync());
             }
             catch (ArgumentException e)
             {
@@ -114,16 +120,18 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OfferDeviceResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> GetAsync([FromQuery] Device device, [FromQuery] Address address)
+        public async Task<IActionResult> GetAsync([FromQuery] [Required] string region,
+            [FromQuery] Device device, [FromQuery] Address address)
         {
             NullCheck.ThrowIfNull<Device>(device);
             NullCheck.ThrowIfNull<Address>(address);
 
             try
             {
+                _configurationService.ThrowIfUnknownRegion(region);
                 device.address = address;
                 _resourceStockInputValidatorService.ValidateForStockQuery(device);
-                return Ok(await _resourceStockQueryService.QueryOffersAsync(device).ToListAsync());
+                return Ok(await _resourceStockQueryService.QueryOffersAsync(device, region).ToListAsync());
             }
             catch (ArgumentException e)
             {
@@ -150,16 +158,18 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OfferPersonalResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> GetAsync([FromQuery] Manpower manpower, [FromQuery] Address address)
+        public async Task<IActionResult> GetAsync([FromQuery] [Required] string region,
+            [FromQuery] Manpower manpower, [FromQuery] Address address)
         {
             NullCheck.ThrowIfNull<Manpower>(manpower);
             NullCheck.ThrowIfNull<Address>(address);
 
             try
             {
+                _configurationService.ThrowIfUnknownRegion(region);
                 manpower.address = address;
                 _resourceStockInputValidatorService.ValidateForStockQuery(manpower);
-                return Ok(await _resourceStockQueryService.QueryOffersAsync(manpower).ToListAsync());
+                return Ok(await _resourceStockQueryService.QueryOffersAsync(manpower, region).ToListAsync());
             }
             catch (ArgumentException e)
             {
@@ -223,15 +233,16 @@ namespace Pirat.Controllers
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OfferResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ErrorCodeResponseExample))]
-        public async Task<IActionResult> PostAsync([FromBody] Offer offer)
+        public async Task<IActionResult> PostAsync([FromQuery] [Required] string region, [FromBody] Offer offer)
         {
             NullCheck.ThrowIfNull<Offer>(offer);
 
             try
             {
+                _configurationService.ThrowIfUnknownRegion(region);
                 _mailInputValidatorService.validateMail(offer.provider.mail);
                 _resourceStockInputValidatorService.ValidateForStockInsertion(offer);
-                var token = await _resourceStockUpdateService.InsertAsync(offer);
+                var token = await _resourceStockUpdateService.InsertAsync(offer, region);
                 await _mailService.SendNewOfferConfirmationMailAsync(token, offer.provider.mail, offer.provider.name);
                 return Ok(token);
             }

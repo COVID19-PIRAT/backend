@@ -7,11 +7,11 @@ namespace Pirat.Services.Resource
 {
     public interface IResourceStockQueryService
     {
-        IAsyncEnumerable<OfferResource<Consumable>> QueryOffersAsync(Consumable consumable);
+        IAsyncEnumerable<OfferResource<Consumable>> QueryOffersAsync(Consumable consumable, string region);
 
-        IAsyncEnumerable<OfferResource<Device>> QueryOffersAsync(Device device);
+        IAsyncEnumerable<OfferResource<Device>> QueryOffersAsync(Device device, string region);
 
-        IAsyncEnumerable<OfferResource<Personal>> QueryOffersAsync(Manpower manpower);
+        IAsyncEnumerable<OfferResource<Personal>> QueryOffersAsync(Manpower manpower, string region);
 
         /// <summary>
         /// Finds an entity that implements <see cref="IFindable"/> by the given ID. Calling this method during runtime, findable is always an entity object implementing

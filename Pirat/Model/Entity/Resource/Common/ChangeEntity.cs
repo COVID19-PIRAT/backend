@@ -24,6 +24,8 @@ namespace Pirat.Model.Entity.Resource.Common
         public string reason { get; set; } = string.Empty;
         
         public DateTime timestamp { get; set; } = DateTime.Now;
+        
+        public string region { get; set; }
 
         public async Task<IInsertable> InsertAsync(ResourceContext context)
         {

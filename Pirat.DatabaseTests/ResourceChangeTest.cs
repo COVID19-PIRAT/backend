@@ -58,7 +58,7 @@ namespace Pirat.DatabaseTests
         public async Task InitializeAsync()
         {
             var offer = _captainHookGenerator.generateOffer();
-            var token = await _resourceStockUpdateService.InsertAsync(offer);
+            var token = await _resourceStockUpdateService.InsertAsync(offer, "de");
             offer = await _resourceStockQueryService.QueryLinkAsync(token);
             (_offer, _token) = (offer, token);
         }
@@ -186,7 +186,7 @@ namespace Pirat.DatabaseTests
                     country = "Deutschland"
                 }
             };
-            var response = await _resourceStockQueryService.QueryOffersAsync(queryConsumable)
+            var response = await _resourceStockQueryService.QueryOffersAsync(queryConsumable, "de")
                 .ToListAsync();
 
             //Assert
@@ -217,7 +217,7 @@ namespace Pirat.DatabaseTests
 
             //Generate the consumable for the query that should still be findable 
             Consumable queryConsumable = _captainHookGenerator.GenerateConsumable();
-            var response = await _resourceStockQueryService.QueryOffersAsync(queryConsumable)
+            var response = await _resourceStockQueryService.QueryOffersAsync(queryConsumable, "de")
                 .ToListAsync();
 
             //Assert
@@ -257,7 +257,7 @@ namespace Pirat.DatabaseTests
                 },
                 category = device.category
             };
-            var response = await _resourceStockQueryService.QueryOffersAsync(queryDevice)
+            var response = await _resourceStockQueryService.QueryOffersAsync(queryDevice, "de")
                 .ToListAsync();
 
             //Assert
@@ -288,7 +288,7 @@ namespace Pirat.DatabaseTests
 
             //The original device should still be findable
             Device queryDevice = _captainHookGenerator.GenerateDevice();
-            var response = await _resourceStockQueryService.QueryOffersAsync(queryDevice)
+            var response = await _resourceStockQueryService.QueryOffersAsync(queryDevice, "de")
                 .ToListAsync();
 
             //Assert
@@ -332,7 +332,7 @@ namespace Pirat.DatabaseTests
                     country = "Deutschland",
                 }
             };
-            var response = await _resourceStockQueryService.QueryOffersAsync(queryManpower)
+            var response = await _resourceStockQueryService.QueryOffersAsync(queryManpower, "de")
                 .ToListAsync();
 
             //Assert
@@ -361,7 +361,7 @@ namespace Pirat.DatabaseTests
 
             //The personal in the original manpower should still be findable
             Manpower queryManpower = _captainHookGenerator.GenerateManpower();
-            var response = await _resourceStockQueryService.QueryOffersAsync(queryManpower)
+            var response = await _resourceStockQueryService.QueryOffersAsync(queryManpower, "de")
                 .ToListAsync();
 
             //Assert

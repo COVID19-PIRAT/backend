@@ -101,6 +101,14 @@ namespace Pirat.Services
             return this.Regions.Keys.ToList();
         }
 
+        public void ThrowIfUnknownRegion(string regionCode)
+        {
+            if (!GetRegionCodes().Contains(regionCode))
+            {
+                throw new ArgumentException($"Unknown region code: {regionCode}");
+            }
+        }
+
         private static IEnumerable<(string path, string code)> GetAllPathCodeTuples(string filter)
         {
             var dataDir = ConfigDataDirPath;

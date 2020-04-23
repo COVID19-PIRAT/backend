@@ -32,7 +32,8 @@ create table offer
 			references address
 				on update cascade on delete cascade,
 	token text not null,
-	timestamp timestamp not null
+	timestamp timestamp not null,
+	region text not null
 );
 
 create table consumable
@@ -123,7 +124,8 @@ create table region_subscription
 	institution text not null,
 	postalcode text not null,
 	latitude numeric not null,
-	longitude numeric not null
+	longitude numeric not null,
+	region text not null
 );
 
 create table change
@@ -138,7 +140,8 @@ create table change
 	reason text,
 	diff_amount integer default 0 not null,
 	element_category text,
-	element_name text
+	element_name text,
+	region text not null
 );
 
 create table demand

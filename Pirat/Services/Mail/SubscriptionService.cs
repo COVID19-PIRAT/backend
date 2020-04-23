@@ -29,7 +29,7 @@ namespace Pirat.Services.Mail
             _addressMaker = addressMaker;
         }
 
-        public async Task SubscribeRegionAsync(RegionSubscription subscription)
+        public async Task SubscribeRegionAsync(RegionSubscription subscription, string region)
         {
             NullCheck.ThrowIfNull<RegionSubscription>(subscription);
             AddressEntity addressEntity = new AddressEntity()
@@ -41,6 +41,7 @@ namespace Pirat.Services.Mail
             subscription.latitude = addressEntity.latitude;
             subscription.longitude = addressEntity.longitude;
             subscription.active = true;
+            subscription.region = region;
             await subscription.InsertAsync(_context);
         }
 

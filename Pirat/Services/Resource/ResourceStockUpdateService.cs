@@ -107,7 +107,7 @@ namespace Pirat.Services.Resource
         }
 
 
-        public async Task<string> InsertAsync(Offer offer)
+        public async Task<string> InsertAsync(Offer offer, string region)
         {
             NullCheck.ThrowIfNull<Offer>(offer);
 
@@ -115,7 +115,7 @@ namespace Pirat.Services.Resource
 
             //Build as entities
 
-            var offerEntity = new OfferEntity().Build(provider);
+            var offerEntity = new OfferEntity().Build(provider, region);
             var offerAddressEntity = new AddressEntity().build(provider.address);
 
             //Create the coordinates and store the address of the offer
@@ -322,14 +322,15 @@ namespace Pirat.Services.Resource
                 from o in _context.offer as IQueryable<OfferEntity>
                 join c in _context.consumable on o.id equals c.offer_id
                 where token == o.token && c.id == consumableId
-                select c;
+                select new { c, o };
             var foundConsumables = await query.ToListAsync();
 
             if (foundConsumables.Count == 0)
             {
                 throw new DataNotFoundException(FailureCodes.NotFoundConsumable);
             }
-            ConsumableEntity consumable = foundConsumables[0];
+            ConsumableEntity consumable = foundConsumables[0].c;
+            OfferEntity offer = foundConsumables[0].o;
             
             // If amount has not changed: do nothing
             if (consumable.amount == newAmount)
@@ -355,7 +356,8 @@ namespace Pirat.Services.Resource
                     element_name = consumable.name,
                     diff_amount = diffAmount,
                     reason = reason,
-                    timestamp = DateTime.Now
+                    timestamp = DateTime.Now,
+                    region = offer.region
                 }.InsertAsync(_context);
                 
                 return;
@@ -383,7 +385,8 @@ namespace Pirat.Services.Resource
                 element_name = consumable.name,
                 diff_amount = diffAmount,
                 reason = reason,
-                timestamp = DateTime.Now
+                timestamp = DateTime.Now,
+                region = offer.region
             }.InsertAsync(_context);
         }
 
@@ -401,7 +404,7 @@ namespace Pirat.Services.Resource
                 from o in _context.offer as IQueryable<OfferEntity>
                 join d in _context.device on o.id equals d.offer_id
                 where token == o.token && d.id == deviceId
-                select d;
+                select new { d, o };
 
             var foundDevices = await query.ToListAsync();
 
@@ -410,7 +413,8 @@ namespace Pirat.Services.Resource
                 throw new DataNotFoundException(FailureCodes.NotFoundDevice);
             }
 
-            DeviceEntity device = foundDevices[0];
+            DeviceEntity device = foundDevices[0].d;
+            OfferEntity offer = foundDevices[0].o;
             
             // If amount has not changed: do nothing
             if (device.amount == newAmount)
@@ -436,7 +440,8 @@ namespace Pirat.Services.Resource
                     element_name = device.name,
                     diff_amount = diffAmount,
                     reason = reason,
-                    timestamp = DateTime.Now
+                    timestamp = DateTime.Now,
+                    region = offer.region
                 }.InsertAsync(_context);
                 
                 return;
@@ -466,7 +471,8 @@ namespace Pirat.Services.Resource
                 element_name = device.name,
                 diff_amount = diffAmount,
                 reason = reason,
-                timestamp = DateTime.Now
+                timestamp = DateTime.Now,
+                region = offer.region
             }.InsertAsync(_context);
         }
 
@@ -511,7 +517,7 @@ namespace Pirat.Services.Resource
                 from o in _context.offer as IQueryable<OfferEntity>
                 join c in _context.consumable on o.id equals c.offer_id
                 where token == o.token && c.id == consumableId
-                select c;
+                select new { c, o };
 
             var foundConsumables = await query.ToListAsync();
 
@@ -520,7 +526,8 @@ namespace Pirat.Services.Resource
                 throw new DataNotFoundException(FailureCodes.NotFoundConsumable);
             }
 
-            ConsumableEntity consumableEntity = foundConsumables[0];
+            ConsumableEntity consumableEntity = foundConsumables[0].c;
+            OfferEntity offerEntity = foundConsumables[0].o;
 
             AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, consumableEntity.address_id);
 
@@ -544,7 +551,8 @@ namespace Pirat.Services.Resource
                 element_name = consumableEntity.name,
                 diff_amount = consumableEntity.amount,
                 reason = reason,
-                timestamp = DateTime.Now
+                timestamp = DateTime.Now,
+                region = offerEntity.region
             }.InsertAsync(_context);
         }
 
@@ -563,7 +571,7 @@ namespace Pirat.Services.Resource
                 from o in _context.offer as IQueryable<OfferEntity>
                 join d in _context.device on o.id equals d.offer_id
                 where token == o.token && d.id == deviceId
-                select d;
+                select new { d, o };
 
             var foundDevices = await query.ToListAsync();
 
@@ -572,7 +580,8 @@ namespace Pirat.Services.Resource
                 throw new DataNotFoundException(FailureCodes.NotFoundConsumable);
             }
 
-            DeviceEntity deviceEntity = foundDevices[0];
+            DeviceEntity deviceEntity = foundDevices[0].d;
+            OfferEntity offerEntity = foundDevices[0].o;
 
             AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, deviceEntity.address_id);
             
@@ -596,7 +605,8 @@ namespace Pirat.Services.Resource
                 element_name = deviceEntity.name,
                 diff_amount = deviceEntity.amount,
                 reason = reason,
-                timestamp = DateTime.Now
+                timestamp = DateTime.Now,
+                region = offerEntity.region
             }.InsertAsync(_context);
         }
 
@@ -614,7 +624,7 @@ namespace Pirat.Services.Resource
                 from o in _context.offer as IQueryable<OfferEntity>
                 join p in _context.personal on o.id equals p.offer_id
                 where token == o.token && p.id == personalId
-                select p;
+                select new { p, o };
 
             var foundPersonals = await query.ToListAsync();
 
@@ -623,7 +633,8 @@ namespace Pirat.Services.Resource
                 throw new DataNotFoundException(FailureCodes.NotFoundPersonal);
             }
 
-            PersonalEntity personalEntity = foundPersonals[0];
+            PersonalEntity personalEntity = foundPersonals[0].p;
+            OfferEntity offerEntity = foundPersonals[0].o;
 
             AddressEntity addressEntity = (AddressEntity)await new AddressEntity().FindAsync(_context, personalEntity.address_id);
 
@@ -648,7 +659,8 @@ namespace Pirat.Services.Resource
                 element_name = null,
                 diff_amount = 1,
                 reason = reason,
-                timestamp = DateTime.Now
+                timestamp = DateTime.Now,
+                region = offerEntity.region
             }.InsertAsync(_context);
         }
 

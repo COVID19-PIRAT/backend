@@ -64,12 +64,12 @@ namespace Pirat.DatabaseTests
         public async Task InitializeAsync()
         {
             var offer = _captainHookGenerator.generateOffer();
-            var token = await _resourceStockUpdateService.InsertAsync(offer);
+            var token = await _resourceStockUpdateService.InsertAsync(offer, "de");
             offer = await _resourceStockQueryService.QueryLinkAsync(token);
             (_offerCaptainHook, _tokenCaptainHook) = (offer, token);
 
             offer = _anneBonnyGenerator.generateOffer();
-            token = await _resourceStockUpdateService.InsertAsync(offer);
+            token = await _resourceStockUpdateService.InsertAsync(offer, "de");
             offer = await _resourceStockQueryService.QueryLinkAsync(token);
             (_offerAnneBonny, _tokenAnneBonny) = (offer, token);
         }
@@ -234,7 +234,7 @@ namespace Pirat.DatabaseTests
 
             //Device should not be retrieved by querying with a device object
             var deviceForQuery = _captainHookGenerator.GenerateDevice();
-            var foundDevices = await _resourceStockQueryService.QueryOffersAsync(deviceForQuery).ToListAsync();
+            var foundDevices = await _resourceStockQueryService.QueryOffersAsync(deviceForQuery, "de").ToListAsync();
             Assert.NotNull(foundDevices);
             Assert.Empty(foundDevices);
 

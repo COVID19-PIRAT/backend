@@ -29,13 +29,15 @@ namespace Pirat.Model.Entity.Resource.Stock
         public string token { get; set; }
 
         public DateTime timestamp { get; set; }
+        
+        public string region { get; set; }
 
         //***Keys to other tables
 
         public int address_id { get; set; }
 
 
-        public OfferEntity Build(Provider p)
+        public OfferEntity Build(Provider p, string region)
         {
             NullCheck.ThrowIfNull<Provider>(p);
             name = p.name;
@@ -43,6 +45,7 @@ namespace Pirat.Model.Entity.Resource.Stock
             phone = p.phone;
             mail = p.mail;
             ispublic = p.ispublic;
+            this.region = region;
             return this;
         }
 
