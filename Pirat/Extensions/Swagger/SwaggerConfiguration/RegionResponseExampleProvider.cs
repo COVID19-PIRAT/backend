@@ -18,6 +18,14 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                 Device = new Dictionary<string, string>
                 {
                     ["devices_key"] = "name_de"
+                },
+                PersonnelArea = new Dictionary<string, string>
+                {
+                    ["personnel_area_key"] = "name_de"
+                },
+                PersonnelQualification = new Dictionary<string, string>
+                {
+                    ["personnel_qualification_key"] = "name_de"
                 }
             };
 
@@ -30,6 +38,14 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                 Device = new Dictionary<string, string>
                 {
                     ["devices_key"] = "name_en"
+                },
+                PersonnelArea = new Dictionary<string, string>
+                {
+                    ["personnel_area_key"] = "name_en"
+                },
+                PersonnelQualification = new Dictionary<string, string>
+                {
+                    ["personnel_qualification_key"] = "name_en"
                 }
             };
             var region = new RegionClientConfig
@@ -48,6 +64,14 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                     Device = new List<string>()
                     {
                         "devices_key"
+                    },
+                    PersonnelArea = new List<string>()
+                    {
+                        "personnel_area_key"
+                    },
+                    PersonnelQualification = new List<string>()
+                    {
+                        "personnel_qualification_key"
                     }
                 }
             };
