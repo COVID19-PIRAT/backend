@@ -142,7 +142,8 @@ namespace Pirat.Services.Mail
                 ResourceCompilation resources = postalCodeToResources[subscription.postalcode];
                 if (!resources.isEmpty())
                 {
-                    await this._mailService.SendNotificationAboutNewOffersAsync(subscription, postalCodeToResources[subscription.postalcode]);
+                    await this._mailService.SendNotificationAboutNewOffersAsync(subscription.region, subscription,
+                        postalCodeToResources[subscription.postalcode]);
                 }
             }
         }

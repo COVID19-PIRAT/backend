@@ -47,7 +47,7 @@ namespace Pirat.Controllers
             {
                 _configurationService.ThrowIfUnknownRegion(region);
                 _mailInputValidatorService.validateMail(telephoneCallbackRequest.email);
-                this._mailService.SendTelephoneCallbackMailAsync(telephoneCallbackRequest);
+                this._mailService.SendTelephoneCallbackMailAsync(region, telephoneCallbackRequest);
                 return Ok();
             }
             catch (ArgumentException e)

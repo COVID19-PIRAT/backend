@@ -6,21 +6,23 @@ namespace Pirat.Services.Mail
 {
     public interface IMailService
     {
-        public Task SendNewOfferConfirmationMailAsync(string confirmationLink, string receiverMailAddress, string receiverMailUserName);
+        public Task SendNewOfferConfirmationMailAsync(string region, string confirmationLink, string receiverMailAddress,
+            string receiverMailUserName);
 
-        public Task SendTelephoneCallbackMailAsync(TelephoneCallbackRequest telephoneCallbackRequest);
+        public Task SendTelephoneCallbackMailAsync(string region, TelephoneCallbackRequest telephoneCallbackRequest);
 
-        public Task SendDemandMailToProviderAsync(ContactInformationDemand demandInformation, string mailAddressReceiver, string receiverMailUserName);
+        public Task SendDemandMailToProviderAsync(string region, ContactInformationDemand demandInformation, string mailAddressReceiver,
+            string receiverMailUserName);
 
-        public Task SendDemandConformationMailToDemanderAsync(ContactInformationDemand demandInformation);
+        public Task SendDemandConformationMailToDemanderAsync(string region, ContactInformationDemand demandInformation);
         
-        public Task SendOfferMailToDemanderAsync(ContactInformationDemand contactInformation, string mailAddressReceiver,
+        public Task SendOfferMailToDemanderAsync(string region, ContactInformationDemand contactInformation, string mailAddressReceiver,
             string nameReceiver, string resourceNameDE, string resourceNameEN);
 
-        public Task SendOfferConformationMailToProviderAsync(ContactInformationDemand contactInformation);
+        public Task SendOfferConformationMailToProviderAsync(string region, ContactInformationDemand contactInformation);
         
-        public Task SendRegionSubscriptionConformationMailAsync(RegionSubscription regionSubscription);
+        public Task SendRegionSubscriptionConformationMailAsync(string region, RegionSubscription regionSubscription);
 
-        public Task SendNotificationAboutNewOffersAsync(RegionSubscription regionSubscription, ResourceCompilation resourceCompilation);
+        public Task SendNotificationAboutNewOffersAsync(string region, RegionSubscription regionSubscription, ResourceCompilation resourceCompilation);
     }
 }

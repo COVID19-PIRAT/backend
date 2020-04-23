@@ -150,7 +150,8 @@ namespace Pirat.Services.Resource
 
             try
             {
-                device.GetCategoryLocalizedName("de");
+                // device.GetCategoryLocalizedName("de");
+                // TODO See #102
             }
             catch (KeyNotFoundException)
             {
@@ -170,7 +171,8 @@ namespace Pirat.Services.Resource
 
             try
             {
-                consumable.GetCategoryLocalizedName("de");
+                // consumable.GetCategoryLocalizedName("de");
+                // TODO See #102
             }
             catch (KeyNotFoundException)
             {

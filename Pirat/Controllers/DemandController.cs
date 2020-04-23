@@ -221,9 +221,11 @@ namespace Pirat.Controllers
 
                 var mailAddressReceiver = demand.mail;
                 var mailUserNameReceiver = demand.name;
-                await _mailService.SendOfferMailToDemanderAsync(contactInformationDemand, mailAddressReceiver,
+                // TODO
+                var region = "de";
+                await _mailService.SendOfferMailToDemanderAsync(region, contactInformationDemand, mailAddressReceiver,
                     mailUserNameReceiver, resourceNameDE, resourceNameEN);
-                await _mailService.SendDemandConformationMailToDemanderAsync(contactInformationDemand);
+                await _mailService.SendDemandConformationMailToDemanderAsync(region, contactInformationDemand);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -276,9 +278,11 @@ namespace Pirat.Controllers
 
                 var mailAddressReceiver = demand.mail;
                 var mailUserNameReceiver = demand.name;
-                await _mailService.SendOfferMailToDemanderAsync(contactInformationDemand, mailAddressReceiver,
+                // TODO
+                var region = "de";
+                await _mailService.SendOfferMailToDemanderAsync(region, contactInformationDemand, mailAddressReceiver,
                     mailUserNameReceiver, resourceNameDE, resourceNameEN);
-                await _mailService.SendDemandConformationMailToDemanderAsync(contactInformationDemand);
+                await _mailService.SendDemandConformationMailToDemanderAsync(region, contactInformationDemand);
                 return Ok();
             }
             catch (ArgumentException e)
