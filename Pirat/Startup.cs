@@ -88,15 +88,25 @@ namespace Pirat
             {
                 logger.LogInformation("In Development environment");
                 Environment.SetEnvironmentVariable("PIRAT_HOST", "http://localhost:4200");
-                var swaggerPrefix = Environment.GetEnvironmentVariable("PIRAT_PREFIX_SWAGGER_ENDPOINT");
-                if(string.IsNullOrEmpty(swaggerPrefix)){
-                    swaggerPrefix = "";
-                }
+
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
+
+                //Swagger settings
+                var swaggerPrefix = Environment.GetEnvironmentVariable("PIRAT_PREFIX_SWAGGER_ENDPOINT");
+                var swaggerTemplate = Path.Combine(swaggerPrefix, "swagger/{documentname}/swagger.json");
+                var swaggerRoutePrefix = Path.Combine(swaggerPrefix, "swagger");
+                var swaggerEndpoint = "/" + Path.Combine(swaggerPrefix, "swagger/v1/swagger.json");
+                logger.LogDebug($"Swagger template: {swaggerTemplate}");
+                logger.LogDebug($"Swagger route prefix: {swaggerRoutePrefix}");
+                logger.LogDebug($"Swagger endpoint: {swaggerEndpoint}");
+                app.UseSwagger(c =>
+                {
+                    c.RouteTemplate = swaggerTemplate;
+                });
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint(Path.Combine(swaggerPrefix, "/swagger/v1/swagger.json"), "Pirat API");
+                    c.RoutePrefix = swaggerRoutePrefix;
+                    c.SwaggerEndpoint(swaggerEndpoint, "Pirat API");
                 });
             }
             if (env.IsProduction())
