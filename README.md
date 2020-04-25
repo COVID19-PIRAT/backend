@@ -13,6 +13,12 @@ This repository contains the backend service for https://pirat-tool.com.
 
 See https://dotnet.microsoft.com/download/dotnet-core/3.1 to get the SDK
 
+
+#### Database
+
+This program uses a PostgreSQL database. The database definition is in `init.sql`.
+
+
 #### Compile
 
 Use dotnet publish on the sln File
