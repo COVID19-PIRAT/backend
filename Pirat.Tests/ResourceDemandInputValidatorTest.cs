@@ -26,17 +26,17 @@ namespace Pirat.Tests
         public void QueryConsumable_BadInputs()
         {
             //Invalid category
-            var consumable = _captainHookGenerator.GenerateConsumable();
+            var consumable = _captainHookGenerator.GenerateQueryConsumable();
             consumable.category = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForDemandQuery(consumable));
 
             //Country empty but postal code specified
-            consumable = _captainHookGenerator.GenerateConsumable();
+            consumable = _captainHookGenerator.GenerateQueryConsumable();
             consumable.address.country = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForDemandQuery(consumable));
 
             //Negative kilometer
-            consumable = _captainHookGenerator.GenerateConsumable();
+            consumable = _captainHookGenerator.GenerateQueryConsumable();
             consumable.kilometer = -10;
             Assert.Throws<ArgumentException>(() => _service.ValidateForDemandQuery(consumable));
         }
@@ -48,7 +48,7 @@ namespace Pirat.Tests
         public void QueryConsumable_AllowedInputs()
         {
             //Country and postalcode can be empty both
-            var consumable = _captainHookGenerator.GenerateConsumable();
+            var consumable = _captainHookGenerator.GenerateQueryConsumable();
             consumable.address.country = "";
             consumable.address.postalcode = "";
             var exception = Record.Exception(() => _service.ValidateForDemandQuery(consumable));
@@ -62,17 +62,17 @@ namespace Pirat.Tests
         public void QueryDevice_BadInputs()
         {
             //Invalid category
-            var device = _captainHookGenerator.GenerateDevice();
+            var device = _captainHookGenerator.GenerateQueryDevice();
             device.category = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForDemandQuery(device));
 
             //Country empty but postal code specified
-            device = _captainHookGenerator.GenerateDevice();
+            device = _captainHookGenerator.GenerateQueryDevice();
             device.address.country = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForDemandQuery(device));
 
             //Negative kilometer
-            device = _captainHookGenerator.GenerateDevice();
+            device = _captainHookGenerator.GenerateQueryDevice();
             device.kilometer = -10;
             Assert.Throws<ArgumentException>(() => _service.ValidateForDemandQuery(device));
         }
@@ -84,7 +84,7 @@ namespace Pirat.Tests
         public void QueryDevice_AllowedInputs()
         {
             //Country and postalcode can be empty both
-            var device = _captainHookGenerator.GenerateDevice();
+            var device = _captainHookGenerator.GenerateQueryDevice();
             device.address.country = "";
             device.address.postalcode = "";
             var exception = Record.Exception(() => _service.ValidateForDemandQuery(device));

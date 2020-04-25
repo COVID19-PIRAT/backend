@@ -60,7 +60,6 @@ namespace Pirat.Tests
             newConsumable.amount = 0; // Invalid!
             newConsumable.category = "PIPETTENSPITZEN";
             Personal newPersonal = _captainHookGenerator.GeneratePersonal();
-            newPersonal.address.postalcode = "22459";
             newPersonal.qualification = null; // Invalid!
 
             Assert.Throws<ArgumentException>(() => _service.ValidateForStockInsertion(newDevice));
@@ -74,11 +73,11 @@ namespace Pirat.Tests
         [Fact]
         public void QueryConsumable_BadInputs()
         {
-            var consumable = _captainHookGenerator.GenerateConsumable();
+            var consumable = _captainHookGenerator.GenerateQueryConsumable();
             consumable.category = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(consumable));
 
-            consumable = _captainHookGenerator.GenerateConsumable();
+            consumable = _captainHookGenerator.GenerateQueryConsumable();
             consumable.address.country = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(consumable));
         }
@@ -86,11 +85,11 @@ namespace Pirat.Tests
         [Fact]
         public void QueryDevice_BadInputs()
         {
-            var device = _captainHookGenerator.GenerateDevice();
+            var device = _captainHookGenerator.GenerateQueryDevice();
             device.category = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(device));
 
-            device = _captainHookGenerator.GenerateDevice();
+            device = _captainHookGenerator.GenerateQueryDevice();
             device.address.postalcode = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(device));
         }
@@ -150,14 +149,7 @@ namespace Pirat.Tests
             personal = _captainHookGenerator.GeneratePersonal();
             personal.area = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForChangeInformation(_dummyToken, personal));
-
-            personal = _captainHookGenerator.GeneratePersonal();
-            personal.address.postalcode = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForChangeInformation(_dummyToken, personal));
-
-            personal = _captainHookGenerator.GeneratePersonal();
-            personal.address.country = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForChangeInformation(_dummyToken, personal));
+            
         }
 
         [Fact]
@@ -169,14 +161,6 @@ namespace Pirat.Tests
 
             device = _captainHookGenerator.GenerateDevice();
             device.category = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForChangeInformation(_dummyToken, device));
-
-            device = _captainHookGenerator.GenerateDevice();
-            device.address.postalcode = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForChangeInformation(_dummyToken, device));
-
-            device = _captainHookGenerator.GenerateDevice();
-            device.address.country = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForChangeInformation(_dummyToken, device));
         }
 
@@ -193,14 +177,6 @@ namespace Pirat.Tests
 
             consumable = _captainHookGenerator.GenerateConsumable();
             consumable.category = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForChangeInformation(_dummyToken, consumable));
-
-            consumable = _captainHookGenerator.GenerateConsumable();
-            consumable.address.postalcode = "";
-            Assert.Throws<ArgumentException>(() => _service.ValidateForChangeInformation(_dummyToken, consumable));
-
-            consumable = _captainHookGenerator.GenerateConsumable();
-            consumable.address.country = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForChangeInformation(_dummyToken, consumable));
         }
 

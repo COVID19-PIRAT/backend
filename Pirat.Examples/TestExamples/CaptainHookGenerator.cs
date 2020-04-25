@@ -30,6 +30,18 @@ namespace Pirat.Examples.TestExamples
             };
         }
 
+        public Device GenerateQueryDevice()
+        {
+            return new Device()
+            {
+                category = "PCR_THERMOCYCLER",
+                name = "Zeitticker",
+                manufacturer = "Piratenrolex",
+                address = generateProviderAddress(),
+                amount = 5,
+            };
+        }
+
         public Personal GeneratePersonal()
         {
             return new Personal()
@@ -66,6 +78,19 @@ namespace Pirat.Examples.TestExamples
                 amount = 40,
                 unit = "Packung",
                 address = null
+            };
+        }
+
+        public Consumable GenerateQueryConsumable()
+        {
+            return new Consumable()
+            {
+                category = "SCHUTZKLEIDUNG",
+                name = "Hook3000",
+                manufacturer = "HookInc",
+                amount = 40,
+                unit = "Packung",
+                address = generateProviderAddress()
             };
         }
 
