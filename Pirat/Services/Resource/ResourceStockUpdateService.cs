@@ -181,10 +181,7 @@ namespace Pirat.Services.Resource
         public async Task<int> ChangeInformationAsync(string token, Consumable consumable)
         {
             NullCheck.ThrowIfNull<Consumable>(consumable);
-
-            AddressEntity location = new AddressEntity().build(consumable.address);
-            _addressMaker.SetCoordinates(location);
-
+            
             var query = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join c in _context.consumable on o.id equals c.offer_id
@@ -213,10 +210,7 @@ namespace Pirat.Services.Resource
         public async Task<int> ChangeInformationAsync(string token, Device device)
         {
             NullCheck.ThrowIfNull<Device>(device);
-
-            AddressEntity location = new AddressEntity().build(device.address);
-            _addressMaker.SetCoordinates(location);
-
+            
             var query = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join d in _context.device on o.id equals d.offer_id
@@ -244,10 +238,7 @@ namespace Pirat.Services.Resource
         public async Task<int> ChangeInformationAsync(string token, Personal personal)
         {
             NullCheck.ThrowIfNull<Personal>(personal);
-
-            AddressEntity location = new AddressEntity().build(personal.address);
-            _addressMaker.SetCoordinates(location);
-
+            
             var query = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join p in _context.personal on o.id equals p.offer_id

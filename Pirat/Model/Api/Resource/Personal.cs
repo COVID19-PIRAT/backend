@@ -76,7 +76,7 @@ namespace Pirat.Model.Api.Resource
         
         public bool Equals(Personal other)
         {
-            if (!(address != null && address.Equals(other.address)))
+            if (address != null && other != null && !address.Equals(other.address))
             {
                 return false;
             }
