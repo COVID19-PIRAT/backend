@@ -11,14 +11,14 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
             {
                 address = new Address()
                 {
-                    street = "Hauptstraße",
-                    streetnumber = "77",
+                    street = "Leuchtturmstraße",
+                    streetnumber = "716",
                     postalcode = "27498",
                     city = "Helgoland",
                     country = "Deutschland"
                 },
-                category = "Schiffsmaterial",
-                name = "Steuerrad",
+                category = "ZENTRIFUGE",
+                name = "Ultrazentrifuge",
                 manufacturer = "Störtebeker & Co",
                 ordernumber = "12345",
                 amount = 10,

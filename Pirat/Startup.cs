@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -87,11 +88,15 @@ namespace Pirat
             {
                 logger.LogInformation("In Development environment");
                 Environment.SetEnvironmentVariable("PIRAT_HOST", "http://localhost:4200");
+                var swaggerPrefix = Environment.GetEnvironmentVariable("PIRAT_PREFIX_SWAGGER_ENDPOINT");
+                if(string.IsNullOrEmpty(swaggerPrefix)){
+                    swaggerPrefix = "";
+                }
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pirat API");
+                    c.SwaggerEndpoint(Path.Combine(swaggerPrefix, "/swagger/v1/swagger.json"), "Pirat API");
                 });
             }
             if (env.IsProduction())

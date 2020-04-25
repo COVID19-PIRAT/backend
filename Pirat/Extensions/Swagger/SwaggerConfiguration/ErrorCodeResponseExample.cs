@@ -2,9 +2,9 @@
 
 namespace Pirat.Extensions.Swagger.SwaggerConfiguration
 {
-    public class ErrorCodeResponseExample : IExamplesProvider<string>
+    public class ErrorCodeResponseExample : IExamplesProvider<object>
     {
-        public string GetExamples()
+        public object GetExamples()
         {
             return "XXXX:Description";
         }

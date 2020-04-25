@@ -9,18 +9,18 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
         {
             return new Personal()
             {
-                qualification = "Kapitän",
-                area = "Schiffsfahrt, Piraterie",
+                qualification = "PHD_STUDENT",
+                area = "MOLECULAR_BIOLOGY",
                 address = new Address()
                 {
-                    street = "Hauptstraße",
-                    streetnumber = "77",
+                    street = "Leuchtturmstraße",
+                    streetnumber = "716",
                     postalcode = "27498",
                     city = "Helgoland",
                     country = "Deutschland"
                 },
                 institution = "Institut für Piraterie",
-                researchgroup = "Piraten Ahoi",
+                researchgroup = "Biologie Piraten",
                 experience_rt_pcr = false,
                 annotation = "Ahoi!"
             };

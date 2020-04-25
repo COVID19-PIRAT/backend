@@ -2,9 +2,9 @@
 
 namespace Pirat.Extensions.Swagger.SwaggerConfiguration
 {
-    public class EmptyResponseExample : IExamplesProvider<string>
+    public class EmptyResponseExample : IExamplesProvider<object>
     {
-        public string GetExamples()
+        public object GetExamples()
         {
             return "";
         }

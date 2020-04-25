@@ -22,8 +22,8 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                         phone = "987654",
                         address = new Address()
                         {
-                            street = "Hauptstraße",
-                            streetnumber = "77",
+                            street = "Leuchtturmstraße",
+                            streetnumber = "716",
                             postalcode = "27498",
                             city = "Helgoland",
                             country = "Deutschland"

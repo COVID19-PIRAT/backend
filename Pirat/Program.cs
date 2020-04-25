@@ -33,7 +33,8 @@ namespace Pirat
                 "PIRAT_GOOGLE_API_KEY",
                 "PIRAT_GOOGLE_RECAPTCHA_SECRET",
                 
-                "PIRAT_ADMIN_KEY"
+                "PIRAT_ADMIN_KEY",
+                "PIRAT_PREFIX_SWAGGER_ENDPOINT"
             };
             foreach (var requiredEnvironmentVariable in requiredEnvironmentVariables)
             {
