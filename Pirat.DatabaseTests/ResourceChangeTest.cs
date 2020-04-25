@@ -173,7 +173,7 @@ namespace Pirat.DatabaseTests
 
             //Update
             var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, consumable);
-            Assert.True(changedRows == 2);
+            Assert.True(changedRows == 1);
 
             //Generate a consumable with the necessary attributes to find the updated consumable
             Consumable queryConsumable = new Consumable()
@@ -242,7 +242,7 @@ namespace Pirat.DatabaseTests
 
             //Update
             var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, device);
-            Assert.True(changedRows == 2);
+            Assert.True(changedRows == 1);
 
             //Generate a device with the necessary attributes to find the updated device
             Device queryDevice = new Device()
@@ -314,7 +314,7 @@ namespace Pirat.DatabaseTests
 
             //Update
             var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, personal);
-            Assert.True(changedRows == 2);
+            Assert.True(changedRows == 1);
 
             //Create manpower to find the updated personal
             Manpower queryManpower = new Manpower()
