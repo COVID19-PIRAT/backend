@@ -257,7 +257,6 @@ namespace Pirat.Services.Resource
         {
             var offerEntity = await _queryHelper.RetrieveOfferFromTokenAsync(token);
             var offerKey = offerEntity.id;
-            var providerAddressKey = offerEntity.address_id;
 
             //Build the provider from the offerEntity and the address we retrieve from the address id
 
@@ -272,7 +271,7 @@ namespace Pirat.Services.Resource
             foreach (var c in consumableEntities)
             {
                 if (c.is_deleted) continue;
-                offer.consumables.Add(new Consumable().build(c).build(await _queryHelper.QueryAddressAsync(providerAddressKey)));
+                offer.consumables.Add(new Consumable().build(c));
             }
 
             var queD = from d in _context.device as IQueryable<DeviceEntity> where d.offer_id == offerKey select d;
@@ -280,7 +279,7 @@ namespace Pirat.Services.Resource
             foreach (var d in deviceEntities)
             {
                 if(d.is_deleted) continue;
-                offer.devices.Add(new Device().Build(d).Build(await _queryHelper.QueryAddressAsync(providerAddressKey)));
+                offer.devices.Add(new Device().Build(d));
             }
 
             var queP = from p in _context.personal as IQueryable<PersonalEntity> where p.offer_id == offerKey select p;
@@ -288,7 +287,7 @@ namespace Pirat.Services.Resource
             foreach (var p in personalEntities)
             {
                 if(p.is_deleted) continue;
-                offer.personals.Add(new Personal().build(p).build(await _queryHelper.QueryAddressAsync(providerAddressKey)));
+                offer.personals.Add(new Personal().build(p));
             }
 
             return offer;

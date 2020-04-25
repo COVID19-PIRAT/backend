@@ -93,7 +93,7 @@ namespace Pirat.DatabaseTests
             var deviceOriginal = offer.devices.First();
             Console.Out.WriteLine(deviceFromQuery);
             Console.Out.WriteLine(deviceOriginal);
-            Assert.True(deviceOriginal.Equals(deviceFromQuery));
+            Assert.Equal(deviceOriginal, deviceFromQuery);
 
             //check the provider
             var providerFromQuery = resultDevices.First().provider; 
@@ -114,7 +114,7 @@ namespace Pirat.DatabaseTests
             var consumableOriginal = offer.consumables.First();
             Console.Out.WriteLine(consumableFromQuery);
             Console.Out.WriteLine(consumableOriginal);
-            Assert.True(consumableOriginal.Equals(consumableFromQuery));
+            Assert.Equal(consumableOriginal, consumableFromQuery);
 
             //Get personal
             var manpowerQuery = _captainHookGenerator.GenerateQueryManpower();
@@ -151,7 +151,7 @@ namespace Pirat.DatabaseTests
             var deviceOriginal = offer.devices.First();
             Console.Out.WriteLine(deviceFromQuery);
             Console.Out.WriteLine(deviceOriginal);
-            Assert.True(deviceOriginal.Equals(deviceFromQuery));
+            Assert.Equal(deviceOriginal, deviceFromQuery);
 
             //check the provider
             var providerFromQuery = resultDevices.First().provider;

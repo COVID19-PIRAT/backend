@@ -127,7 +127,7 @@ namespace Pirat.DatabaseTests
             Provider providerFromOffer = response.provider;
             Console.Out.WriteLine(providerFromOffer);
             Console.Out.WriteLine(provider);
-            Assert.True(providerFromOffer.Equals(provider));
+            Assert.Equal(provider, providerFromOffer);
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace Pirat.DatabaseTests
             Consumable consumableFromQuery = response.First().resource;
             Console.Out.WriteLine(consumableFromQuery);
             Console.Out.WriteLine(consumable);
-            Assert.True(consumableFromQuery.Equals(consumable));
+            Assert.Equal(consumable, consumableFromQuery);
         }
 
         /// <summary>
@@ -263,7 +263,7 @@ namespace Pirat.DatabaseTests
             Device deviceFromQuery = response.First().resource;
             Console.Out.WriteLine(deviceFromQuery);
             Console.Out.WriteLine(device);
-            Assert.True(deviceFromQuery.Equals(device));
+            Assert.Equal(device, deviceFromQuery);
         }
 
         /// <summary>
@@ -292,7 +292,7 @@ namespace Pirat.DatabaseTests
             Assert.NotNull(response);
             Assert.NotEmpty(response);
             var deviceFromQuery = response.First().resource;
-            Assert.True(deviceFromQuery.category.Equals(categoryOriginal));
+            Assert.Equal(categoryOriginal, deviceFromQuery.category);
             Assert.True(deviceFromQuery.id == idOriginal);
         }
 
@@ -336,7 +336,7 @@ namespace Pirat.DatabaseTests
             Personal personalFromQuery = response.First().resource;
             Console.Out.WriteLine(personalFromQuery);
             Console.Out.WriteLine(personal);
-            Assert.True(personalFromQuery.Equals(personal));
+            Assert.Equal(personal, personalFromQuery);
         }
 
         /// <summary>
