@@ -57,7 +57,7 @@ The following environment variables are available, most of them are required.
 * PIRAT_GOOGLE_RECAPTCHA_SECRET
 
 
-Example (for Bash):
+Example:
 
 ```
 ASPNETCORE_URLS=http://127.0.0.1:5000
