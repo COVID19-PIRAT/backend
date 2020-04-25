@@ -41,6 +41,8 @@
       "OTHERS"
     ],
     "personnelQualification": [
+      "DOCTOR",
+      "NURSE",
       "TA",
       "LAB_ASSISTANT",
       "POSTDOC",

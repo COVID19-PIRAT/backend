@@ -38,6 +38,8 @@
     "OTHERS": "Others"
   },
   "personnelQualification": {
+    "DOCTOR": "Doctor",
+    "NURSE": "Nurse",
     "TA": "TA",
     "LAB_ASSISTANT": "Lab assistant",
     "PHARMACIST": "Pharmacist",
