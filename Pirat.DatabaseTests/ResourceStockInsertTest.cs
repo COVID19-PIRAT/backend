@@ -139,6 +139,7 @@ namespace Pirat.DatabaseTests
         {
             var offer = _shyPirateGenerator.generateOffer();
             var token = await _resourceStockUpdateService.InsertAsync(offer, "de");
+            Assert.True(token.Length == 30);
 
             //Get device
             var queryDevice = _shyPirateGenerator.GenerateDevice();

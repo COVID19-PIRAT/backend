@@ -79,6 +79,9 @@ namespace Pirat.Services.Resource
                 }
                 resource.kilometer = (int)Math.Round(distance);
 
+                //Give resource empty address
+                resource.address = new Address();
+
                 var provider = new Provider().Build(data.o);
                 var providerAddress = new Address().Build(data.ap);
 
@@ -146,6 +149,9 @@ namespace Pirat.Services.Resource
                     continue;
                 }
                 resource.kilometer = (int)Math.Round(distance);
+
+                //Give resource empty address
+                resource.address = new Address();
 
                 var provider = new Provider().Build(data.o);
                 var providerAddress = new Address().Build(data.ap);
@@ -222,6 +228,9 @@ namespace Pirat.Services.Resource
                     continue;
                 }
                 resource.kilometer = (int)Math.Round(distance);
+
+                //Give resource empty address
+                resource.address = new Address();
 
                 var provider = new Provider().Build(data.o);
                 var providerAddress = new Address().Build(data.ap);
