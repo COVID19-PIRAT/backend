@@ -92,7 +92,7 @@ namespace Pirat
                 app.UseDeveloperExceptionPage();
 
                 //Swagger settings
-                var swaggerPrefix = Environment.GetEnvironmentVariable("PIRAT_PREFIX_SWAGGER_ENDPOINT");
+                var swaggerPrefix = Environment.GetEnvironmentVariable("PIRAT_SWAGGER_PREFIX_PATH");
                 var swaggerTemplate = Path.Combine(swaggerPrefix, "swagger/{documentname}/swagger.json");
                 var swaggerRoutePrefix = Path.Combine(swaggerPrefix, "swagger");
                 var swaggerEndpoint = "/" + Path.Combine(swaggerPrefix, "swagger/v1/swagger.json");
