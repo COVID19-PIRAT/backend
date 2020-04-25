@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Npgsql;
 
 namespace Pirat
 {
@@ -12,6 +13,7 @@ namespace Pirat
         public static void Main(string[] args)
         {
             CheckEnvironmentVariables();
+            CheckConnectionToDatabase();
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -40,6 +42,13 @@ namespace Pirat
                     throw new Exception("Environment variable is missing: " + requiredEnvironmentVariable);
                 }
             }
+        }
+
+        public static void CheckConnectionToDatabase()
+        {
+            var connection = new NpgsqlConnection(Environment.GetEnvironmentVariable("PIRAT_CONNECTION"));
+            connection.Open();
+            connection.Dispose();
         }
 
 
