@@ -55,7 +55,7 @@ namespace Pirat.Examples.TestExamples
             };
         }
 
-        public Manpower GenerateManpower()
+        public Manpower GenerateQueryManpower()
         {
             return new Manpower()
             {

@@ -77,9 +77,18 @@ namespace Pirat.Model.Api.Resource
 
         public override string ToString()
         {
+            var addressOutput = "";
+            if (address is null)
+            {
+                addressOutput = "null";
+            }
+            else
+            {
+                addressOutput = address.ToString();
+            }
             return $"id={id}, category={category}, name={name}, " +
                    $"manufacturer={manufacturer}, ordernumber={ordernumber}, " +
-                   $"amount={amount}, annotation={annotation}, address={address.ToString()}," +
+                   $"amount={amount}, annotation={annotation}, address={addressOutput}," +
                    $"kilometer={kilometer}";
         }
     }

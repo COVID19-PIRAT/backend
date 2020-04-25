@@ -84,7 +84,7 @@ namespace Pirat.DatabaseTests
             //Now query the elements. If it is not empty we received the element back
 
             //Get device
-            var queryDevice = _captainHookGenerator.GenerateDevice();
+            var queryDevice = _captainHookGenerator.GenerateQueryDevice();
             var resultDevices = await _resourceStockQueryService.QueryOffersAsync(queryDevice, "de")
                 .ToListAsync();
             Assert.NotNull(resultDevices);
@@ -105,7 +105,7 @@ namespace Pirat.DatabaseTests
             // Assert.True(providerOriginal.Equals(providerFromQuery));
 
             //Get consumable
-            var queryConsumable = _captainHookGenerator.GenerateConsumable();
+            var queryConsumable = _captainHookGenerator.GenerateQueryConsumable();
             var resultConsumables = await _resourceStockQueryService.QueryOffersAsync(queryConsumable, "de")
                 .ToListAsync();
             Assert.NotNull(resultConsumables);
@@ -117,7 +117,7 @@ namespace Pirat.DatabaseTests
             Assert.True(consumableOriginal.Equals(consumableFromQuery));
 
             //Get personal
-            var manpowerQuery = _captainHookGenerator.GenerateManpower();
+            var manpowerQuery = _captainHookGenerator.GenerateQueryManpower();
             var resultPersonal = await _resourceStockQueryService.QueryOffersAsync(manpowerQuery, "de")
                 .ToListAsync();
             Assert.NotNull(resultPersonal);
@@ -142,7 +142,7 @@ namespace Pirat.DatabaseTests
             Assert.True(token.Length == 30);
 
             //Get device
-            var queryDevice = _shyPirateGenerator.GenerateDevice();
+            var queryDevice = _shyPirateGenerator.GenerateQueryDevice();
             var resultDevices = await _resourceStockQueryService.QueryOffersAsync(queryDevice, "de")
                 .ToListAsync();
             Assert.NotNull(resultDevices);

@@ -215,7 +215,7 @@ namespace Pirat.DatabaseTests
             Assert.True(changedRows == 0);
 
             //Generate the consumable for the query that should still be findable 
-            Consumable queryConsumable = _captainHookGenerator.GenerateConsumable();
+            Consumable queryConsumable = _captainHookGenerator.GenerateQueryConsumable();
             var response = await _resourceStockQueryService.QueryOffersAsync(queryConsumable, "de")
                 .ToListAsync();
 
@@ -284,7 +284,7 @@ namespace Pirat.DatabaseTests
             Assert.True(changedRows == 0);
 
             //The original device should still be findable
-            Device queryDevice = _captainHookGenerator.GenerateDevice();
+            Device queryDevice = _captainHookGenerator.GenerateQueryDevice();
             var response = await _resourceStockQueryService.QueryOffersAsync(queryDevice, "de")
                 .ToListAsync();
 
@@ -355,7 +355,7 @@ namespace Pirat.DatabaseTests
             Assert.True(changedRows == 0);
 
             //The personal in the original manpower should still be findable
-            Manpower queryManpower = _captainHookGenerator.GenerateManpower();
+            Manpower queryManpower = _captainHookGenerator.GenerateQueryManpower();
             var response = await _resourceStockQueryService.QueryOffersAsync(queryManpower, "de")
                 .ToListAsync();
 

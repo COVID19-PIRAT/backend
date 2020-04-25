@@ -98,7 +98,7 @@ namespace Pirat.Tests
         [Fact]
         public void QueryManpower_BadInputs()
         {
-            var manpower = _captainHookGenerator.GenerateManpower();
+            var manpower = _captainHookGenerator.GenerateQueryManpower();
             manpower.address.postalcode = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(manpower));
         }

@@ -233,7 +233,7 @@ namespace Pirat.DatabaseTests
             Assert.Empty(foundOffer.devices);
 
             //Device should not be retrieved by querying with a device object
-            var deviceForQuery = _captainHookGenerator.GenerateDevice();
+            var deviceForQuery = _captainHookGenerator.GenerateQueryDevice();
             var foundDevices = await _resourceStockQueryService.QueryOffersAsync(deviceForQuery, "de").ToListAsync();
             Assert.NotNull(foundDevices);
             Assert.Empty(foundDevices);

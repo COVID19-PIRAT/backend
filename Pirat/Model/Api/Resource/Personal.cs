@@ -104,8 +104,18 @@ namespace Pirat.Model.Api.Resource
 
         public override string ToString()
         {
+            var addressOutput = "";
+            if (address is null)
+            {
+                addressOutput = "null";
+            }
+            else
+            {
+                addressOutput = address.ToString();
+            }
             return "Personal={ " + $"{base.ToString()} institution={institution}, researchgroup={researchgroup}, " +
-                   $"experience_rt_pcr={experience_rt_pcr}, annotation={annotation}, qualification={qualification} area={area} address={address} kilometer={kilometer}" + " }";
+                   $"experience_rt_pcr={experience_rt_pcr}, annotation={annotation}, qualification={qualification} " +
+                   $"area={area} address={addressOutput} kilometer={kilometer}" + " }";
         }
     }
 

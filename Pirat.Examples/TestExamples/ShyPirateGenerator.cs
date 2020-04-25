@@ -26,6 +26,18 @@ namespace Pirat.Examples.TestExamples
             };
         }
 
+        public Device GenerateQueryDevice()
+        {
+            return new Device()
+            {
+                category = "PCR_THERMOCYCLER",
+                name = "Piratenstecher",
+                manufacturer = "W.Turner",
+                address = generateProviderAddress(),
+                amount = 5
+            };
+        }
+
         public Provider GenerateProvider()
         {
             return new Provider()
