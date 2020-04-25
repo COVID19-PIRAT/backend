@@ -70,13 +70,21 @@ namespace Pirat.Model.Api.Resource
 
         public bool Equals(Provider other)
         {
+            if (!(address != null && address.Equals(other.address)))
+            {
+                return false;
+            }
+            if(address == null && other.address != null)
+            {
+                return false;
+            }
+
             return other != null
                    && string.Equals(name, other.name, StringComparison.Ordinal)
                    && string.Equals(organisation, other.organisation, StringComparison.Ordinal)
                    && string.Equals(phone, other.phone, StringComparison.Ordinal)
                    && string.Equals(mail, other.mail, StringComparison.Ordinal)
                    && ispublic == other.ispublic
-                   && Equals(address, other.address)
                    && kilometer == other.kilometer;
         }
 

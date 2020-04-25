@@ -51,6 +51,14 @@ namespace Pirat.Model.Api.Resource
 
         public bool Equals(Item other)
         {
+            if (!(address != null && address.Equals(other.address)))
+            {
+                return false;
+            }
+            if (address == null && other.address != null)
+            {
+                return false;
+            }
             return other != null
                    && id == other.id
                    && string.Equals(category, other.category, StringComparison.Ordinal)
@@ -59,7 +67,6 @@ namespace Pirat.Model.Api.Resource
                    && string.Equals(ordernumber, other.ordernumber, StringComparison.Ordinal)
                    && amount == other.amount
                    && string.Equals(annotation, other.annotation, StringComparison.Ordinal)
-                   && Equals(address, other.address)
                    && kilometer == other.kilometer;
         }
 

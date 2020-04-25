@@ -5,7 +5,7 @@ namespace Pirat.DatabaseTests.Examples
 {
     public class AnneBonnyGenerator
     {
-        public Address generateAddress()
+        public Address generateProviderAddress()
         {
             return new Address()
             {
@@ -21,7 +21,7 @@ namespace Pirat.DatabaseTests.Examples
                 category = "ZENTRIFUGE",
                 name = "BermudaTriangle",
                 manufacturer = "Maestral",
-                address = generateAddress(),
+                address = null,
                 amount = 1
             };
         }
@@ -35,7 +35,7 @@ namespace Pirat.DatabaseTests.Examples
                 experience_rt_pcr = true,
                 qualification = "Heart Surgeon",
                 area = "Piraten",
-                address = generateAddress()
+                address = null
             };
         }
 
@@ -48,7 +48,7 @@ namespace Pirat.DatabaseTests.Examples
                 manufacturer = "Sober Inc",
                 amount = 20,
                 unit = "Stück",
-                address = generateAddress()
+                address = null
             };
         }
 
@@ -61,7 +61,7 @@ namespace Pirat.DatabaseTests.Examples
                 phone = "1720",
                 mail = "annebonny.revenge@gmx.de",
                 ispublic = true,
-                address = generateAddress()
+                address = generateProviderAddress()
             };
         }
 

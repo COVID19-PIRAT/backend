@@ -181,8 +181,8 @@ namespace Pirat.DatabaseTests
                 category = consumable.category,
                 address = new Address()
                 {
-                    postalcode = consumable.address.postalcode,
-                    country = consumable.address.country
+                    postalcode = _offer.provider.address.postalcode,
+                    country = _offer.provider.address.country
                 }
             };
             var response = await _resourceStockQueryService.QueryOffersAsync(queryConsumable, "de")
@@ -209,10 +209,6 @@ namespace Pirat.DatabaseTests
             var idOriginal = consumable.id;
             consumable.category = "Doch was anderes";
             consumable.id = 999999;
-
-            //Gets ignored because entity has no address
-            consumable.address.postalcode = "85521";
-            consumable.address.country = "Deutschland";
 
             //Try to update
             var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, consumable);
@@ -253,8 +249,8 @@ namespace Pirat.DatabaseTests
             {
                 address = new Address()
                 {
-                    postalcode = device.address.postalcode,
-                    country = device.address.country
+                    postalcode = _offer.provider.address.postalcode,
+                    country = _offer.provider.address.country
                 },
                 category = device.category
             };
@@ -282,10 +278,6 @@ namespace Pirat.DatabaseTests
             var idOriginal = device.id;
             device.category = "Doch was anderes";
             device.id = 999999;
-
-            //Will have no effect because device entity has no address
-            device.address.postalcode = "85521";
-            device.address.country = "Deutschland";
 
             //Try to update
             var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, device);
@@ -331,8 +323,8 @@ namespace Pirat.DatabaseTests
                 area = new List<string>() { "Piratenforschung"},
                 address = new Address()
                 {
-                    postalcode = personal.address.postalcode,
-                    country = personal.address.country,
+                    postalcode = _offer.provider.address.postalcode,
+                    country = _offer.provider.address.country,
                 }
             };
             var response = await _resourceStockQueryService.QueryOffersAsync(queryManpower, "de")
@@ -357,10 +349,6 @@ namespace Pirat.DatabaseTests
             Personal personal = _offer.personals[0];
             var idOriginal = personal.id;
             personal.id = 999999;
-
-            //Getting ignored because entity has no address
-            personal.address.postalcode = "85521";
-            personal.address.country = "Deutschland";
 
             //Try to update
             var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, personal);
@@ -393,39 +381,9 @@ namespace Pirat.DatabaseTests
             Assert.True(changedRows == 1);
         }
 
-        //Device, consumable and personal address changes gets ignored because they do not have an address 
+        //Tests for provider, device, consumable and personal in chaning information
         [Fact]
-        public async Task Test_ChangeInformation_OnlyAddress_Possible()
-        {
-            //Change
-            Consumable consumable = _offer.consumables[0];
-            consumable.address.postalcode = "85521";
-            consumable.address.country = "Deutschland";
-            //Update
-            var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, consumable);
-            Assert.True(changedRows == 0);
-            
-            //Change
-            Device device = _offer.devices[0];
-            device.address.postalcode = "85521";
-            device.address.country = "Deutschland";
-            //Update
-            changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, device);
-            Assert.True(changedRows == 0);
-            
-            //Change
-            Personal personal = _offer.personals[0];
-            personal.address.postalcode = "85521";
-            personal.address.country = "Deutschland";
-            //Update
-            changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, personal);
-            Assert.True(changedRows == 0);
-            
-        }
-
-        //Tests for provider, device, consumable and personal that include only changes in non-address information 
-        [Fact]
-        public async Task Test_ChangeInformation_AddressUnchanged_Possible()
+        public async Task Test_ChangeInformation_Possible()
         {
             //Change
             Provider provider = _offer.provider;
