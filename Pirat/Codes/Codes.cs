@@ -9,7 +9,7 @@
 
         public const string MoreThanOneOfferFromToken = "9000:MoreThanOneOfferFromToken";
         public const string UpdatesMadeInTooManyRows = "9001:UpdatesMadeInTooManyRows";
-        public const string ResourceWithoutRelatedAddress = "9002:ResourceWithoutRelatedAddress";
+
         public const string MoreThanOneDemandFromToken = "9003:MoreThanOneDemandFromToken";
 
     }

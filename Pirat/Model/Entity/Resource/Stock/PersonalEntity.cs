@@ -20,8 +20,6 @@ namespace Pirat.Model.Entity.Resource.Stock
 
         public int offer_id { get; set; }
 
-        public int address_id { get; set; }
-
         public string qualification { get; set; }
 
         public string area { get; set; }
@@ -37,13 +35,6 @@ namespace Pirat.Model.Entity.Resource.Stock
             annotation = p.annotation;
             qualification = p.qualification;
             area = p.area;
-            return this;
-        }
-
-        public PersonalEntity Build(AddressEntity a)
-        {
-            NullCheck.ThrowIfNull<AddressEntity>(a);
-            address_id = a.id;
             return this;
         }
 
