@@ -1,0 +1,47 @@
+{
+  "languages": [ "it", "en" ],
+  "countryName": "Italy",
+  "categories": {
+    "device": [
+      "PCR_THERMOCYCLER",
+      "RT_PCR_THERMOCYCLER",
+      "ZENTRIFUGE",
+      "VORTEXER",
+      "PIPETTE",
+      "SONSTIGES"
+    ],
+    "consumable": [
+      "MASKE",
+      "SCHUTZKLEIDUNG",
+      "SCHUTZBRILLE",
+      "HANDSCHUHE",
+      "DESINFEKTIONSMITTEL",
+      "REAKTIONSGEFAESSE",
+      "READOUTPLATES",
+      "PIPETTENSPITZEN",
+      "SONSTIGES"
+    ],
+    "personnelArea": [
+      "CHEMISTRY",
+      "BIOCHEMISTRY",
+      "GENETICS",
+      "CELL_BIOLOGY",
+      "BIOLOGY",
+      "VIROLOGY",
+      "MICRO_BIOLOGY",
+      "MOLECULAR_BIOLOGY",
+      "PHARMACOLOGY",
+      "MEDICINE",
+      "OTHERS"
+    ],
+    "personnelQualification": [
+      "TA",
+      "LAB_ASSISTANT",
+      "POSTDOC",
+      "PHD_STUDENT",
+      "MSC_STUDENT",
+      "BSC_STUDENT",
+      "SONSTIGES"
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "consumable": {
+    "MASKE": "Mascherine",
+    "SCHUTZKLEIDUNG": "Tuta protettiva",
+    "SCHUTZBRILLE": "Occhiali di sicurezza",
+    "HANDSCHUHE": "Guanti",
+    "DESINFEKTIONSMITTEL": "Disinfettante",
+    "REAKTIONSGEFAESSE": "Provette",
+    "READOUTPLATES": "Piastre per microtitolazione",
+    "PIPETTENSPITZEN": "Punte per le pipette",
+    "SONSTIGES": "Altro"
+  },
+  "device": {
+    "PCR_THERMOCYCLER": "Termociclatore (PCR)",
+    "RT_PCR_THERMOCYCLER": "Termociclatore per la PCR real-time",
+    "ZENTRIFUGE": "Centrifuga",
+    "VORTEXER": "Agitatore vortex",
+    "PIPETTE": "Pipette",
+    "SONSTIGES": "Altro"
+  },
+  "personnelArea": {
+    "CHEMISTRY": "Chimica",
+    "BIOCHEMISTRY": "Biochimica",
+    "GENETICS": "Genetica",
+    "CELL_BIOLOGY": "Biologia cellulare",
+    "BIOLOGY": "Biologia",
+    "VIROLOGY": "Virologia",
+    "MICRO_BIOLOGY": "Virologia",
+    "MOLECULAR_BIOLOGY": "Biologia molecolare",
+    "PHARMACOLOGY": "Farmacologia",
+    "MEDICINE": "Medicina",
+    "OTHERS": "Altro"
+  },
+  "personnelQualification": {
+    "TA": "Assistente tecnico",
+    "LAB_ASSISTANT": "Assistente di laboratorio",
+    "POSTDOC": "Ricercatore",
+    "PHD_STUDENT": "Dottoranda/o",
+    "MSC_STUDENT": "Studente con laurea triennale",
+    "BSC_STUDENT": "Studente universitario senza laurea",
+    "SONSTIGES": "Altro"
+  }
+}
