@@ -14,14 +14,14 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                 {
                     address = new Address()
                     {
-                        street = "Hauptstraße",
-                        streetnumber = "77",
+                        street = "Leuchtturmstraße",
+                        streetnumber = "716",
                         postalcode = "27498",
                         city = "Helgoland",
                         country = "Deutschland",
                     },
                     name = "Störtebeker",
-                    organisation = "Instiut für Piraterie",
+                    organisation = "Institut für Piraterie",
                     phone = "987654",
                     mail = "pirat.hilfsmittel@gmail.com",
                     ispublic = true
@@ -30,17 +30,17 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                 {
                     new Consumable()
                     {
-                        unit = "Liter",
                         address = new Address()
                         {
-                            street = "Hauptstraße",
-                            streetnumber = "77",
+                            street = "Leuchtturmstraße",
+                            streetnumber = "716",
                             postalcode = "27498",
                             city = "Helgoland",
                             country = "Deutschland"
                         },
-                        category = "Rum",
-                        name = "Nordrum",
+                        category = "MASKE",
+                        name = "FFP2 Maske",
+                        unit = "Packung",
                         manufacturer = "Störtebeker & Co",
                         ordernumber = "999",
                         amount = 100,
@@ -62,14 +62,14 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                 {
                     address = new Address()
                     {
-                        street = "Hauptstraße",
+                        street = "Leuchtturmstraße",
                         streetnumber = "77",
                         postalcode = "27498",
                         city = "Helgoland",
                         country = "Deutschland",
                     },
                     name = "Störtebeker",
-                    organisation = "Instiut für Piraterie",
+                    organisation = "Institut für Piraterie",
                     phone = "987654",
                     mail = "pirat.hilfsmittel@gmail.com",
                     ispublic = true
@@ -80,14 +80,14 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                     {
                         address = new Address()
                         {
-                            street = "Hauptstraße",
+                            street = "Leuchtturmstraße",
                             streetnumber = "77",
                             postalcode = "27498",
                             city = "Helgoland",
                             country = "Deutschland"
                         },
-                        category = "Schiffsmaterial",
-                        name = "Steuerrad",
+                        category = "ZENTRIFUGE",
+                        name = "Ultrazentrifuge",
                         manufacturer = "Störtebeker & Co",
                         ordernumber = "12345",
                         amount = 10,
@@ -109,14 +109,14 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                 {
                     address = new Address()
                     {
-                        street = "Hauptstraße",
+                        street = "Leuchtturmstraße",
                         streetnumber = "77",
                         postalcode = "27498",
                         city = "Helgoland",
                         country = "Deutschland",
                     },
                     name = "Störtebeker",
-                    organisation = "Instiut für Piraterie",
+                    organisation = "Institut für Piraterie",
                     phone = "987654",
                     mail = "pirat.hilfsmittel@gmail.com",
                     ispublic = true
@@ -125,18 +125,18 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                 {
                     new Personal()
                     {
-                        qualification = "Kapitän",
-                        area = "Schiffsfahrt, Piraterie",
+                        qualification = "PHD_STUDENT",
+                        area = "MOLECULAR_BIOLOGY",
                         address = new Address()
                         {
-                            street = "Hauptstraße",
+                            street = "Leuchtturmstraße",
                             streetnumber = "77",
                             postalcode = "27498",
                             city = "Helgoland",
                             country = "Deutschland"
                         },
                         institution = "Institut für Piraterie",
-                        researchgroup = "Piraten Ahoi",
+                        researchgroup = "Biologie Piraten",
                         experience_rt_pcr = false,
                         annotation = "Ahoi!",
                         id = 99999999

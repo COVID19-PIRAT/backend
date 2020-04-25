@@ -9,17 +9,17 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
         {
             return new Consumable()
             {
-                unit = "Liter",
                 address = new Address()
                 {
-                    street = "Hauptstraße",
+                    street = "Leuchtturmstraße",
                     streetnumber = "77",
                     postalcode = "27498",
                     city = "Helgoland",
                     country = "Deutschland"
                 },
-                category = "Rum",
-                name = "Nordrum",
+                category = "MASKE",
+                name = "FFP2 Maske",
+                unit = "Packung",
                 manufacturer = "Störtebeker & Co",
                 ordernumber = "999",
                 amount = 100,

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -87,11 +88,25 @@ namespace Pirat
             {
                 logger.LogInformation("In Development environment");
                 Environment.SetEnvironmentVariable("PIRAT_HOST", "http://localhost:4200");
+
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
+
+                //Swagger settings
+                var swaggerPrefix = Environment.GetEnvironmentVariable("PIRAT_SWAGGER_PREFIX_PATH");
+                var swaggerTemplate = Path.Combine(swaggerPrefix, "swagger/{documentname}/swagger.json");
+                var swaggerRoutePrefix = Path.Combine(swaggerPrefix, "swagger");
+                var swaggerEndpoint = "/" + Path.Combine(swaggerPrefix, "swagger/v1/swagger.json");
+                logger.LogDebug($"Swagger template: {swaggerTemplate}");
+                logger.LogDebug($"Swagger route prefix: {swaggerRoutePrefix}");
+                logger.LogDebug($"Swagger endpoint: {swaggerEndpoint}");
+                app.UseSwagger(c =>
+                {
+                    c.RouteTemplate = swaggerTemplate;
+                });
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pirat API");
+                    c.RoutePrefix = swaggerRoutePrefix;
+                    c.SwaggerEndpoint(swaggerEndpoint, "Pirat API");
                 });
             }
             if (env.IsProduction())

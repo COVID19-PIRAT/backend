@@ -25,6 +25,7 @@ namespace Pirat.Extensions.Swagger
             services.AddSwaggerExamplesFromAssemblyOf<PersonalRequestExample>();
             services.AddSwaggerExamplesFromAssemblyOf<AmountChangeRequestExample>();
             //Add more examples here for swagger response and swagger request
+            //If the example provider is type string use type object instead since type string will cause buggy behaviour in swagger output 
 
 
             services.AddSwaggerGen(c =>
