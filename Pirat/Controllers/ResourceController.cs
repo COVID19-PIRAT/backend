@@ -808,33 +808,4 @@ namespace Pirat.Controllers
         }
     }
 
-    //[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
-    //public class MySwaggerResponseExampleAttribute : SwaggerResponseExampleAttribute
-    //{
-    //    public MySwaggerResponseExampleAttribute(
-    //        int statusCode,
-    //        Type examplesProviderType,
-    //        string description = null,
-    //        Type type = null,
-    //        Type contractResolver = null,
-    //        Type jsonConverter = null) : base(statusCode, examplesProviderType, contractResolver, jsonConverter)
-    //    {
-    //        this.StatusCode = statusCode;
-    //        Type type1 = type;
-    //        if ((object)type1 == null)
-    //            type1 = typeof(void);
-    //        // ISSUE: explicit constructor call
-    //        Type = type ?? throw new ArgumentNullException(nameof(type));
-    //        this.Description = description;
-    //    }
-
-    //    /// <summary>
-    //    /// A short description of the response. GFM syntax can be used for rich text representation.
-    //    /// </summary>
-    //    public string Description { get; set; }
-
-    //    public Type Type { get; }
-
-    //    public int StatusCode { get; }
-    //}
 }
