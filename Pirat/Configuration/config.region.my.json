@@ -43,10 +43,10 @@
     "personnelQualification": [
       "DOCTOR",
       "NURSE",
-      "TA",
       "LAB_ASSISTANT",
       "POSTDOC",
       "PHD_STUDENT",
+      "MSC_STUDENT",
       "PHARMACIST",
       "SONSTIGES"
     ]
