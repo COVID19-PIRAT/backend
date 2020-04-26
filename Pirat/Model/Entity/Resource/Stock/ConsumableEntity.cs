@@ -25,14 +25,6 @@ namespace Pirat.Model.Entity.Resource.Stock
             return this;
         }
 
-        public ConsumableEntity Build(AddressEntity a)
-        {
-            NullCheck.ThrowIfNull<AddressEntity>(a);
-            address_id = a.id;
-            return this;
-        }
-
-        
         public async Task<IFindable> FindAsync(ResourceContext context, int id)
         {
             NullCheck.ThrowIfNull<ResourceContext>(context);

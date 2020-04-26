@@ -50,10 +50,6 @@ create table consumable
 		constraint consumable_offer_id_fk
 			references offer
 				on update cascade on delete cascade,
-	address_id integer not null
-		constraint consumable_address_id_fk
-			references address
-				on update cascade on delete cascade,
 	unit text,
 	annotation text,
 	is_deleted boolean default false not null
@@ -76,10 +72,6 @@ create table device
 		constraint device_offer_id_fk
 			references offer
 				on update cascade on delete cascade,
-	address_id integer not null
-		constraint device_address_id_fk
-			references address
-				on update cascade on delete cascade,
 	annotation text,
 	is_deleted boolean default false not null
 );
@@ -101,10 +93,6 @@ create table personal
 	offer_id integer
 		constraint personal_offer_id_fk
 			references offer
-				on update cascade on delete cascade,
-	address_id integer
-		constraint personal_address_id_fk
-			references address
 				on update cascade on delete cascade,
 	is_deleted boolean default false not null
 );

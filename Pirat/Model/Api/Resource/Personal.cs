@@ -76,6 +76,15 @@ namespace Pirat.Model.Api.Resource
         
         public bool Equals(Personal other)
         {
+            if (address != null && other != null && !address.Equals(other.address))
+            {
+                return false;
+            }
+            if (address == null && other.address != null)
+            {
+                return false;
+            }
+
             return other != null
                    && id == other.id
                    && string.Equals(institution, other.institution, StringComparison.Ordinal)
@@ -84,7 +93,6 @@ namespace Pirat.Model.Api.Resource
                    && string.Equals(annotation, other.annotation, StringComparison.Ordinal)
                    && string.Equals(qualification, other.qualification, StringComparison.Ordinal)
                    && string.Equals(area, other.area, StringComparison.Ordinal)
-                   && Equals(address, other.address)
                    && kilometer == other.kilometer;
         }
 
@@ -96,8 +104,18 @@ namespace Pirat.Model.Api.Resource
 
         public override string ToString()
         {
+            var addressOutput = "";
+            if (address is null)
+            {
+                addressOutput = "null";
+            }
+            else
+            {
+                addressOutput = address.ToString();
+            }
             return "Personal={ " + $"{base.ToString()} institution={institution}, researchgroup={researchgroup}, " +
-                   $"experience_rt_pcr={experience_rt_pcr}, annotation={annotation}, qualification={qualification} area={area} address={address} kilometer={kilometer}" + " }";
+                   $"experience_rt_pcr={experience_rt_pcr}, annotation={annotation}, qualification={qualification} " +
+                   $"area={area} address={addressOutput} kilometer={kilometer}" + " }";
         }
     }
 

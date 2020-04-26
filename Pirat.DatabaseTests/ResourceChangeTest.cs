@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -126,7 +127,7 @@ namespace Pirat.DatabaseTests
             Provider providerFromOffer = response.provider;
             Console.Out.WriteLine(providerFromOffer);
             Console.Out.WriteLine(provider);
-            Assert.True(providerFromOffer.Equals(provider));
+            Assert.Equal(provider, providerFromOffer);
         }
 
         /// <summary>
@@ -169,12 +170,10 @@ namespace Pirat.DatabaseTests
             consumable.annotation = "Geändert";
             consumable.manufacturer = "Doch wer anders";
             consumable.ordernumber = "8877766";
-            consumable.address.postalcode = "85521";
-            consumable.address.country = "Deutschland";
 
             //Update
             var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, consumable);
-            Assert.True(changedRows == 2);
+            Assert.True(changedRows == 1);
 
             //Generate a consumable with the necessary attributes to find the updated consumable
             Consumable queryConsumable = new Consumable()
@@ -182,8 +181,8 @@ namespace Pirat.DatabaseTests
                 category = consumable.category,
                 address = new Address()
                 {
-                    postalcode = "85521",
-                    country = "Deutschland"
+                    postalcode = _offer.provider.address.postalcode,
+                    country = _offer.provider.address.country
                 }
             };
             var response = await _resourceStockQueryService.QueryOffersAsync(queryConsumable, "de")
@@ -195,7 +194,7 @@ namespace Pirat.DatabaseTests
             Consumable consumableFromQuery = response.First().resource;
             Console.Out.WriteLine(consumableFromQuery);
             Console.Out.WriteLine(consumable);
-            Assert.True(consumableFromQuery.Equals(consumable));
+            Assert.Equal(consumable, consumableFromQuery);
         }
 
         /// <summary>
@@ -216,7 +215,7 @@ namespace Pirat.DatabaseTests
             Assert.True(changedRows == 0);
 
             //Generate the consumable for the query that should still be findable 
-            Consumable queryConsumable = _captainHookGenerator.GenerateConsumable();
+            Consumable queryConsumable = _captainHookGenerator.GenerateQueryConsumable();
             var response = await _resourceStockQueryService.QueryOffersAsync(queryConsumable, "de")
                 .ToListAsync();
 
@@ -240,20 +239,18 @@ namespace Pirat.DatabaseTests
             device.annotation = "Geändert";
             device.manufacturer = "Doch wer anders";
             device.ordernumber = "8877766";
-            device.address.postalcode = "85521";
-            device.address.country = "Deutschland";
 
             //Update
             var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, device);
-            Assert.True(changedRows == 2);
+            Assert.True(changedRows == 1);
 
             //Generate a device with the necessary attributes to find the updated device
             Device queryDevice = new Device()
             {
                 address = new Address()
                 {
-                    postalcode = "85521",
-                    country = "Deutschland"
+                    postalcode = _offer.provider.address.postalcode,
+                    country = _offer.provider.address.country
                 },
                 category = device.category
             };
@@ -266,7 +263,7 @@ namespace Pirat.DatabaseTests
             Device deviceFromQuery = response.First().resource;
             Console.Out.WriteLine(deviceFromQuery);
             Console.Out.WriteLine(device);
-            Assert.True(deviceFromQuery.Equals(device));
+            Assert.Equal(device, deviceFromQuery);
         }
 
         /// <summary>
@@ -287,7 +284,7 @@ namespace Pirat.DatabaseTests
             Assert.True(changedRows == 0);
 
             //The original device should still be findable
-            Device queryDevice = _captainHookGenerator.GenerateDevice();
+            Device queryDevice = _captainHookGenerator.GenerateQueryDevice();
             var response = await _resourceStockQueryService.QueryOffersAsync(queryDevice, "de")
                 .ToListAsync();
 
@@ -295,7 +292,7 @@ namespace Pirat.DatabaseTests
             Assert.NotNull(response);
             Assert.NotEmpty(response);
             var deviceFromQuery = response.First().resource;
-            Assert.True(deviceFromQuery.category.Equals(categoryOriginal));
+            Assert.Equal(categoryOriginal, deviceFromQuery.category);
             Assert.True(deviceFromQuery.id == idOriginal);
         }
 
@@ -312,14 +309,12 @@ namespace Pirat.DatabaseTests
             personal.area = "Piratenforschung";
             personal.annotation = "Hier ein neuer Text";
             personal.experience_rt_pcr = false;
-            personal.address.postalcode = "85521";
-            personal.address.country = "Deutschland";
             personal.researchgroup = "Akademische Piraten";
             personal.institution = "TU Pirates";
 
             //Update
             var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, personal);
-            Assert.True(changedRows == 2);
+            Assert.True(changedRows == 1);
 
             //Create manpower to find the updated personal
             Manpower queryManpower = new Manpower()
@@ -328,8 +323,8 @@ namespace Pirat.DatabaseTests
                 area = new List<string>() { "Piratenforschung"},
                 address = new Address()
                 {
-                    postalcode = "85521",
-                    country = "Deutschland",
+                    postalcode = _offer.provider.address.postalcode,
+                    country = _offer.provider.address.country,
                 }
             };
             var response = await _resourceStockQueryService.QueryOffersAsync(queryManpower, "de")
@@ -341,7 +336,7 @@ namespace Pirat.DatabaseTests
             Personal personalFromQuery = response.First().resource;
             Console.Out.WriteLine(personalFromQuery);
             Console.Out.WriteLine(personal);
-            Assert.True(personalFromQuery.Equals(personal));
+            Assert.Equal(personal, personalFromQuery);
         }
 
         /// <summary>
@@ -360,7 +355,7 @@ namespace Pirat.DatabaseTests
             Assert.True(changedRows == 0);
 
             //The personal in the original manpower should still be findable
-            Manpower queryManpower = _captainHookGenerator.GenerateManpower();
+            Manpower queryManpower = _captainHookGenerator.GenerateQueryManpower();
             var response = await _resourceStockQueryService.QueryOffersAsync(queryManpower, "de")
                 .ToListAsync();
 
@@ -371,9 +366,11 @@ namespace Pirat.DatabaseTests
             Assert.True(personalFromQuery.id == idOriginal);
         }
 
-        //Tests for provider, device, consumable and personal that include changes only in address information 
+        /// <summary>
+        /// Test to check the possibility of changing provider address
+        /// </summary>
         [Fact]
-        public async Task Test_ChangeInformation_OnlyAddress_Possible()
+        public async Task Test_ChangeAddress_Provider_Possible()
         {
             //Change
             Provider provider = _offer.provider;
@@ -382,36 +379,11 @@ namespace Pirat.DatabaseTests
             //Update
             var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, provider);
             Assert.True(changedRows == 1);
-            
-            //Change
-            Consumable consumable = _offer.consumables[0];
-            consumable.address.postalcode = "85521";
-            consumable.address.country = "Deutschland";
-            //Update
-            changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, consumable);
-            Assert.True(changedRows == 1);
-            
-            //Change
-            Device device = _offer.devices[0];
-            device.address.postalcode = "85521";
-            device.address.country = "Deutschland";
-            //Update
-            changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, device);
-            Assert.True(changedRows == 1);
-            
-            //Change
-            Personal personal = _offer.personals[0];
-            personal.address.postalcode = "85521";
-            personal.address.country = "Deutschland";
-            //Update
-            changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, personal);
-            Assert.True(changedRows == 1);
-            
         }
 
-        //Tests for provider, device, consumable and personal that include only changes in non-address information 
+        //Tests for provider, device, consumable and personal in chaning information
         [Fact]
-        public async Task Test_ChangeInformation_AddressUnchanged_Possible()
+        public async Task Test_ChangeInformation_Possible()
         {
             //Change
             Provider provider = _offer.provider;
@@ -575,7 +547,6 @@ namespace Pirat.DatabaseTests
             newConsumable.amount = 20;
             newConsumable.category = "PIPETTENSPITZEN";
             Personal newPersonal = _captainHookGenerator.GeneratePersonal();
-            newPersonal.address.postalcode = "22459";
             newPersonal.qualification = "PHD_STUDENT";
 
             await _resourceStockUpdateService.AddResourceAsync(_token, newDevice);

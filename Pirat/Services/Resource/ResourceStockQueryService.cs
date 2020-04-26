@@ -47,9 +47,8 @@ namespace Pirat.Services.Resource
             var query = from o in _context.offer as IQueryable<OfferEntity>
                         join c in _context.consumable on o.id equals c.offer_id
                         join ap in _context.address on o.address_id equals ap.id
-                        join ac in _context.address on c.address_id equals ac.id
                         where consumable.category == c.category && !c.is_deleted && o.region == region
-                        select new { o, c, ap, ac };
+                        select new { o, c, ap };
 
             if (!string.IsNullOrEmpty(consumable.name))
             {
@@ -71,8 +70,8 @@ namespace Pirat.Services.Resource
 
                 var resource = new Consumable().build(data.c);
 
-                var yLatitude = data.ac.latitude;
-                var yLongitude = data.ac.longitude;
+                var yLatitude = data.ap.latitude;
+                var yLongitude = data.ap.longitude;
                 var distance = DistanceCalculator.computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
                 if (distance > maxDistance && maxDistance != 0)
                 {
@@ -82,10 +81,8 @@ namespace Pirat.Services.Resource
 
                 var provider = new Provider().Build(data.o);
                 var providerAddress = new Address().Build(data.ap);
-                var resourceAddress = new Address().Build(data.ac);
 
                 provider.address = providerAddress;
-                resource.address = resourceAddress;
 
                 var offer = new OfferResource<Consumable>()
                 {
@@ -118,9 +115,8 @@ namespace Pirat.Services.Resource
             var query = from o in _context.offer as IQueryable<OfferEntity>
                         join d in _context.device on o.id equals d.offer_id
                         join ap in _context.address on o.address_id equals ap.id
-                        join ac in _context.address on d.address_id equals ac.id
                         where device.category == d.category && !d.is_deleted && o.region == region
-                        select new { o, d, ap, ac };
+                        select new { o, d, ap };
 
             if (!string.IsNullOrEmpty(device.name))
             {
@@ -141,8 +137,8 @@ namespace Pirat.Services.Resource
             {
                 var resource = new Device().Build(data.d);
 
-                var yLatitude = data.ac.latitude;
-                var yLongitude = data.ac.longitude;
+                var yLatitude = data.ap.latitude;
+                var yLongitude = data.ap.longitude;
                 var distance = DistanceCalculator.computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
 
                 if (distance > maxDistance && maxDistance != 0)
@@ -153,10 +149,8 @@ namespace Pirat.Services.Resource
 
                 var provider = new Provider().Build(data.o);
                 var providerAddress = new Address().Build(data.ap);
-                var resourceAddress = new Address().Build(data.ac);
 
                 provider.address = providerAddress;
-                resource.address = resourceAddress;
                 var offer = new OfferResource<Device>()
                 {
                     resource = resource
@@ -188,9 +182,8 @@ namespace Pirat.Services.Resource
             var query = from o in _context.offer as IQueryable<OfferEntity>
                         join personal in _context.personal on o.id equals personal.offer_id
                         join ap in _context.address on o.address_id equals ap.id
-                        join ac in _context.address on personal.address_id equals ac.id
                         where !personal.is_deleted && o.region == region
-                        select new { o, personal, ap, ac };
+                        select new { o, personal, ap };
 
             if (!string.IsNullOrEmpty(manpower.institution))
             {
@@ -221,8 +214,8 @@ namespace Pirat.Services.Resource
             {
                 var resource = new Personal().build(data.personal);
 
-                var yLatitude = data.ac.latitude;
-                var yLongitude = data.ac.longitude;
+                var yLatitude = data.ap.latitude;
+                var yLongitude = data.ap.longitude;
                 var distance = DistanceCalculator.computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
                 if (distance > maxDistance && maxDistance != 0)
                 {
@@ -232,10 +225,8 @@ namespace Pirat.Services.Resource
 
                 var provider = new Provider().Build(data.o);
                 var providerAddress = new Address().Build(data.ap);
-                var resourceAddress = new Address().Build(data.ac);
 
                 provider.address = providerAddress;
-                resource.address = resourceAddress;
 
                 var offer = new OfferResource<Personal>()
                 {
@@ -280,7 +271,7 @@ namespace Pirat.Services.Resource
             foreach (var c in consumableEntities)
             {
                 if (c.is_deleted) continue;
-                offer.consumables.Add(new Consumable().build(c).build(await _queryHelper.QueryAddressAsync(c.address_id)));
+                offer.consumables.Add(new Consumable().build(c));
             }
 
             var queD = from d in _context.device as IQueryable<DeviceEntity> where d.offer_id == offerKey select d;
@@ -288,7 +279,7 @@ namespace Pirat.Services.Resource
             foreach (var d in deviceEntities)
             {
                 if(d.is_deleted) continue;
-                offer.devices.Add(new Device().Build(d).Build(await _queryHelper.QueryAddressAsync(d.address_id)));
+                offer.devices.Add(new Device().Build(d));
             }
 
             var queP = from p in _context.personal as IQueryable<PersonalEntity> where p.offer_id == offerKey select p;
@@ -296,7 +287,7 @@ namespace Pirat.Services.Resource
             foreach (var p in personalEntities)
             {
                 if(p.is_deleted) continue;
-                offer.personals.Add(new Personal().build(p).build(await _queryHelper.QueryAddressAsync(p.address_id)));
+                offer.personals.Add(new Personal().build(p));
             }
 
             return offer;

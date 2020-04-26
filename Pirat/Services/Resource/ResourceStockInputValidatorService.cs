@@ -54,8 +54,6 @@ namespace Pirat.Services.Resource
             {
                 throw new ArgumentException(FailureCodes.IncompleteConsumable);
             }
-
-            validateAddress(consumable.address);
         }
 
         private void validateInformation(Device device)
@@ -64,7 +62,6 @@ namespace Pirat.Services.Resource
             {
                 throw new ArgumentException(FailureCodes.IncompleteDevice);
             }
-            validateAddress(device.address);
         }
 
         private void validateInformation(Personal personal)
@@ -73,8 +70,6 @@ namespace Pirat.Services.Resource
             {
                 throw new ArgumentException(FailureCodes.IncompletePersonal);
             }
-
-            validateAddress(personal.address);
         }
 
 

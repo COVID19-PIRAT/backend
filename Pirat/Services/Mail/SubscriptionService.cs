@@ -58,7 +58,7 @@ namespace Pirat.Services.Mail
             var queryAllRecentDevices = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join d in _context.device on o.id equals d.offer_id
-                join a in _context.address on d.address_id equals a.id
+                join a in _context.address on o.address_id equals a.id
                 where (o.timestamp > DateTime.Now.AddDays(-1))
                 select new { device = d, address = a };
             var allRecentDevices = await queryAllRecentDevices.ToListAsync();
@@ -66,7 +66,7 @@ namespace Pirat.Services.Mail
             var queryAllRecentConsumables = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join c in _context.consumable on o.id equals c.offer_id
-                join a in _context.address on c.address_id equals a.id
+                join a in _context.address on o.address_id equals a.id
                 where (o.timestamp > DateTime.Now.AddDays(-1))
                 select new { consumable = c, address = a };
             var allRecentConsumables = await queryAllRecentConsumables.ToListAsync();
@@ -74,7 +74,7 @@ namespace Pirat.Services.Mail
             var queryAllRecentPersonnel = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join p in _context.personal on o.id equals p.offer_id
-                join a in _context.address on p.address_id equals a.id
+                join a in _context.address on o.address_id equals a.id
                 where (o.timestamp > DateTime.Now.AddDays(-1))
                 select new { personnel = p, address = a };
             var allRecentPersonnel = await queryAllRecentPersonnel.ToListAsync();

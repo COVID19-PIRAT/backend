@@ -39,8 +39,6 @@ namespace Pirat.Services.Resource
 
         /// <summary>
         /// Inserts a consumable entity into the database which gets <c>offerId</c> as foreign key for the offer entity it relates to.
-        /// In addition, an address entity is created based on the address information in <c>consumable</c> and is inserted into the
-        /// database with relation to the new consumable entity.
         /// </summary>
         /// <param name="offerId">The unique id of the offer</param>
         /// <param name="consumable">The consumable from which the entity is created</param>
@@ -48,22 +46,13 @@ namespace Pirat.Services.Resource
         private async Task InsertAsync(int offerId, Consumable consumable)
         {
             var consumableEntity = new ConsumableEntity().Build(consumable);
-            var addressEntity = new AddressEntity().build(consumable.address);
-
-            _addressMaker.SetCoordinates(addressEntity);
-            await addressEntity.InsertAsync(_context);
-
             consumableEntity.offer_id = offerId;
-            consumableEntity.address_id = addressEntity.id;
             await consumableEntity.InsertAsync(_context);
-
             consumable.id = consumableEntity.id;
         }
 
         /// <summary>
-        /// Inserts a device entity into the database which gets <c>offerId</c> as foreign key for the offer entity it relates to.
-        /// In addition, an address entity is created based on the address information in <c>device</c> and is inserted into the
-        /// database with relation to the new device entity.
+        /// Inserts a device entity into the database which gets <c>offerId</c> as foreign key for the offer entity it relates to
         /// </summary>
         /// <param name="offerId">The unique id of the offer</param>
         /// <param name="device">The device from which the entity is created</param>
@@ -71,22 +60,13 @@ namespace Pirat.Services.Resource
         private async Task InsertAsync(int offerId, Device device)
         {
             var deviceEntity = new DeviceEntity().Build(device);
-            var addressEntity = new AddressEntity().build(device.address);
-
-            _addressMaker.SetCoordinates(addressEntity);
-            await addressEntity.InsertAsync(_context);
-
             deviceEntity.offer_id = offerId;
-            deviceEntity.address_id = addressEntity.id;
             await deviceEntity.InsertAsync(_context);
-
             device.id = deviceEntity.id;
         }
 
         /// <summary>
         /// Inserts a personal entity into the database which gets <c>offerId</c> as foreign key for the personal entity it relates to.
-        /// In addition, an address entity is created based on the address information in <c>personal</c> and is inserted into the
-        /// database with relation to the new personal entity.
         /// </summary>
         /// <param name="offerId">The unique id of the offer</param>
         /// <param name="personal">The personal from which the entity is created</param>
@@ -94,15 +74,8 @@ namespace Pirat.Services.Resource
         private async Task InsertAsync(int offerId, Personal personal)
         {
             var personEntity = new PersonalEntity().Build(personal);
-            var addressEntity = new AddressEntity().build(personal.address);
-
-            _addressMaker.SetCoordinates(addressEntity);
-            await addressEntity.InsertAsync(_context);
-
             personEntity.offer_id = offerId;
-            personEntity.address_id = addressEntity.id;
             await personEntity.InsertAsync(_context);
-
             personal.id = personEntity.id;
         }
 
@@ -208,16 +181,12 @@ namespace Pirat.Services.Resource
         public async Task<int> ChangeInformationAsync(string token, Consumable consumable)
         {
             NullCheck.ThrowIfNull<Consumable>(consumable);
-
-            AddressEntity location = new AddressEntity().build(consumable.address);
-            _addressMaker.SetCoordinates(location);
-
+            
             var query = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join c in _context.consumable on o.id equals c.offer_id
-                join ac in _context.address on c.address_id equals ac.id
                 where o.token == token && c.id == consumable.id
-                select new {o, c, ac};
+                select new {o, c};
 
             foreach(var collection in await query.ToListAsync())
             {
@@ -226,12 +195,11 @@ namespace Pirat.Services.Resource
                 collection.c.name = consumable.name;
                 collection.c.manufacturer = consumable.manufacturer;
                 collection.c.ordernumber = consumable.ordernumber;
-                collection.ac.OverwriteWith(location);
             }
 
             var changedRows = await _context.SaveChangesAsync();
 
-            if (2 < changedRows)
+            if (1 < changedRows)
             {
                 throw new InvalidDataStateException(FatalCodes.UpdatesMadeInTooManyRows);
             }
@@ -242,16 +210,12 @@ namespace Pirat.Services.Resource
         public async Task<int> ChangeInformationAsync(string token, Device device)
         {
             NullCheck.ThrowIfNull<Device>(device);
-
-            AddressEntity location = new AddressEntity().build(device.address);
-            _addressMaker.SetCoordinates(location);
-
+            
             var query = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join d in _context.device on o.id equals d.offer_id
-                join ad in _context.address on d.address_id equals ad.id
                 where o.token == token && d.id == device.id
-                select new { o, d, ad };
+                select new { o, d };
 
             foreach (var collection in await query.ToListAsync())
             {
@@ -259,12 +223,11 @@ namespace Pirat.Services.Resource
                 collection.d.name = device.name;
                 collection.d.manufacturer = device.manufacturer;
                 collection.d.ordernumber = device.ordernumber;
-                collection.ad.OverwriteWith(location);
             }
 
             var changedRows = await _context.SaveChangesAsync();
 
-            if (2 < changedRows)
+            if (1 < changedRows)
             {
                 throw new InvalidDataStateException(FatalCodes.UpdatesMadeInTooManyRows);
             }
@@ -275,16 +238,12 @@ namespace Pirat.Services.Resource
         public async Task<int> ChangeInformationAsync(string token, Personal personal)
         {
             NullCheck.ThrowIfNull<Personal>(personal);
-
-            AddressEntity location = new AddressEntity().build(personal.address);
-            _addressMaker.SetCoordinates(location);
-
+            
             var query = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join p in _context.personal on o.id equals p.offer_id
-                join ap in _context.address on p.address_id equals ap.id
                 where o.token == token && p.id == personal.id
-                select new {o, p, ap};
+                select new {o, p};
 
             foreach (var collection in await query.ToListAsync())
             {
@@ -294,12 +253,11 @@ namespace Pirat.Services.Resource
                 collection.p.researchgroup = personal.researchgroup;
                 collection.p.annotation = personal.annotation;
                 collection.p.experience_rt_pcr = personal.experience_rt_pcr;
-                collection.ap.OverwriteWith(location);
             }
 
             var changedRows = await _context.SaveChangesAsync();
 
-            if (2 < changedRows)
+            if (1 < changedRows)
             {
                 throw new InvalidDataStateException(FatalCodes.UpdatesMadeInTooManyRows);
             }
@@ -528,20 +486,10 @@ namespace Pirat.Services.Resource
 
             ConsumableEntity consumableEntity = foundConsumables[0].c;
             OfferEntity offerEntity = foundConsumables[0].o;
-
-            AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, consumableEntity.address_id);
-
-            if (addressEntity is null)
-            {
-                throw new InvalidDataStateException(FatalCodes.ResourceWithoutRelatedAddress);
-            }
-
+            
             consumableEntity.is_deleted = true;
             await consumableEntity.UpdateAsync(_context);
-
-            addressEntity.is_deleted = true;
-            await addressEntity.UpdateAsync(_context);
-
+            
             await new ChangeEntity()
             {
                 change_type = ChangeEntityChangeType.DeleteResource,
@@ -583,19 +531,9 @@ namespace Pirat.Services.Resource
             DeviceEntity deviceEntity = foundDevices[0].d;
             OfferEntity offerEntity = foundDevices[0].o;
 
-            AddressEntity addressEntity = (AddressEntity) await new AddressEntity().FindAsync(_context, deviceEntity.address_id);
-            
-            if (addressEntity is null)
-            {
-                throw new InvalidDataStateException(FatalCodes.ResourceWithoutRelatedAddress);
-            }
-
             deviceEntity.is_deleted = true;
             await deviceEntity.UpdateAsync(_context);
-
-            addressEntity.is_deleted = true;
-            await addressEntity.UpdateAsync(_context);
-
+            
             await new ChangeEntity()
             {
                 change_type = ChangeEntityChangeType.DeleteResource,
@@ -636,19 +574,8 @@ namespace Pirat.Services.Resource
             PersonalEntity personalEntity = foundPersonals[0].p;
             OfferEntity offerEntity = foundPersonals[0].o;
 
-            AddressEntity addressEntity = (AddressEntity)await new AddressEntity().FindAsync(_context, personalEntity.address_id);
-
-
-            if (addressEntity is null)
-            {
-                throw new InvalidDataStateException(FatalCodes.ResourceWithoutRelatedAddress);
-            }
-
             personalEntity.is_deleted = true;
             await personalEntity.UpdateAsync(_context);
-
-            addressEntity.is_deleted = true;
-            await addressEntity.UpdateAsync(_context);
 
             await new ChangeEntity()
             {

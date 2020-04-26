@@ -9,7 +9,7 @@ namespace Pirat.Examples.TestExamples
     public class CaptainHookGenerator
     {
 
-        public Address generateAddress()
+        public Address generateProviderAddress()
         {
             return new Address()
             {
@@ -25,8 +25,20 @@ namespace Pirat.Examples.TestExamples
                 category = "PCR_THERMOCYCLER",
                 name = "Zeitticker",
                 manufacturer = "Piratenrolex",
-                address = generateAddress(),
+                address = null,
                 amount = 5
+            };
+        }
+
+        public Device GenerateQueryDevice()
+        {
+            return new Device()
+            {
+                category = "PCR_THERMOCYCLER",
+                name = "Zeitticker",
+                manufacturer = "Piratenrolex",
+                address = generateProviderAddress(),
+                amount = 5,
             };
         }
 
@@ -39,11 +51,11 @@ namespace Pirat.Examples.TestExamples
                 experience_rt_pcr = false,
                 qualification = "Entern",
                 area = "Piraten",
-                address = generateAddress()
+                address = null
             };
         }
 
-        public Manpower GenerateManpower()
+        public Manpower GenerateQueryManpower()
         {
             return new Manpower()
             {
@@ -52,7 +64,7 @@ namespace Pirat.Examples.TestExamples
                 experience_rt_pcr = false,
                 qualification = new List<string>(){"Entern"},
                 area = new List<string>(){"Piraten"},
-                address = generateAddress()
+                address = generateProviderAddress()
             };
         }
 
@@ -65,7 +77,20 @@ namespace Pirat.Examples.TestExamples
                 manufacturer = "HookInc",
                 amount = 40,
                 unit = "Packung",
-                address = generateAddress()
+                address = null
+            };
+        }
+
+        public Consumable GenerateQueryConsumable()
+        {
+            return new Consumable()
+            {
+                category = "SCHUTZKLEIDUNG",
+                name = "Hook3000",
+                manufacturer = "HookInc",
+                amount = 40,
+                unit = "Packung",
+                address = generateProviderAddress()
             };
         }
 
@@ -78,7 +103,7 @@ namespace Pirat.Examples.TestExamples
                 phone = "546389",
                 mail = "captainhook.neverland@gmx.de",
                 ispublic = true,
-                address = generateAddress()
+                address = generateProviderAddress()
             };
         }
 
