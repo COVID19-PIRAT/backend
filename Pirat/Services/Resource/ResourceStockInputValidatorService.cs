@@ -18,7 +18,7 @@ namespace Pirat.Services.Resource
         {
             NullCheck.ThrowIfNull<Address>(address);
 
-            if (string.IsNullOrEmpty(address.postalcode) || string.IsNullOrEmpty(address.country))
+            if (!address.ContainsInformation())
             {
                 throw new ArgumentException(FailureCodes.IncompleteAddress);
             }

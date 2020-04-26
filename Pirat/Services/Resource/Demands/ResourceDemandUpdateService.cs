@@ -33,12 +33,12 @@ namespace Pirat.Services.Resource.Demands
             DemandEntity demandEntity = new DemandEntity().Build(provider);
 
             // Store address if available
-            if (provider.address != null && !provider.address.IsEmpty())
+            if (provider.address != null && provider.address.ContainsInformation())
             {
                 AddressEntity demandAddressEntity = new AddressEntity().build(provider.address);
                 _addressMaker.SetCoordinates(demandAddressEntity);
                 await demandAddressEntity.InsertAsync(_context);
-                demandEntity.address_id = demandAddressEntity.id;
+                demandEntity.address_id = demandAddressEntity.Id;
             }
             
             // Store demand

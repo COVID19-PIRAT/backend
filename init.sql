@@ -3,15 +3,19 @@ create table address
 	id serial not null
 		constraint address_pk
 			primary key,
-	streetnumber text,
-	postalcode text not null,
-	city text,
-	country text,
 	hascoordinates boolean default false not null,
 	latitude numeric,
 	longitude numeric,
-	street text,
-	is_deleted boolean default false not null
+	is_deleted boolean default false not null,
+	street_line_1 text,
+	street_line_2 text,
+	street_line_3 text,
+	street_line_4 text,
+	county text,
+	city text,
+	state text,
+	postal_code text,
+	country text not null
 );
 
 create unique index address_id_uindex
@@ -110,7 +114,7 @@ create table region_subscription
 	active boolean default true not null,
 	name text not null,
 	institution text not null,
-	postalcode text not null,
+	postal_code text not null,
 	latitude numeric not null,
 	longitude numeric not null,
 	region text not null

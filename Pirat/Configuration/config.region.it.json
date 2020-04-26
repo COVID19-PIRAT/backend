@@ -1,6 +1,38 @@
 {
   "languages": [ "it", "en" ],
   "countryName": "Italy",
+  "addressFormat": {
+    "fields": [
+      {
+        "id": "streetLine1",
+        "label": {
+          "it": "Indirizzo",
+          "en": "Street"
+        }
+      },
+      {
+        "id": "postalCode",
+        "label": {
+          "it": "CAP",
+          "en": "Postal code"
+        }
+      },
+      {
+        "id": "city",
+        "label": {
+          "it": "Città",
+          "en": "City"
+        }
+      },
+      {
+        "id": "country",
+        "label": {
+          "it": "Stato",
+          "en": "Country"
+        }
+      }
+    ]
+  },
   "categories": {
     "device": [
       "PCR_THERMOCYCLER",

@@ -49,10 +49,52 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                 }
             };
             var region = new RegionClientConfig
-            {
-                CountryName = "Deutschland",
-                Languages = new Dictionary<string, Language>
                 {
+                    CountryName = "Deutschland",
+                    AddressFormat = new AddressFormat()
+                    {
+                        Fields = new List<AddressFormatField>()
+                        {
+                            new AddressFormatField()
+                            {
+                                Id = "street_line_1",
+                                Label = new Dictionary<string, string>()
+                                {
+                                    {"de", "Straße und Hausnummer"},
+                                    {"en", "Street and street number"}
+                                }
+                            },
+                            new AddressFormatField()
+                            {
+                                Id = "postal_code",
+                                Label = new Dictionary<string, string>()
+                                {
+                                    {"de", "Postleitzahl"},
+                                    {"en", "Postal code"}
+                                }
+                            },
+                            new AddressFormatField()
+                            {
+                                Id = "city",
+                                Label = new Dictionary<string, string>()
+                                {
+                                    {"de", "Stadt"},
+                                    {"en", "City"}
+                                }
+                            },
+                            new AddressFormatField()
+                            {
+                                Id = "country",
+                                Label = new Dictionary<string, string>()
+                                {
+                                    {"de", "Land"},
+                                    {"en", "Country"}
+                                }
+                            }
+                        }
+                    },
+                    Languages = new Dictionary<string, Language>
+                    {
                     ["de"] = lang_de,
                     ["en"] = lang_en
                 },

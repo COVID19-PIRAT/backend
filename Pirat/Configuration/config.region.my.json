@@ -1,6 +1,46 @@
 {
   "languages": [ "en" ],
   "countryName": "Malaysia",
+  "addressFormat": {
+    "fields": [
+      {
+        "id": "streetLine1",
+        "label": {
+          "en": "Unit/Block/Floor"
+        }
+      },
+      {
+        "id": "streetLine2",
+        "label": {
+          "en": "Street"
+        }
+      },
+      {
+        "id": "county",
+        "label": {
+          "en": "Region"
+        }
+      },
+      {
+        "id": "postalCode",
+        "label": {
+          "en": "Postal code"
+        }
+      },
+      {
+        "id": "city",
+        "label": {
+          "en": "City"
+        }
+      },
+      {
+        "id": "country",
+        "label": {
+          "en": "Country"
+        }
+      }
+    ]
+  },
   "categories": {
     "device": [
       "PCR_THERMOCYCLER",

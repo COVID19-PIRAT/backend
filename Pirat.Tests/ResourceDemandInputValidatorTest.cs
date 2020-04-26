@@ -32,7 +32,7 @@ namespace Pirat.Tests
 
             //Country empty but postal code specified
             consumable = _captainHookGenerator.GenerateQueryConsumable();
-            consumable.address.country = "";
+            consumable.address.Country = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForDemandQuery(consumable));
 
             //Negative kilometer
@@ -47,10 +47,10 @@ namespace Pirat.Tests
         [Fact]
         public void QueryConsumable_AllowedInputs()
         {
-            //Country and postalcode can be empty both
+            //Country and postal_code can be empty both
             var consumable = _captainHookGenerator.GenerateQueryConsumable();
-            consumable.address.country = "";
-            consumable.address.postalcode = "";
+            consumable.address.Country = "";
+            consumable.address.PostalCode = "";
             var exception = Record.Exception(() => _service.ValidateForDemandQuery(consumable));
             Assert.Null(exception);
         }
@@ -68,7 +68,7 @@ namespace Pirat.Tests
 
             //Country empty but postal code specified
             device = _captainHookGenerator.GenerateQueryDevice();
-            device.address.country = "";
+            device.address.Country = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForDemandQuery(device));
 
             //Negative kilometer
@@ -83,10 +83,10 @@ namespace Pirat.Tests
         [Fact]
         public void QueryDevice_AllowedInputs()
         {
-            //Country and postalcode can be empty both
+            //Country and postal_code can be empty both
             var device = _captainHookGenerator.GenerateQueryDevice();
-            device.address.country = "";
-            device.address.postalcode = "";
+            device.address.Country = "";
+            device.address.PostalCode = "";
             var exception = Record.Exception(() => _service.ValidateForDemandQuery(device));
             Assert.Null(exception);
         }

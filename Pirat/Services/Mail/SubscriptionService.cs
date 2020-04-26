@@ -34,12 +34,12 @@ namespace Pirat.Services.Mail
             NullCheck.ThrowIfNull<RegionSubscription>(subscription);
             AddressEntity addressEntity = new AddressEntity()
             {
-                postalcode = subscription.postalcode,
-                country = "Deutschland"
+                PostalCode = subscription.postal_code,
+                Country = "Deutschland"
             };
             _addressMaker.SetCoordinates(addressEntity);
-            subscription.latitude = addressEntity.latitude;
-            subscription.longitude = addressEntity.longitude;
+            subscription.latitude = addressEntity.Latitude;
+            subscription.longitude = addressEntity.Longitude;
             subscription.active = true;
             subscription.region = region;
             await subscription.InsertAsync(_context);
@@ -58,7 +58,7 @@ namespace Pirat.Services.Mail
             var queryAllRecentDevices = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join d in _context.device on o.id equals d.offer_id
-                join a in _context.address on o.address_id equals a.id
+                join a in _context.address on o.address_id equals a.Id
                 where (o.timestamp > DateTime.Now.AddDays(-1))
                 select new { device = d, address = a };
             var allRecentDevices = await queryAllRecentDevices.ToListAsync();
@@ -66,7 +66,7 @@ namespace Pirat.Services.Mail
             var queryAllRecentConsumables = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join c in _context.consumable on o.id equals c.offer_id
-                join a in _context.address on o.address_id equals a.id
+                join a in _context.address on o.address_id equals a.Id
                 where (o.timestamp > DateTime.Now.AddDays(-1))
                 select new { consumable = c, address = a };
             var allRecentConsumables = await queryAllRecentConsumables.ToListAsync();
@@ -74,64 +74,64 @@ namespace Pirat.Services.Mail
             var queryAllRecentPersonnel = 
                 from o in _context.offer as IQueryable<OfferEntity>
                 join p in _context.personal on o.id equals p.offer_id
-                join a in _context.address on o.address_id equals a.id
+                join a in _context.address on o.address_id equals a.Id
                 where (o.timestamp > DateTime.Now.AddDays(-1))
                 select new { personnel = p, address = a };
             var allRecentPersonnel = await queryAllRecentPersonnel.ToListAsync();
 
-            var postalCodeToSubscriptionsDictionary = new Dictionary<string, List<RegionSubscription>>();
-            var postalCodeToResources = new Dictionary<string, ResourceCompilation>();
+            var postal_codeToSubscriptionsDictionary = new Dictionary<string, List<RegionSubscription>>();
+            var postal_codeToResources = new Dictionary<string, ResourceCompilation>();
 
             // Group subscriptions by postal code
             foreach (RegionSubscription subscription in allSubscriptions)
             {
-                var ss = postalCodeToSubscriptionsDictionary.GetValueOrDefault(subscription.postalcode,
+                var ss = postal_codeToSubscriptionsDictionary.GetValueOrDefault(subscription.postal_code,
                     new List<RegionSubscription>());
                 ss.Add(subscription);
-                postalCodeToSubscriptionsDictionary[subscription.postalcode] = ss;
+                postal_codeToSubscriptionsDictionary[subscription.postal_code] = ss;
             }
 
             // Prepare data structures
-            foreach (var (postalCode, _) in postalCodeToSubscriptionsDictionary)
+            foreach (var (postal_code, _) in postal_codeToSubscriptionsDictionary)
             {
-                postalCodeToResources[postalCode] = new ResourceCompilation();
+                postal_codeToResources[postal_code] = new ResourceCompilation();
             }
 
             // Compute the distance between all recently offered resources to the relevant postal codes
             // and assign the resources to the postal codes if they are in close proximity.
             foreach (var da in allRecentDevices)
             {
-                foreach (var (postalCode, ss) in postalCodeToSubscriptionsDictionary)
+                foreach (var (postal_code, ss) in postal_codeToSubscriptionsDictionary)
                 {
-                    double distance = ComputeDistance(da.address.latitude, da.address.longitude, 
+                    double distance = ComputeDistance(da.address.Latitude, da.address.Longitude, 
                         ss[0].latitude, ss[0].longitude);
                     if (distance <= MAX_DISTANCE)
                     {
-                        postalCodeToResources[postalCode].devices.Add(new Device().Build(da.device));
+                        postal_codeToResources[postal_code].devices.Add(new Device().Build(da.device));
                     }
                 }
             }
             foreach (var ca in allRecentConsumables)
             {
-                foreach (var (postalCode, ss) in postalCodeToSubscriptionsDictionary)
+                foreach (var (postal_code, ss) in postal_codeToSubscriptionsDictionary)
                 {
-                    double distance = ComputeDistance(ca.address.latitude, ca.address.longitude,
+                    double distance = ComputeDistance(ca.address.Latitude, ca.address.Longitude,
                         ss[0].latitude, ss[0].longitude);
                     if (distance <= MAX_DISTANCE)
                     {
-                        postalCodeToResources[postalCode].consumables.Add(new Consumable().build(ca.consumable));
+                        postal_codeToResources[postal_code].consumables.Add(new Consumable().build(ca.consumable));
                     }
                 }
             }
             foreach (var pa in allRecentPersonnel)
             {
-                foreach (var (postalCode, ss) in postalCodeToSubscriptionsDictionary)
+                foreach (var (postal_code, ss) in postal_codeToSubscriptionsDictionary)
                 {
-                    double distance = ComputeDistance(pa.address.latitude, pa.address.longitude,
+                    double distance = ComputeDistance(pa.address.Latitude, pa.address.Longitude,
                         ss[0].latitude, ss[0].longitude);
                     if (distance <= MAX_DISTANCE)
                     {
-                        postalCodeToResources[postalCode].personals.Add(new Personal().build(pa.personnel));
+                        postal_codeToResources[postal_code].personals.Add(new Personal().build(pa.personnel));
                     }
                 }
             }
@@ -139,11 +139,11 @@ namespace Pirat.Services.Mail
             // Send emails
             foreach (RegionSubscription subscription in allSubscriptions)
             {
-                ResourceCompilation resources = postalCodeToResources[subscription.postalcode];
+                ResourceCompilation resources = postal_codeToResources[subscription.postal_code];
                 if (!resources.isEmpty())
                 {
                     await this._mailService.SendNotificationAboutNewOffersAsync(subscription.region, subscription,
-                        postalCodeToResources[subscription.postalcode]);
+                        postal_codeToResources[subscription.postal_code]);
                 }
             }
         }

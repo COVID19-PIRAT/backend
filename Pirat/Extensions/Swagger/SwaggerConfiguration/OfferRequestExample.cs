@@ -14,11 +14,10 @@ namespace Pirat.SwaggerConfiguration
                 {
                     address = new Address()
                     {
-                        street = "Leuchtturmstraße",
-                        streetnumber = "716",
-                        postalcode = "27498",
-                        city = "Helgoland",
-                        country = "Deutschland",
+                        StreetLine1 = "Leuchtturmstraße 716",
+                        PostalCode = "27498",
+                        City = "Helgoland",
+                        Country = "Deutschland",
                     },
                     name = "Störtebeker",
                     organisation = "Instiut für Piraterie",
@@ -32,14 +31,7 @@ namespace Pirat.SwaggerConfiguration
                     {
                         qualification = "PHD_STUDENT",
                         area = "MOLECULAR_BIOLOGY",
-                        address = new Address()
-                        {
-                            street = "Leuchtturmstraße",
-                            streetnumber = "716",
-                            postalcode = "27498",
-                            city = "Helgoland",
-                            country = "Deutschland"
-                        },
+                        address = null,
                         institution = "Institut für Piraterie",
                         researchgroup = "Biologie Piraten",
                         experience_rt_pcr = false,
@@ -50,14 +42,7 @@ namespace Pirat.SwaggerConfiguration
                 {
                     new Consumable()
                     {
-                        address = new Address()
-                        {
-                            street = "Leuchtturmstraße",
-                            streetnumber = "716",
-                            postalcode = "27498",
-                            city = "Helgoland",
-                            country = "Deutschland"
-                        },
+                        address = null,
                         category = "MASKE",
                         name = "FFP2 Maske",
                         unit = "Packung",
@@ -71,14 +56,7 @@ namespace Pirat.SwaggerConfiguration
                 {
                     new Device()
                     {
-                        address = new Address()
-                        {
-                            street = "Leuchtturmstraße",
-                            streetnumber = "716",
-                            postalcode = "27498",
-                            city = "Helgoland",
-                            country = "Deutschland"
-                        },
+                        address = null,
                         category = "ZENTRIFUGE",
                         name = "Piratenzentrifuge",
                         manufacturer = "Störtebeker & Co",
