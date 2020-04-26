@@ -1,0 +1,90 @@
+name: Build, test, and push to Docker Hub
+
+on:
+  push:
+  schedule:
+    - cron: '0 7 */2 * *'
+
+env:
+  IMAGE_NAME: covid19pirat/pirat-backend
+  IMAGE_TAG: latest
+  BRANCH: NONE
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.101
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Unit Tests
+        run: dotnet test Pirat.Tests/Pirat.Tests.csproj --no-restore --verbosity normal
+      - name: Build containers
+        run: docker-compose -f test-database_docker-compose.yml up -d
+      - name: Check running containers
+        run: docker ps -a
+      - name: Check logs
+        run: docker logs postgres
+      - name: Database Tests
+        run: dotnet test Pirat.DatabaseTests/Pirat.DatabaseTests.csproj --no-restore --verbosity normal
+      - name: Integration Tests
+        run: dotnet test Pirat.IntegrationTests/Pirat.IntegrationTests.csproj --no-restore --verbosity normal
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v2
+      - name: set branch env
+        run: |
+          echo "::set-env name=BRANCH::${GITHUB_REF##*/}"
+
+      - name: set image tag to stable
+        if: endsWith(github.ref, '/master')
+        run: |
+          echo "::set-env name=IMAGE_TAG::stable"
+
+      - name: set image tag to integration
+        if: endsWith(github.ref, '/integration')
+        run: |
+          echo "::set-env name=IMAGE_TAG::integration"
+
+      - name: set image tag to testing
+        if: endsWith(github.ref, '/testing')
+        run: |
+          echo "::set-env name=IMAGE_TAG::testing"
+
+      - name: login
+        run: docker login -u ${{ secrets.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: build
+        run: docker build -t backend .
+
+      - name: tag
+        run: |
+          docker tag backend ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker tag backend ${{ env.IMAGE_NAME }}:${{ env.BRANCH }}
+          docker tag backend ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker tag backend ${{ env.IMAGE_NAME }}:latest
+
+      - name: push
+        run: |
+          docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.IMAGE_NAME }}:${{ env.BRANCH }}
+          docker push ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.IMAGE_NAME }}:latest
+
+      - name: Slack notification
+        uses: Ilshidur/action-slack@master
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          SLACK_USERNAME: backend
+        with:
+          args: "New Images available:\n- {{ GITHUB_SHA }}\n- {{ IMAGE_TAG }}\n- {{ BRANCH }}\n- latest"

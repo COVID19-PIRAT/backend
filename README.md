@@ -113,6 +113,6 @@ If you want to execute the tests locally make sure you have a fresh build of Pir
 
 Executing Pirat.Tests: This project contains Unit Tests. Run them in your IDE or via console using the command "dotnet test Pirat.Tests/".
 
-Executing Pirat.DatabaseTests: This project contains Tests that need access to a database. Before starting the including tests you need first to start the postgres container. Do this by using the command "(sudo) docker-compose up" in your console. Now a local postgres container runs on port 5432 and you can run the tests in your IDE or via the console with the command "dotnet test Pirat.DatabaseTests/".
+Executing Pirat.DatabaseTests: This project contains Tests that need access to a database. Before starting the including tests you need first to start the postgres container. Do this by using the command "(sudo) docker-compose -f test-database_docker-compose.yml up" in your console. Now a local postgres container runs on port 5432 and you can run the tests in your IDE or via the console with the command "dotnet test Pirat.DatabaseTests/".
 
 Executing Pirat.IntegrationTests: Documentation will come - no Integration Tests to far. 
