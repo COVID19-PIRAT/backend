@@ -40,7 +40,7 @@ The following environment variables are available, most of them are required.
 * PIRAT_ADMIN_KEY - An arbitrary value: It is used as the password for a small admin area.
 * PIRAT_CONFIG_DIR (optional) - The path to the directory with the configuration files which are in `Pirat/Configuration`.
 * PIRAT_CONNECTION - A NpgsqlConnection connection string.
-* PIRAT_SWAGGER_PREFIX_PATH - The base href for swagger: It can be set to `/` in most cases.
+* PIRAT_SWAGGER_PREFIX_PATH - The base href for swagger: A common value would be `api/`.
 
 
 **Email**
@@ -65,6 +65,7 @@ ASPNETCORE_ENVIRONMENT=development
 PIRAT_ADMIN_KEY=i_am_admin
 PIRAT_HOST=https://pirat-tool.com
 PIRAT_CONNECTION="Server=localhost;Port=5432;Database=pirat;User ID=pirat;Password=secret_db_password"
+PIRAT_SWAGGER_PREFIX_PATH=api/
 
 PIRAT_SENDER_MAIL_ADDRESS=mail@pirat-tool.com
 PIRAT_SENDER_MAIL_USERNAME=mail@pirat-tool.com
@@ -90,6 +91,12 @@ dotnet publish -c Release -r win-x64 --self-contained true Pirat.sln
 ```
 
 The backend will listen on localhost:5000.
+
+
+#### Documentation
+
+Swagger is used to document the API. If started in the development mode, the Swagger UI is available at `/{PIRAT_SWAGGER_PREFIX_PATH}swagger`.
+
 
 
 ## Contributing
