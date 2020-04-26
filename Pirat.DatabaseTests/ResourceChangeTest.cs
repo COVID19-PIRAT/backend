@@ -45,9 +45,9 @@ namespace Pirat.DatabaseTests
             var addressMaker = new Mock<IAddressMaker>();
             addressMaker.Setup(m => m.SetCoordinates(It.IsAny<AddressEntity>())).Callback((AddressEntity a) =>
             {
-                a.latitude = 0;
-                a.longitude = 0;
-                a.hascoordinates = false;
+                a.Latitude = 0;
+                a.Longitude = 0;
+                a.HasCoordinates = false;
             });
 
             this._resourceStockQueryService = new ResourceStockQueryService(loggerDemand.Object, ResourceContext, addressMaker.Object);
@@ -112,8 +112,8 @@ namespace Pirat.DatabaseTests
             provider.name = "Peter Pan";
             provider.phone = "987766";
             provider.organisation = "Never Grow Up Kids";
-            provider.address.postalcode = "88888";
-            provider.address.country = "Atlantis";
+            provider.address.PostalCode = "88888";
+            provider.address.Country = "Atlantis";
 
             //Update
             var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, provider);
@@ -181,8 +181,8 @@ namespace Pirat.DatabaseTests
                 category = consumable.category,
                 address = new Address()
                 {
-                    postalcode = _offer.provider.address.postalcode,
-                    country = _offer.provider.address.country
+                    PostalCode = _offer.provider.address.PostalCode,
+                    Country = _offer.provider.address.Country
                 }
             };
             var response = await _resourceStockQueryService.QueryOffersAsync(queryConsumable, "de")
@@ -249,8 +249,8 @@ namespace Pirat.DatabaseTests
             {
                 address = new Address()
                 {
-                    postalcode = _offer.provider.address.postalcode,
-                    country = _offer.provider.address.country
+                    PostalCode = _offer.provider.address.PostalCode,
+                    Country = _offer.provider.address.Country
                 },
                 category = device.category
             };
@@ -323,8 +323,8 @@ namespace Pirat.DatabaseTests
                 area = new List<string>() { "Piratenforschung"},
                 address = new Address()
                 {
-                    postalcode = _offer.provider.address.postalcode,
-                    country = _offer.provider.address.country,
+                    PostalCode = _offer.provider.address.PostalCode,
+                    Country = _offer.provider.address.Country,
                 }
             };
             var response = await _resourceStockQueryService.QueryOffersAsync(queryManpower, "de")
@@ -374,8 +374,8 @@ namespace Pirat.DatabaseTests
         {
             //Change
             Provider provider = _offer.provider;
-            provider.address.postalcode = "85521";
-            provider.address.country = "Deutschland";
+            provider.address.PostalCode = "85521";
+            provider.address.Country = "Deutschland";
             //Update
             var changedRows = await _resourceStockUpdateService.ChangeInformationAsync(_token, provider);
             Assert.True(changedRows == 1);

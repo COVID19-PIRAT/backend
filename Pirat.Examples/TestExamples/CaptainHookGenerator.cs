@@ -13,8 +13,8 @@ namespace Pirat.Examples.TestExamples
         {
             return new Address()
             {
-                postalcode = "55555",
-                country = "Neverland"
+                PostalCode = "55555",
+                Country = "Neverland"
             };
         }
 

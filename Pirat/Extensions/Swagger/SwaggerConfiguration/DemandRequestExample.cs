@@ -22,11 +22,11 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                         phone = "987654",
                         address = new Address()
                         {
-                            street = "Leuchtturmstraße",
-                            streetnumber = "716",
-                            postalcode = "27498",
-                            city = "Helgoland",
-                            country = "Deutschland"
+                            StreetLine1 = "Leuchtturmstraße",
+                            County = "716",
+                            PostalCode = "27498",
+                            City = "Helgoland",
+                            Country = "Deutschland"
                         }
                     },
                     consumables = new List<Consumable>()

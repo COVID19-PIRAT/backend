@@ -62,6 +62,7 @@ namespace Pirat.Services
                 return new RegionClientConfig()
                 {
                     CountryName = region.CountryName,
+                    AddressFormat = region.AddressFormat,
                     Categories = region.Categories,
                     Languages = langDic
                 };

@@ -78,7 +78,7 @@ namespace Pirat.Tests
             Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(consumable));
 
             consumable = _captainHookGenerator.GenerateQueryConsumable();
-            consumable.address.country = "";
+            consumable.address.Country = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(consumable));
         }
 
@@ -90,7 +90,7 @@ namespace Pirat.Tests
             Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(device));
 
             device = _captainHookGenerator.GenerateQueryDevice();
-            device.address.postalcode = "";
+            device.address.PostalCode = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(device));
         }
 
@@ -99,7 +99,7 @@ namespace Pirat.Tests
         public void QueryManpower_BadInputs()
         {
             var manpower = _captainHookGenerator.GenerateQueryManpower();
-            manpower.address.postalcode = "";
+            manpower.address.PostalCode = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForStockQuery(manpower));
         }
 
@@ -119,11 +119,11 @@ namespace Pirat.Tests
             //Assert.Throws<ArgumentException>(() => _service.validateForChangeInformation(_dummyToken, provider));
 
             provider = _captainHookGenerator.GenerateProvider();
-            provider.address.postalcode = "";
+            provider.address.PostalCode = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForChangeInformation(_dummyToken, provider));
 
             provider = _captainHookGenerator.GenerateProvider();
-            provider.address.country = "";
+            provider.address.Country = "";
             Assert.Throws<ArgumentException>(() => _service.ValidateForChangeInformation(_dummyToken, provider));
 
             provider = _captainHookGenerator.GenerateProvider();

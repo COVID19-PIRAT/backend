@@ -12,7 +12,7 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                 name = "Jack Sparrow",
                 email = "captainjacksparrow1@gmx.de",
                 institution = "Weltmeere",
-                postalcode = "85748"
+                postal_code = "85748"
             };
         }
     }

@@ -97,7 +97,7 @@ namespace Pirat.Services.Resource
             await offerAddressEntity.InsertAsync(_context);
 
             //Store the offer including the address id as foreign key, the token and a timestamp
-            offerEntity.address_id = offerAddressEntity.id;
+            offerEntity.address_id = offerAddressEntity.Id;
             offerEntity.token = createToken();
             offerEntity.timestamp = DateTime.Now;
             await offerEntity.InsertAsync(_context);
@@ -155,7 +155,7 @@ namespace Pirat.Services.Resource
 
             var query = 
                 from o in _context.offer as IQueryable<OfferEntity>
-                join ap in _context.address on o.address_id equals ap.id
+                join ap in _context.address on o.address_id equals ap.Id
                 where o.token == token
                 select new {o, ap};
 

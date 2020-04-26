@@ -26,7 +26,7 @@ namespace Pirat.Model
 
         [JsonProperty]
         [Required]
-        public string postalcode { get; set; }
+        public string postal_code { get; set; }
 
         public decimal latitude { get; set; }
 

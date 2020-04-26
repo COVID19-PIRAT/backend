@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 using System.Threading.Tasks;
 using Pirat.DatabaseContext;
 using Pirat.Model.Api.Resource;
@@ -9,68 +12,88 @@ namespace Pirat.Model.Entity.Resource.Common
 
 	public class AddressEntity : Address, IFindable, IDeletable, IUpdatable, IInsertable
 	{
+		[Column("id")]
+		public int Id { get; set; }
 
-		public int id { get; set; }
-
-		public bool hascoordinates { get; set; }
-
-        public bool is_deleted { get; set; }
+		[Column("hascoordinates")]
+		public bool HasCoordinates { get; set; }
+		
+		[Column("is_deleted")]
+        public bool IsDeleted { get; set; }
 
 		public AddressEntity build(Address a)
 		{
             NullCheck.ThrowIfNull<Address>(a);
-			street = a.street;
-			streetnumber = a.streetnumber;
-			postalcode = a.postalcode;
-			city = a.city;
-			country = a.country;
-			latitude = a.latitude;
-			longitude = a.longitude;
+            Latitude = a.Latitude;
+            Longitude = a.Longitude;
+            StreetLine1 = a.StreetLine1;
+            StreetLine2 = a.StreetLine2;
+            StreetLine3 = a.StreetLine3;
+            StreetLine4 = a.StreetLine4;
+            County = a.County;
+            City = a.City;
+            State = a.State;
+            PostalCode = a.PostalCode;
+            Country = a.Country;
             return this;
         }
 
         public void OverwriteWith(AddressEntity other)
         {
             NullCheck.ThrowIfNull<AddressEntity>(other);
-			postalcode = other.postalcode;
-            country = other.country;
-            city = other.city;
-            street = other.street;
-            streetnumber = other.streetnumber;
-            latitude = other.latitude;
-            longitude = other.longitude;
-            hascoordinates = other.hascoordinates;
-            is_deleted = other.is_deleted;
+            Latitude = other.Latitude;
+            Longitude = other.Longitude;
+            HasCoordinates = other.HasCoordinates;
+            IsDeleted = other.IsDeleted;
+            StreetLine1 = other.StreetLine1;
+            StreetLine2 = other.StreetLine2;
+            StreetLine3 = other.StreetLine3;
+            StreetLine4 = other.StreetLine4;
+            County = other.County;
+            City = other.City;
+            State = other.State;
+            PostalCode = other.PostalCode;
+            Country = other.Country;
+        }
+
+		/// <summary>
+		/// This method returns a formatted string that may be passed to a geocoding API.
+		/// </summary>
+        public string ToQueryString()
+		{
+			var parts = new List<string>()
+			{
+				StreetLine1,
+				StreetLine2,
+				StreetLine3,
+				StreetLine4,
+				County,
+				City,
+				State,
+				PostalCode,
+				Country
+			};
+
+			var s = "";
+			foreach (var part in parts)
+			{
+				if (!string.IsNullOrWhiteSpace(part))
+				{
+					s += part + ", ";
+				}
+			}
+	        return s;
         }
 
 		public override string ToString()
 		{
-			var builder = new StringBuilder();
-			//string s = street + " " + streetnumber + ", " + postalcode + " " + city + ", " + country;
-			if (!string.IsNullOrEmpty(street) && !string.IsNullOrEmpty(streetnumber))
-			{
-				builder.Append(street + " " + streetnumber + ", ");
-			}
-			builder.Append(postalcode);
-			if (!string.IsNullOrEmpty(city))
-			{
-				builder.Append(" ");
-				builder.Append(city);
-			}
-			if (!string.IsNullOrEmpty(country))
-			{
-				builder.Append(",");
-				builder.Append(country);
-			}
-
-			if (hascoordinates)
-			{
-				builder.Append(" (lat=" + latitude + ", lng=" + longitude + ")");
-			}
-			return builder.ToString();
+			return $"{base.ToString()}, " +
+			       $"{nameof(Id)}: {Id}, " +
+			       $"{nameof(HasCoordinates)}: {HasCoordinates}, " +
+			       $"{nameof(IsDeleted)}: {IsDeleted}";
 		}
 
-        public async Task<IInsertable> InsertAsync(ResourceContext context)
+		public async Task<IInsertable> InsertAsync(ResourceContext context)
         {
             NullCheck.ThrowIfNull<ResourceContext>(context);
 			context.address.Add(this);
@@ -98,7 +121,4 @@ namespace Pirat.Model.Entity.Resource.Common
             await context.SaveChangesAsync();
         }
 	}
-
-	
-
 }

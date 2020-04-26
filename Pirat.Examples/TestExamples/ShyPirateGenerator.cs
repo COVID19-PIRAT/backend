@@ -9,8 +9,8 @@ namespace Pirat.Examples.TestExamples
         {
             return new Address()
             {
-                postalcode = "121212",
-                country = "Jamaica"
+                PostalCode = "121212",
+                Country = "Jamaica"
             };
         }
 

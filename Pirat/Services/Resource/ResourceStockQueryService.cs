@@ -46,7 +46,7 @@ namespace Pirat.Services.Resource
 
             var query = from o in _context.offer as IQueryable<OfferEntity>
                         join c in _context.consumable on o.id equals c.offer_id
-                        join ap in _context.address on o.address_id equals ap.id
+                        join ap in _context.address on o.address_id equals ap.Id
                         where consumable.category == c.category && !c.is_deleted && o.region == region
                         select new { o, c, ap };
 
@@ -70,9 +70,9 @@ namespace Pirat.Services.Resource
 
                 var resource = new Consumable().build(data.c);
 
-                var yLatitude = data.ap.latitude;
-                var yLongitude = data.ap.longitude;
-                var distance = DistanceCalculator.computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
+                var yLatitude = data.ap.Latitude;
+                var yLongitude = data.ap.Longitude;
+                var distance = DistanceCalculator.computeDistance(location.Latitude, location.Longitude, yLatitude, yLongitude);
                 if (distance > maxDistance && maxDistance != 0)
                 {
                     continue;
@@ -114,7 +114,7 @@ namespace Pirat.Services.Resource
 
             var query = from o in _context.offer as IQueryable<OfferEntity>
                         join d in _context.device on o.id equals d.offer_id
-                        join ap in _context.address on o.address_id equals ap.id
+                        join ap in _context.address on o.address_id equals ap.Id
                         where device.category == d.category && !d.is_deleted && o.region == region
                         select new { o, d, ap };
 
@@ -137,9 +137,9 @@ namespace Pirat.Services.Resource
             {
                 var resource = new Device().Build(data.d);
 
-                var yLatitude = data.ap.latitude;
-                var yLongitude = data.ap.longitude;
-                var distance = DistanceCalculator.computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
+                var yLatitude = data.ap.Latitude;
+                var yLongitude = data.ap.Longitude;
+                var distance = DistanceCalculator.computeDistance(location.Latitude, location.Longitude, yLatitude, yLongitude);
 
                 if (distance > maxDistance && maxDistance != 0)
                 {
@@ -181,7 +181,7 @@ namespace Pirat.Services.Resource
 
             var query = from o in _context.offer as IQueryable<OfferEntity>
                         join personal in _context.personal on o.id equals personal.offer_id
-                        join ap in _context.address on o.address_id equals ap.id
+                        join ap in _context.address on o.address_id equals ap.Id
                         where !personal.is_deleted && o.region == region
                         select new { o, personal, ap };
 
@@ -214,9 +214,9 @@ namespace Pirat.Services.Resource
             {
                 var resource = new Personal().build(data.personal);
 
-                var yLatitude = data.ap.latitude;
-                var yLongitude = data.ap.longitude;
-                var distance = DistanceCalculator.computeDistance(location.latitude, location.longitude, yLatitude, yLongitude);
+                var yLatitude = data.ap.Latitude;
+                var yLongitude = data.ap.Longitude;
+                var distance = DistanceCalculator.computeDistance(location.Latitude, location.Longitude, yLatitude, yLongitude);
                 if (distance > maxDistance && maxDistance != 0)
                 {
                     continue;

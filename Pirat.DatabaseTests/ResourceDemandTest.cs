@@ -39,9 +39,9 @@ namespace Pirat.DatabaseTests
             var addressMaker = new Mock<IAddressMaker>();
             addressMaker.Setup(m => m.SetCoordinates(It.IsAny<AddressEntity>())).Callback((AddressEntity a) =>
             {
-                a.latitude = 0;
-                a.longitude = 0;
-                a.hascoordinates = false;
+                a.Latitude = 0;
+                a.Longitude = 0;
+                a.HasCoordinates = false;
             });
             _resourceDemandQueryService = new ResourceDemandQueryService(loggerDemand.Object, ResourceContext, addressMaker.Object);
             _resourceDemandUpdateService = new ResourceDemandUpdateService(ResourceContext, addressMaker.Object);

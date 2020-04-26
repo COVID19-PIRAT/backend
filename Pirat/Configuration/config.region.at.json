@@ -1,6 +1,38 @@
 {
   "languages": [ "de", "en" ],
   "countryName": "Österreich",
+  "addressFormat": {
+    "fields": [
+      {
+        "id": "streetLine1",
+        "label": {
+          "de": "Straße und Hausnummer",
+          "en": "Street and street number"
+        }
+      },
+      {
+        "id": "postalCode",
+        "label": {
+          "de": "Postleitzahl",
+          "en": "Postal code"
+        }
+      },
+      {
+        "id": "city",
+        "label": {
+          "de": "Stadt",
+          "en": "City"
+        }
+      },
+      {
+        "id": "country",
+        "label": {
+          "de": "Land",
+          "en": "Country"
+        }
+      }
+    ]
+  },
   "categories": {
     "device": [
       "PCR_THERMOCYCLER",

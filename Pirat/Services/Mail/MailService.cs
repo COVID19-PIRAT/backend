@@ -285,7 +285,7 @@ your PIRAT-Team";
 
                 var germanText = $@"Liebe/r {regionSubscription.name},
 
-vielen Dank für Ihr Interesse an PIRAT. Sie werden von nun an über neue Angebote in der Nähe von {regionSubscription.postalcode} benachrichtigt.
+vielen Dank für Ihr Interesse an PIRAT. Sie werden von nun an über neue Angebote in der Nähe von {regionSubscription.postal_code} benachrichtigt.
 
 Falls Sie die Benachrichtigung beenden wollen oder noch Fragen zu PIRAT haben, melden Sie sich gerne jederzeit unter mail@pirat-tool.com.
 
@@ -294,7 +294,7 @@ Beste Grüße,
 Ihr PIRAT-Team";
                 var englishText = $@"Dear {regionSubscription.name},
 
-Thank you very much for your interest in PIRAT. You will now get notifications about new offers in the region {regionSubscription.postalcode}.
+Thank you very much for your interest in PIRAT. You will now get notifications about new offers in the region {regionSubscription.postal_code}.
 
 If you wish to cancel the subscription or have any questions regarding PIRAT, please contact us at mail@pirat-tool.com.
 
@@ -318,7 +318,7 @@ your PIRAT-Team";
 
                 var germanText = $@"Liebe/r {regionSubscription.name},
 
-wir haben neue Angebote für Sie auf PIRAT in der Nähe von {regionSubscription.postalcode}. Sie können sie unter https://pirat-tool.com/{region}/de/suchanfrage finden.
+wir haben neue Angebote für Sie auf PIRAT in der Nähe von {regionSubscription.postal_code}. Sie können sie unter https://pirat-tool.com/{region}/de/suchanfrage finden.
 
 {offersDE}
 
@@ -329,7 +329,7 @@ Beste Grüße,
 Ihr PIRAT-Team";
                 var englishText = $@"Dear {regionSubscription.name},
 
-There are new offers on PIRAT for you in the region {regionSubscription.postalcode}. You can find them under https://pirat-tool.com/{region}/en/suchanfrage.
+There are new offers on PIRAT for you in the region {regionSubscription.postal_code}. You can find them under https://pirat-tool.com/{region}/en/suchanfrage.
 
 {offersEN}
 

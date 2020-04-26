@@ -9,8 +9,8 @@ namespace Pirat.DatabaseTests.Examples
         {
             return new Address()
             {
-                postalcode = "16981782",
-                country = "Cuba"
+                PostalCode = "16981782",
+                Country = "Cuba"
             };
         }
 

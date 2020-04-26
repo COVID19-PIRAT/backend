@@ -16,7 +16,7 @@ namespace Pirat.Services.Helper.AddressMaking
 		{
             NullCheck.ThrowIfNull<AddressEntity>(address);
 			string apiKey = Environment.GetEnvironmentVariable("PIRAT_GOOGLE_API_KEY");
-			string addressString = address.ToString();
+			string addressString = address.ToQueryString();
 			Uri uri = new Uri("https://maps.googleapis.com/maps/api/geocode/json?address=" + addressString + "&key=" + apiKey);
 
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
@@ -39,9 +39,9 @@ namespace Pirat.Services.Helper.AddressMaking
 			decimal lat = location.GetValue("lat", StringComparison.Ordinal).ToObject<decimal>();
 			decimal lng = location.GetValue("lng", StringComparison.Ordinal).ToObject<decimal>();
 
-			address.latitude = lat;
-			address.longitude = lng;
-			address.hascoordinates = true;
+			address.Latitude = lat;
+			address.Longitude = lng;
+			address.HasCoordinates = true;
 		}
 	}
 }
