@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Pirat.Codes;
 using Pirat.Configuration;
@@ -28,6 +29,14 @@ namespace Pirat.Controllers
         {
             this._logger = logger;
             this._configurationManager = configurationManager;
+        }
+        
+        [HttpGet("webapp-environment")]
+        [Produces("application/json")]
+        [SwaggerResponse(Status200OK, type: typeof(string))]
+        public IActionResult GetWebappEnvironment()
+        {
+            return Ok(Environment.GetEnvironmentVariable("PIRAT_WEBAPP_ENVIRONMENT"));
         }
 
         /// <summary>
