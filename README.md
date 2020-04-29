@@ -41,6 +41,7 @@ The following environment variables are available, most of them are required.
 * PIRAT_CONFIG_DIR (optional) - The path to the directory with the configuration files which are in `Pirat/Configuration`.
 * PIRAT_CONNECTION - A NpgsqlConnection connection string.
 * PIRAT_SWAGGER_PREFIX_PATH - The base href for swagger: A common value would be `api/`.
+* PIRAT_WEBAPP_ENVIRONMENT - The environment for the frontend, possible values include: `production`, `testproduction`, and `development`
 
 
 **Email**
@@ -66,6 +67,7 @@ PIRAT_ADMIN_KEY=i_am_admin
 PIRAT_HOST=https://pirat-tool.com
 PIRAT_CONNECTION="Server=localhost;Port=5432;Database=pirat;User ID=pirat;Password=secret_db_password"
 PIRAT_SWAGGER_PREFIX_PATH=api/
+PIRAT_WEBAPP_ENVIRONMENT=production
 
 PIRAT_SENDER_MAIL_ADDRESS=mail@pirat-tool.com
 PIRAT_SENDER_MAIL_USERNAME=mail@pirat-tool.com
