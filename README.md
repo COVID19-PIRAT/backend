@@ -103,6 +103,8 @@ Swagger is used to document the API. If started in the development mode, the Swa
 
 ## Contributing
 
+Please read https://github.com/COVID19-PIRAT/frontend/blob/develop/README.md#contributing
+
 Use Feature Branches for the development and open a pull request.
 
 Code quality: To improve the quality we use the analyzer tools FxCop and Puma. If you make a pull request try to fix all warnings. To enable both anaylzers in order to check your code locally you might have to change settings in your IDE. For Visual Studio check that full solution analysis is allowed: Optionen/Options -> Text-Editor/Text Editor -> C# -> Erweitert/Advanced -> Bereich für Hintegrundanalyse/Background analysis scope -> Gesamte Projektmappe/Entire solution must be ticked.
