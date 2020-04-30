@@ -10,7 +10,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace Pirat.Controllers
@@ -21,6 +20,7 @@ namespace Pirat.Controllers
     {
         private readonly IConfigurationService _configurationManager;
         private readonly ILogger<ConfigurationController> _logger;
+        private readonly string version;
 
         public ConfigurationController(
             ILogger<ConfigurationController> logger,
@@ -29,8 +29,17 @@ namespace Pirat.Controllers
         {
             this._logger = logger;
             this._configurationManager = configurationManager;
+
+            if (System.IO.File.Exists("git_commit"))
+            {
+                var s = System.IO.File.ReadAllText("git_commit");
+                if (!s.StartsWith("#", StringComparison.Ordinal))
+                {
+                    version = s;
+                }
+            }
         }
-        
+
         [HttpGet("webapp-environment")]
         [Produces("application/json")]
         [SwaggerResponse(Status200OK, type: typeof(string))]
@@ -38,6 +47,19 @@ namespace Pirat.Controllers
         {
             return Ok(Environment.GetEnvironmentVariable("PIRAT_WEBAPP_ENVIRONMENT"));
         }
+
+        /// <summary>
+        /// Returns the version of this instance (the Git commit hash)
+        /// </summary>
+        [HttpGet("version")]
+        [Produces("application/json")]
+        [SwaggerResponse(Status200OK, type: typeof(string))]
+        [SwaggerResponse(Status204NoContent)]
+        public IActionResult GetVersion()
+        {
+            return Ok(version);
+        }
+
 
         /// <summary>
         /// Gets the complete configuration for the given region.
