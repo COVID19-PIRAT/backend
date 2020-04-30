@@ -44,6 +44,9 @@ jobs:
       - name: set branch env
         run: |
           echo "::set-env name=BRANCH::${GITHUB_REF##*/}"
+          
+      - name: write commit hash to file
+        run: echo ${{ github.sha }} > Pirat/git_commit
 
       - name: set image tag to stable
         if: endsWith(github.ref, '/master')
