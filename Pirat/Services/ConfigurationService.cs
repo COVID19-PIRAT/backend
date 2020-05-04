@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using Pirat.Codes;
+using Pirat.Model.Api.Resource;
 
 namespace Pirat.Services
 {
@@ -69,9 +71,9 @@ namespace Pirat.Services
             }
             else
             {
-                using var scope = _logger.BeginScope("Unknown region-code");
+                using var scope = _logger.BeginScope("Unknown region-regionCode");
                 _logger.LogWarning(
-                    "Tried to access configuration for invalid region-code: {0}",
+                    "Tried to access configuration for invalid region-regionCode: {0}",
                     regionCode
                 );
 
@@ -88,9 +90,9 @@ namespace Pirat.Services
             }
             else
             {
-                using var scope = _logger.BeginScope("Unknown region-code");
+                using var scope = _logger.BeginScope("Unknown region-regionCode");
                 _logger.LogWarning(
-                    "Tried to access languages for invalid region-code: {0}",
+                    "Tried to access languages for invalid region-regionCode: {0}",
                     regionCode
                 );
 
@@ -103,11 +105,60 @@ namespace Pirat.Services
             return this.Regions.Keys.ToList();
         }
 
+        public void ThrowIfNotInLanguage(string regionCode, Offer offer)
+        {
+            foreach (var consumable in offer.consumables)
+            {
+                ThrowIfNotConsumableCategoryInLanguage(regionCode, consumable.category);
+            }
+            foreach (var device in offer.devices)
+            {
+                ThrowIfNotDeviceCategoryInLanguage(regionCode, device.category);
+            }
+            foreach (var personal in offer.personals)
+            {
+                ThrowIfNotPersonnelAreaInLanguage(regionCode, new List<string>(1){personal.area});
+                ThrowIfNotPersonnelQualificationInLanguage(regionCode, new List<string>(1) { personal.qualification });
+            }
+        }
+
+        public void ThrowIfNotConsumableCategoryInLanguage(string regionCode, string category)
+        {
+            if (!Languages[regionCode].Consumable.Values.Contains(category))
+            {
+                throw new ArgumentException(Codes.FailureCodes.InvalidCategoryConsumable);
+            }
+        }
+
+        public void ThrowIfNotDeviceCategoryInLanguage(string regionCode, string category)
+        {
+            if(!Languages[regionCode].Device.Values.Contains(category))
+            {
+                throw new ArgumentException(Codes.FailureCodes.InvalidCategoryDevice);
+            }
+        }
+
+        public void ThrowIfNotPersonnelAreaInLanguage(string regionCode, List<string> areas)
+        {
+            if (!areas.Any() || areas.Any(area => !Languages[regionCode].PersonnelArea.Values.Contains(area)))
+            {
+                throw new ArgumentException(Codes.FailureCodes.InvalidPersonnelArea);
+            }
+        }
+
+        public void ThrowIfNotPersonnelQualificationInLanguage(string regionCode, List<string> qualifications)
+        {
+            if (!qualifications.Any() || qualifications.Any(qualification => !Languages[regionCode].PersonnelQualification.Values.Contains(qualification)))
+            {
+                throw new ArgumentException(Codes.FailureCodes.InvalidPersonnelQualification);
+            }
+        }
+
         public void ThrowIfUnknownRegion(string regionCode)
         {
             if (!GetRegionCodes().Contains(regionCode))
             {
-                throw new ArgumentException($"Unknown region code: {regionCode}");
+                throw new ArgumentException($"Unknown region regionCode: {regionCode}");
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using Pirat.Configuration;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Pirat.Model.Api.Resource;
 
 namespace Pirat.Services
 {
@@ -38,6 +39,16 @@ namespace Pirat.Services
         /// A List (this is never null) that contains all region codes
         /// </returns>
         List<string> GetRegionCodes();
+
+        void ThrowIfNotInLanguage(string regionCode, Offer offer);
+
+        void ThrowIfNotConsumableCategoryInLanguage(string regionCode, string category);
+
+        void ThrowIfNotDeviceCategoryInLanguage(string regionCode, string category);
+
+        void ThrowIfNotPersonnelAreaInLanguage(string regionCode, List<string> areas);
+
+        void ThrowIfNotPersonnelQualificationInLanguage(string regionCode, List<string> qualifications);
 
         /// <summary>
         /// This function throws an ArgumentException if the region-code is not recognized.
