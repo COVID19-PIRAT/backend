@@ -17,7 +17,7 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                     City = "Helgoland",
                     Country = "Deutschland"
                 },
-                category = "MASKE",
+                category = "Maske",
                 name = "FFP2 Maske",
                 unit = "Packung",
                 manufacturer = "Störtebeker & Co",

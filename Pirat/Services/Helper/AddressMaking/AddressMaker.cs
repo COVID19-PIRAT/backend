@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Pirat.Codes;
@@ -12,6 +13,13 @@ namespace Pirat.Services.Helper.AddressMaking
 {
 	public class AddressMaker : IAddressMaker
 	{
+        private readonly ILogger<AddressMaker> _logger;
+
+        public AddressMaker(ILogger<AddressMaker> logger)
+        {
+            _logger = logger;
+        }
+
 		public void SetCoordinates(AddressEntity address)
 		{
             NullCheck.ThrowIfNull<AddressEntity>(address);
@@ -33,6 +41,7 @@ namespace Pirat.Services.Helper.AddressMaking
 			JArray result = (JArray) json.GetValue("results", StringComparison.Ordinal);
 			if (result.Count == 0)
 			{
+				_logger.LogError(json.ToString());
 				throw new UnknownAdressException(FailureCodes.InvalidAddress);
 			}
 			JObject location = (JObject)((JObject)((JObject)result[0]).GetValue("geometry", StringComparison.Ordinal)).GetValue("location", StringComparison.Ordinal);

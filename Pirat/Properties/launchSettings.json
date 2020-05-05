@@ -2,13 +2,13 @@
   "profiles": {
     "Pirat": {
       "commandName": "Project",
-      "launchBrowser": false,
+      "launchBrowser": true,
       "launchUrl": "api/swagger",
       "environmentVariables": {
-        "PIRAT_HOST": "localhost:4200",
-        "PIRAT_ADMIN_KEY": "ich bin admin",
         "PIRAT_SWAGGER_PREFIX_PATH": "api/",
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "PIRAT_HOST": "localhost:4200",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PIRAT_ADMIN_KEY": "ich bin admin"
       },
       "applicationUrl": "http://localhost:5000"
     }

@@ -29,8 +29,8 @@ namespace Pirat.SwaggerConfiguration
                 {
                     new Personal()
                     {
-                        qualification = "PHD_STUDENT",
-                        area = "MOLECULAR_BIOLOGY",
+                        qualification = "PhD-Student",
+                        area = "Molekularbiologie",
                         address = null,
                         institution = "Institut für Piraterie",
                         researchgroup = "Biologie Piraten",
@@ -43,7 +43,7 @@ namespace Pirat.SwaggerConfiguration
                     new Consumable()
                     {
                         address = null,
-                        category = "MASKE",
+                        category = "Maske",
                         name = "FFP2 Maske",
                         unit = "Packung",
                         manufacturer = "Störtebeker & Co",
@@ -57,7 +57,7 @@ namespace Pirat.SwaggerConfiguration
                     new Device()
                     {
                         address = null,
-                        category = "ZENTRIFUGE",
+                        category = "Zentrifuge",
                         name = "Piratenzentrifuge",
                         manufacturer = "Störtebeker & Co",
                         ordernumber = "12345",
