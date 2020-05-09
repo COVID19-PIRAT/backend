@@ -9,8 +9,8 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
         {
             return new Personal()
             {
-                qualification = "PhD-Student",
-                area = "Molekularbiologie",
+                qualification = "PHD_STUDENT",
+                area = "MOLECULAR_BIOLOGY",
                 address = new Address()
                 {
                     StreetLine1 = "Leuchtturmstraße",

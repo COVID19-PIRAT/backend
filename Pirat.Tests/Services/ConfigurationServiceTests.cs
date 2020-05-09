@@ -73,7 +73,7 @@ namespace Pirat.Tests.Services
         public void IsConsumableCategoryInLanguageTest_validConsumableCategories(
             string regionCode)
         {
-            var categories = new List<string>(){ "Maske", "Pipettenspitze", "Reaktionsgefäße" };
+            var categories = new List<string>(){ "MASKE", "PIPETTENSPITZEN", "REAKTIONSGEFAESSE" };
 
             categories.ForEach(c => Assert.Null(Record.Exception(() => _service.ThrowIfNotConsumableCategoryInLanguage(regionCode, c))));
         }
@@ -83,7 +83,7 @@ namespace Pirat.Tests.Services
         public void IsConsumableCategoryInLanguageTest_invalidConsumableCategories(
             string regionCode)
         {
-            var categories = new List<string>() { "maske", "Pipettenspitze ", "Reaktionsgefäße\n", "Playstation 4"};
+            var categories = new List<string>() { "maske", "PIPETTENSPITZEN ", "REAKTIONSGEFAESSE\n", "Playstation 4"};
 
             categories.ForEach(c => Assert.Throws<ArgumentException>(() => _service.ThrowIfNotConsumableCategoryInLanguage(regionCode, c)));
         }
@@ -93,7 +93,7 @@ namespace Pirat.Tests.Services
         public void IsDeviceCategoryInLanguageTest_validDeviceCategories(
             string regionCode)
         {
-            var categories = new List<string>() { "Termociclatore (PCR)", "Altro", "Agitatore vortex" };
+            var categories = new List<string>() { "PCR_THERMOCYCLER", "SONSTIGES", "VORTEXER" };
 
             categories.ForEach(c => Assert.Null(Record.Exception(() => _service.ThrowIfNotDeviceCategoryInLanguage(regionCode, c))));
         }
@@ -103,7 +103,7 @@ namespace Pirat.Tests.Services
         public void IsDeviceCategoryInLanguageTest_invalidDeviceCategories(
             string regionCode)
         {
-            var categories = new List<string>() { "termociclatore (PCR)", " Altro", "\nAgitatore vortex", "AC Milano" };
+            var categories = new List<string>() { "PR_THERMOCYCLER", " CELL_BIOLOGY", "\nZENTRIFUGE", "AC Milano" };
 
             categories.ForEach(c => Assert.Throws<ArgumentException>(() => _service.ThrowIfNotDeviceCategoryInLanguage(regionCode, c)));
         }
@@ -113,9 +113,9 @@ namespace Pirat.Tests.Services
         public void IsPersonnelAreaInLanguageTest_validPersonnelAreas(
             string regionCode)
         {
-            var areas1 = new List<string>() { "Biochemistry", "Molecular biology", "Medicine" };
-            var areas2 = new List<string>() { "Medicine" };
-            var areas3 = new List<string>() {"Cell biology", "Pharmacology"};
+            var areas1 = new List<string>() { "BIOCHEMISTRY", "MOLECULAR_BIOLOGY", "MEDICINE" };
+            var areas2 = new List<string>() { "MEDICINE" };
+            var areas3 = new List<string>() { "CELL_BIOLOGY", "PHARMACOLOGY" };
 
             List<List<string>> areas = new List<List<string>>() { areas1, areas2, areas3 };
 
@@ -130,7 +130,7 @@ namespace Pirat.Tests.Services
         public void IsPersonnelAreaInLanguageTest_invalidPersonnelAreas(
             string regionCode)
         {
-            var areas1 = new List<string>() { "biochemistry", "\rMolecular biology", " Medicine", "Football"};
+            var areas1 = new List<string>() { "Biochemistry", "\rMOLECULAR_BIOLOGY", " MEDICINE", "Football"};
             var areas2 = new List<string>() { "" };
             var areas3 = new List<string>();
 
@@ -146,8 +146,8 @@ namespace Pirat.Tests.Services
         public void IsPersonnelQualificationInLanguageTest_validPersonnelQualification(
             string regionCode)
         {
-            var qualification1 = new List<string>() { "Doctor", "Nurse", "MSc Student" };
-            var qualification2 = new List<string>() { "Others" };
+            var qualification1 = new List<string>() { "DOCTOR", "NURSE", "MSC_STUDENT" };
+            var qualification2 = new List<string>() { "SONSTIGES" };
 
             List<List<string>> qualifications = new List<List<string>>() { qualification1, qualification2 };
             qualifications.ForEach(q => 
@@ -160,7 +160,7 @@ namespace Pirat.Tests.Services
         public void IsPersonnelQualificationInLanguageTest_invalidPersonnelQualification(
             string regionCode)
         {
-            var qualification1 = new List<string>() { "doctor", "Nurse ", "MSc Student\n"};
+            var qualification1 = new List<string>() { "Doctor", "NURSE ", "MSC_STUDENT\n" };
             var qualification2 = new List<string>();
             var qualification3 = new List<string>() { "" };
 

@@ -81,7 +81,7 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                             City = "Helgoland",
                             Country = "Deutschland"
                         },
-                        category = "Zentrifuge",
+                        category = "ZENTRIFUGE",
                         name = "Ultrazentrifuge",
                         manufacturer = "Störtebeker & Co",
                         ordernumber = "12345",

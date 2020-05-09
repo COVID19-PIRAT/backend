@@ -33,7 +33,7 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                     {
                         new Consumable()
                         {
-                            category = "Maske",
+                            category = "MASKE",
                             name = "FFP2 Maske",
                             manufacturer = "Hersteller X",
                             amount = 30,
@@ -47,7 +47,7 @@ namespace Pirat.Extensions.Swagger.SwaggerConfiguration
                     {
                         new Device()
                         {
-                            category = "PCR Thermocycler",
+                            category = "PCR_THERMOCYCLER",
                             name = "MiniAmp™ Thermal Cycler",
                             manufacturer = "Thermo Fisher Scientific",
                             amount = 5,
