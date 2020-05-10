@@ -109,7 +109,7 @@ namespace Pirat.Tests.Services
         }
 
         [Theory]
-        [InlineData("en")]
+        [InlineData("my")]
         public void IsPersonnelAreaInLanguageTest_validPersonnelAreas(
             string regionCode)
         {
@@ -126,7 +126,7 @@ namespace Pirat.Tests.Services
         }
 
         [Theory]
-        [InlineData("en")]
+        [InlineData("my")]
         public void IsPersonnelAreaInLanguageTest_invalidPersonnelAreas(
             string regionCode)
         {
@@ -142,7 +142,7 @@ namespace Pirat.Tests.Services
         }
 
         [Theory]
-        [InlineData("en")]
+        [InlineData("my")]
         public void IsPersonnelQualificationInLanguageTest_validPersonnelQualification(
             string regionCode)
         {
@@ -156,7 +156,7 @@ namespace Pirat.Tests.Services
         }
 
         [Theory]
-        [InlineData("en")]
+        [InlineData("my")]
         public void IsPersonnelQualificationInLanguageTest_invalidPersonnelQualification(
             string regionCode)
         {
