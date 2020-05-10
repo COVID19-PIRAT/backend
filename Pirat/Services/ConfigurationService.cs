@@ -124,7 +124,7 @@ namespace Pirat.Services
 
         public void ThrowIfNotConsumableCategoryInLanguage(string regionCode, string category)
         {
-            if (!Languages[regionCode].Consumable.Keys.Contains(category))
+            if (!Regions[regionCode].Categories.Consumable.Contains(category))
             {
                 throw new ArgumentException(Codes.FailureCodes.InvalidCategoryConsumable);
             }
@@ -132,7 +132,7 @@ namespace Pirat.Services
 
         public void ThrowIfNotDeviceCategoryInLanguage(string regionCode, string category)
         {
-            if(!Languages[regionCode].Device.Keys.Contains(category))
+            if(!Regions[regionCode].Categories.Device.Contains(category))
             {
                 throw new ArgumentException(Codes.FailureCodes.InvalidCategoryDevice);
             }
@@ -140,7 +140,7 @@ namespace Pirat.Services
 
         public void ThrowIfNotPersonnelAreaInLanguage(string regionCode, List<string> areas)
         {
-            if (!areas.Any() || areas.Any(area => !Languages[regionCode].PersonnelArea.Keys.Contains(area)))
+            if (!areas.Any() || areas.Any(area => !Regions[regionCode].Categories.PersonnelArea.Contains(area)))
             {
                 throw new ArgumentException(Codes.FailureCodes.InvalidPersonnelArea);
             }
@@ -148,7 +148,7 @@ namespace Pirat.Services
 
         public void ThrowIfNotPersonnelQualificationInLanguage(string regionCode, List<string> qualifications)
         {
-            if (!qualifications.Any() || qualifications.Any(qualification => !Languages[regionCode].PersonnelQualification.Keys.Contains(qualification)))
+            if (!qualifications.Any() || qualifications.Any(qualification => !Regions[regionCode].Categories.PersonnelQualification.Contains(qualification)))
             {
                 throw new ArgumentException(Codes.FailureCodes.InvalidPersonnelQualification);
             }
