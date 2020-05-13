@@ -40,7 +40,7 @@ namespace Pirat.Services
         /// </returns>
         List<string> GetRegionCodes();
 
-        void ThrowIfNotInLanguage(string regionCode, Offer offer);
+        void ThrowIfNotInRegion(string regionCode, Offer offer);
 
         void ThrowIfNotConsumableCategoryInLanguage(string regionCode, string category);
 

@@ -133,11 +133,13 @@ namespace Pirat.Tests.Services
             var areas1 = new List<string>() { "Biochemistry", "\rMOLECULAR_BIOLOGY", " MEDICINE", "Football"};
             var areas2 = new List<string>() { "" };
             var areas3 = new List<string>();
+            List<string> areas4 = null;
 
-            List<List<string>> areas = new List<List<string>>() { areas1, areas2, areas3 };
+            // ReSharper disable once ExpressionIsAlwaysNull
+            List<List<string>> areas = new List<List<string>>() { areas1, areas2, areas3, areas4 };
 
             areas.ForEach(a =>
-                Assert.Throws<ArgumentException>(() =>
+                Assert.ThrowsAny<ArgumentException>(() =>
                     _service.ThrowIfNotPersonnelAreaInLanguage(regionCode, a)));
         }
 
@@ -163,10 +165,12 @@ namespace Pirat.Tests.Services
             var qualification1 = new List<string>() { "Doctor", "NURSE ", "MSC_STUDENT\n" };
             var qualification2 = new List<string>();
             var qualification3 = new List<string>() { "" };
+            List<string> qualification4 = null;
 
-            List<List<string>> qualifications = new List<List<string>>(){qualification1, qualification2, qualification3};
+            // ReSharper disable once ExpressionIsAlwaysNull
+            List<List<string>> qualifications = new List<List<string>>(){qualification1, qualification2, qualification3, qualification4};
             qualifications.ForEach(q => 
-                Assert.Throws<ArgumentException>(() => 
+                Assert.ThrowsAny<ArgumentException>(() => 
                     _service.ThrowIfNotPersonnelQualificationInLanguage(regionCode, q)));
 
         }

@@ -246,7 +246,7 @@ namespace Pirat.Controllers
             try
             {
                 _configurationService.ThrowIfUnknownRegion(region);
-                _configurationService.ThrowIfNotInLanguage(region, offer);
+                _configurationService.ThrowIfNotInRegion(region, offer);
                 _mailInputValidatorService.validateMail(offer.provider.mail);
                 _resourceStockInputValidatorService.ValidateForStockInsertion(offer);
                 var token = await _resourceStockUpdateService.InsertAsync(offer, region);

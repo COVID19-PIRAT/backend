@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using Pirat.Codes;
 using Pirat.Model.Api.Resource;
+using Pirat.Other;
 
 namespace Pirat.Services
 {
@@ -71,7 +72,7 @@ namespace Pirat.Services
             }
             else
             {
-                using var scope = _logger.BeginScope("Unknown region-regionCode");
+                using var scope = _logger.BeginScope("Unknown region-code");
                 _logger.LogWarning(
                     "Tried to access configuration for invalid region-regionCode: {0}",
                     regionCode
@@ -105,8 +106,9 @@ namespace Pirat.Services
             return this.Regions.Keys.ToList();
         }
 
-        public void ThrowIfNotInLanguage(string regionCode, Offer offer)
+        public void ThrowIfNotInRegion(string regionCode, Offer offer)
         {
+            NullCheck.ThrowIfNull<Offer>(offer);
             foreach (var consumable in offer.consumables)
             {
                 ThrowIfNotConsumableCategoryInLanguage(regionCode, consumable.category);
@@ -126,7 +128,7 @@ namespace Pirat.Services
         {
             if (!Regions[regionCode].Categories.Consumable.Contains(category))
             {
-                throw new ArgumentException(Codes.FailureCodes.InvalidCategoryConsumable);
+                throw new ArgumentException(FailureCodes.InvalidCategoryConsumable);
             }
         }
 
@@ -134,23 +136,25 @@ namespace Pirat.Services
         {
             if(!Regions[regionCode].Categories.Device.Contains(category))
             {
-                throw new ArgumentException(Codes.FailureCodes.InvalidCategoryDevice);
+                throw new ArgumentException(FailureCodes.InvalidCategoryDevice);
             }
         }
 
         public void ThrowIfNotPersonnelAreaInLanguage(string regionCode, List<string> areas)
         {
+            NullCheck.ThrowIfNull<List<string>>(areas);
             if (!areas.Any() || areas.Any(area => !Regions[regionCode].Categories.PersonnelArea.Contains(area)))
             {
-                throw new ArgumentException(Codes.FailureCodes.InvalidPersonnelArea);
+                throw new ArgumentException(FailureCodes.InvalidPersonnelArea);
             }
         }
 
         public void ThrowIfNotPersonnelQualificationInLanguage(string regionCode, List<string> qualifications)
         {
+            NullCheck.ThrowIfNull<List<string>>(qualifications);
             if (!qualifications.Any() || qualifications.Any(qualification => !Regions[regionCode].Categories.PersonnelQualification.Contains(qualification)))
             {
-                throw new ArgumentException(Codes.FailureCodes.InvalidPersonnelQualification);
+                throw new ArgumentException(FailureCodes.InvalidPersonnelQualification);
             }
         }
 
