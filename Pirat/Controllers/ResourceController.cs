@@ -92,6 +92,7 @@ namespace Pirat.Controllers
             try
             {
                 _configurationService.ThrowIfUnknownRegion(region);
+                _configurationService.ThrowIfNotConsumableCategoryInRegion(region, consumable.category);
                 consumable.address = address;
                 _resourceStockInputValidatorService.ValidateForStockQuery(consumable);
                 return Ok(await _resourceStockQueryService.QueryOffersAsync(consumable, region).ToListAsync());
@@ -131,6 +132,7 @@ namespace Pirat.Controllers
             try
             {
                 _configurationService.ThrowIfUnknownRegion(region);
+                _configurationService.ThrowIfNotDeviceCategoryInRegion(region, device.category);
                 device.address = address;
                 _resourceStockInputValidatorService.ValidateForStockQuery(device);
                 return Ok(await _resourceStockQueryService.QueryOffersAsync(device, region).ToListAsync());
@@ -169,6 +171,8 @@ namespace Pirat.Controllers
             try
             {
                 _configurationService.ThrowIfUnknownRegion(region);
+                _configurationService.ThrowIfNotPersonnelAreaInRegion(region, manpower.area);
+                _configurationService.ThrowIfNotPersonnelQualificationInRegion(region, manpower.qualification);
                 manpower.address = address;
                 _resourceStockInputValidatorService.ValidateForStockQuery(manpower);
                 return Ok(await _resourceStockQueryService.QueryOffersAsync(manpower, region).ToListAsync());
@@ -242,6 +246,7 @@ namespace Pirat.Controllers
             try
             {
                 _configurationService.ThrowIfUnknownRegion(region);
+                _configurationService.ThrowIfNotInRegion(region, offer);
                 _mailInputValidatorService.validateMail(offer.provider.mail);
                 _resourceStockInputValidatorService.ValidateForStockInsertion(offer);
                 var token = await _resourceStockUpdateService.InsertAsync(offer, region);

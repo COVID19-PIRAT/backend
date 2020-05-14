@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using Pirat.Codes;
+using Pirat.Model.Api.Resource;
+using Pirat.Other;
 
 namespace Pirat.Services
 {
@@ -71,7 +74,7 @@ namespace Pirat.Services
             {
                 using var scope = _logger.BeginScope("Unknown region-code");
                 _logger.LogWarning(
-                    "Tried to access configuration for invalid region-code: {0}",
+                    "Tried to access configuration for invalid region-regionCode: {0}",
                     regionCode
                 );
 
@@ -88,9 +91,9 @@ namespace Pirat.Services
             }
             else
             {
-                using var scope = _logger.BeginScope("Unknown region-code");
+                using var scope = _logger.BeginScope("Unknown region-regionCode");
                 _logger.LogWarning(
-                    "Tried to access languages for invalid region-code: {0}",
+                    "Tried to access languages for invalid region-regionCode: {0}",
                     regionCode
                 );
 
@@ -103,11 +106,63 @@ namespace Pirat.Services
             return this.Regions.Keys.ToList();
         }
 
+        public void ThrowIfNotInRegion(string regionCode, Offer offer)
+        {
+            NullCheck.ThrowIfNull<Offer>(offer);
+            foreach (var consumable in offer.consumables)
+            {
+                ThrowIfNotConsumableCategoryInRegion(regionCode, consumable.category);
+            }
+            foreach (var device in offer.devices)
+            {
+                ThrowIfNotDeviceCategoryInRegion(regionCode, device.category);
+            }
+            foreach (var personal in offer.personals)
+            {
+                ThrowIfNotPersonnelAreaInRegion(regionCode, new List<string>(1){personal.area});
+                ThrowIfNotPersonnelQualificationInRegion(regionCode, new List<string>(1) { personal.qualification });
+            }
+        }
+
+        public void ThrowIfNotConsumableCategoryInRegion(string regionCode, string category)
+        {
+            if (!Regions[regionCode].Categories.Consumable.Contains(category))
+            {
+                throw new ArgumentException(FailureCodes.InvalidCategoryConsumable);
+            }
+        }
+
+        public void ThrowIfNotDeviceCategoryInRegion(string regionCode, string category)
+        {
+            if(!Regions[regionCode].Categories.Device.Contains(category))
+            {
+                throw new ArgumentException(FailureCodes.InvalidCategoryDevice);
+            }
+        }
+
+        public void ThrowIfNotPersonnelAreaInRegion(string regionCode, List<string> areas)
+        {
+            NullCheck.ThrowIfNull<List<string>>(areas);
+            if (!areas.Any() || areas.Any(area => !Regions[regionCode].Categories.PersonnelArea.Contains(area)))
+            {
+                throw new ArgumentException(FailureCodes.InvalidPersonnelArea);
+            }
+        }
+
+        public void ThrowIfNotPersonnelQualificationInRegion(string regionCode, List<string> qualifications)
+        {
+            NullCheck.ThrowIfNull<List<string>>(qualifications);
+            if (!qualifications.Any() || qualifications.Any(qualification => !Regions[regionCode].Categories.PersonnelQualification.Contains(qualification)))
+            {
+                throw new ArgumentException(FailureCodes.InvalidPersonnelQualification);
+            }
+        }
+
         public void ThrowIfUnknownRegion(string regionCode)
         {
             if (!GetRegionCodes().Contains(regionCode))
             {
-                throw new ArgumentException($"Unknown region code: {regionCode}");
+                throw new ArgumentException($"Unknown region regionCode: {regionCode}");
             }
         }
 

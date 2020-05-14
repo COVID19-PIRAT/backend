@@ -26,6 +26,8 @@
         public const string InvalidCategoryDevice = "1006:InvalidCategoryDevice";
         public const string InvalidReason = "1007:InvalidReason";
         public const string InvalidRegionCode = "1008:InvalidRegionCode";
+        public const string InvalidPersonnelArea = "1009:InvalidPersonnelArea";
+        public const string InvalidPersonnelQualification = "1010:InvalidPersonnelQualification";
 
         public const string InvalidChangeAddress = "1100:InvalidChangeAddress";
         public const string InvalidChangeProvider = "1102:InvalidChangeProvider";
