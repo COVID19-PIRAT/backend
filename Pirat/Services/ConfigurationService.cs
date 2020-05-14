@@ -111,20 +111,20 @@ namespace Pirat.Services
             NullCheck.ThrowIfNull<Offer>(offer);
             foreach (var consumable in offer.consumables)
             {
-                ThrowIfNotConsumableCategoryInLanguage(regionCode, consumable.category);
+                ThrowIfNotConsumableCategoryInRegion(regionCode, consumable.category);
             }
             foreach (var device in offer.devices)
             {
-                ThrowIfNotDeviceCategoryInLanguage(regionCode, device.category);
+                ThrowIfNotDeviceCategoryInRegion(regionCode, device.category);
             }
             foreach (var personal in offer.personals)
             {
-                ThrowIfNotPersonnelAreaInLanguage(regionCode, new List<string>(1){personal.area});
-                ThrowIfNotPersonnelQualificationInLanguage(regionCode, new List<string>(1) { personal.qualification });
+                ThrowIfNotPersonnelAreaInRegion(regionCode, new List<string>(1){personal.area});
+                ThrowIfNotPersonnelQualificationInRegion(regionCode, new List<string>(1) { personal.qualification });
             }
         }
 
-        public void ThrowIfNotConsumableCategoryInLanguage(string regionCode, string category)
+        public void ThrowIfNotConsumableCategoryInRegion(string regionCode, string category)
         {
             if (!Regions[regionCode].Categories.Consumable.Contains(category))
             {
@@ -132,7 +132,7 @@ namespace Pirat.Services
             }
         }
 
-        public void ThrowIfNotDeviceCategoryInLanguage(string regionCode, string category)
+        public void ThrowIfNotDeviceCategoryInRegion(string regionCode, string category)
         {
             if(!Regions[regionCode].Categories.Device.Contains(category))
             {
@@ -140,7 +140,7 @@ namespace Pirat.Services
             }
         }
 
-        public void ThrowIfNotPersonnelAreaInLanguage(string regionCode, List<string> areas)
+        public void ThrowIfNotPersonnelAreaInRegion(string regionCode, List<string> areas)
         {
             NullCheck.ThrowIfNull<List<string>>(areas);
             if (!areas.Any() || areas.Any(area => !Regions[regionCode].Categories.PersonnelArea.Contains(area)))
@@ -149,7 +149,7 @@ namespace Pirat.Services
             }
         }
 
-        public void ThrowIfNotPersonnelQualificationInLanguage(string regionCode, List<string> qualifications)
+        public void ThrowIfNotPersonnelQualificationInRegion(string regionCode, List<string> qualifications)
         {
             NullCheck.ThrowIfNull<List<string>>(qualifications);
             if (!qualifications.Any() || qualifications.Any(qualification => !Regions[regionCode].Categories.PersonnelQualification.Contains(qualification)))

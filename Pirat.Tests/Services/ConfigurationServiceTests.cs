@@ -70,47 +70,47 @@ namespace Pirat.Tests.Services
 
         [Theory]
         [InlineData("de")]
-        public void IsConsumableCategoryInLanguageTest_validConsumableCategories(
+        public void IsConsumableCategoryInRegionTest_validConsumableCategories(
             string regionCode)
         {
             var categories = new List<string>(){ "MASKE", "PIPETTENSPITZEN", "REAKTIONSGEFAESSE" };
 
-            categories.ForEach(c => Assert.Null(Record.Exception(() => _service.ThrowIfNotConsumableCategoryInLanguage(regionCode, c))));
+            categories.ForEach(c => Assert.Null(Record.Exception(() => _service.ThrowIfNotConsumableCategoryInRegion(regionCode, c))));
         }
 
         [Theory]
         [InlineData("de")]
-        public void IsConsumableCategoryInLanguageTest_invalidConsumableCategories(
+        public void IsConsumableCategoryInRegionTest_invalidConsumableCategories(
             string regionCode)
         {
             var categories = new List<string>() { "maske", "PIPETTENSPITZEN ", "REAKTIONSGEFAESSE\n", "Playstation 4"};
 
-            categories.ForEach(c => Assert.Throws<ArgumentException>(() => _service.ThrowIfNotConsumableCategoryInLanguage(regionCode, c)));
+            categories.ForEach(c => Assert.Throws<ArgumentException>(() => _service.ThrowIfNotConsumableCategoryInRegion(regionCode, c)));
         }
 
         [Theory]
         [InlineData("it")]
-        public void IsDeviceCategoryInLanguageTest_validDeviceCategories(
+        public void IsDeviceCategoryInRegionTest_validDeviceCategories(
             string regionCode)
         {
             var categories = new List<string>() { "PCR_THERMOCYCLER", "SONSTIGES", "VORTEXER" };
 
-            categories.ForEach(c => Assert.Null(Record.Exception(() => _service.ThrowIfNotDeviceCategoryInLanguage(regionCode, c))));
+            categories.ForEach(c => Assert.Null(Record.Exception(() => _service.ThrowIfNotDeviceCategoryInRegion(regionCode, c))));
         }
 
         [Theory]
         [InlineData("it")]
-        public void IsDeviceCategoryInLanguageTest_invalidDeviceCategories(
+        public void IsDeviceCategoryInRegionTest_invalidDeviceCategories(
             string regionCode)
         {
             var categories = new List<string>() { "PR_THERMOCYCLER", " CELL_BIOLOGY", "\nZENTRIFUGE", "AC Milano" };
 
-            categories.ForEach(c => Assert.Throws<ArgumentException>(() => _service.ThrowIfNotDeviceCategoryInLanguage(regionCode, c)));
+            categories.ForEach(c => Assert.Throws<ArgumentException>(() => _service.ThrowIfNotDeviceCategoryInRegion(regionCode, c)));
         }
 
         [Theory]
         [InlineData("my")]
-        public void IsPersonnelAreaInLanguageTest_validPersonnelAreas(
+        public void IsPersonnelAreaInRegionTest_validPersonnelAreas(
             string regionCode)
         {
             var areas1 = new List<string>() { "BIOCHEMISTRY", "MOLECULAR_BIOLOGY", "MEDICINE" };
@@ -121,13 +121,13 @@ namespace Pirat.Tests.Services
 
             areas.ForEach(a =>
                 Assert.Null(Record.Exception(() =>
-                    _service.ThrowIfNotPersonnelAreaInLanguage(regionCode, a))));
+                    _service.ThrowIfNotPersonnelAreaInRegion(regionCode, a))));
 
         }
 
         [Theory]
         [InlineData("my")]
-        public void IsPersonnelAreaInLanguageTest_invalidPersonnelAreas(
+        public void IsPersonnelAreaInRegionTest_invalidPersonnelAreas(
             string regionCode)
         {
             var areas1 = new List<string>() { "Biochemistry", "\rMOLECULAR_BIOLOGY", " MEDICINE", "Football"};
@@ -140,12 +140,12 @@ namespace Pirat.Tests.Services
 
             areas.ForEach(a =>
                 Assert.ThrowsAny<ArgumentException>(() =>
-                    _service.ThrowIfNotPersonnelAreaInLanguage(regionCode, a)));
+                    _service.ThrowIfNotPersonnelAreaInRegion(regionCode, a)));
         }
 
         [Theory]
         [InlineData("my")]
-        public void IsPersonnelQualificationInLanguageTest_validPersonnelQualification(
+        public void IsPersonnelQualificationInRegionTest_validPersonnelQualification(
             string regionCode)
         {
             var qualification1 = new List<string>() { "DOCTOR", "NURSE", "MSC_STUDENT" };
@@ -154,12 +154,12 @@ namespace Pirat.Tests.Services
             List<List<string>> qualifications = new List<List<string>>() { qualification1, qualification2 };
             qualifications.ForEach(q => 
                 Assert.Null(Record.Exception(() => 
-                _service.ThrowIfNotPersonnelQualificationInLanguage(regionCode, qualification1))));
+                _service.ThrowIfNotPersonnelQualificationInRegion(regionCode, qualification1))));
         }
 
         [Theory]
         [InlineData("my")]
-        public void IsPersonnelQualificationInLanguageTest_invalidPersonnelQualification(
+        public void IsPersonnelQualificationInRegionTest_invalidPersonnelQualification(
             string regionCode)
         {
             var qualification1 = new List<string>() { "Doctor", "NURSE ", "MSC_STUDENT\n" };
@@ -171,7 +171,7 @@ namespace Pirat.Tests.Services
             List<List<string>> qualifications = new List<List<string>>(){qualification1, qualification2, qualification3, qualification4};
             qualifications.ForEach(q => 
                 Assert.ThrowsAny<ArgumentException>(() => 
-                    _service.ThrowIfNotPersonnelQualificationInLanguage(regionCode, q)));
+                    _service.ThrowIfNotPersonnelQualificationInRegion(regionCode, q)));
 
         }
     }

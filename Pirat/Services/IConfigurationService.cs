@@ -42,13 +42,13 @@ namespace Pirat.Services
 
         void ThrowIfNotInRegion(string regionCode, Offer offer);
 
-        void ThrowIfNotConsumableCategoryInLanguage(string regionCode, string category);
+        void ThrowIfNotConsumableCategoryInRegion(string regionCode, string category);
 
-        void ThrowIfNotDeviceCategoryInLanguage(string regionCode, string category);
+        void ThrowIfNotDeviceCategoryInRegion(string regionCode, string category);
 
-        void ThrowIfNotPersonnelAreaInLanguage(string regionCode, List<string> areas);
+        void ThrowIfNotPersonnelAreaInRegion(string regionCode, List<string> areas);
 
-        void ThrowIfNotPersonnelQualificationInLanguage(string regionCode, List<string> qualifications);
+        void ThrowIfNotPersonnelQualificationInRegion(string regionCode, List<string> qualifications);
 
         /// <summary>
         /// This function throws an ArgumentException if the region-code is not recognized.
