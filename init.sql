@@ -1,4 +1,4 @@
-create table address
+create table if not exists address
 (
 	id serial not null
 		constraint address_pk
@@ -18,10 +18,10 @@ create table address
 	country text not null
 );
 
-create unique index address_id_uindex
+create unique index if not exists address_id_uindex
 	on address (id);
 
-create table offer
+create table if not exists offer
 (
 	id serial not null
 		constraint offer_pkey
@@ -40,7 +40,7 @@ create table offer
 	region text not null
 );
 
-create table consumable
+create table if not exists consumable
 (
 	id serial not null
 		constraint consumables_pk
@@ -59,10 +59,10 @@ create table consumable
 	is_deleted boolean default false not null
 );
 
-create unique index consumables_id_uindex
+create unique index if not exists consumables_id_uindex
 	on consumable (id);
 
-create table device
+create table if not exists device
 (
 	category text not null,
 	name text not null,
@@ -80,10 +80,10 @@ create table device
 	is_deleted boolean default false not null
 );
 
-create unique index device_id_uindex
+create unique index if not exists device_id_uindex
 	on device (id);
 
-create table personal
+create table if not exists personal
 (
 	id serial not null
 		constraint manpower_pk
@@ -101,10 +101,10 @@ create table personal
 	is_deleted boolean default false not null
 );
 
-create unique index manpower_id_uindex
+create unique index if not exists manpower_id_uindex
 	on personal (id);
 
-create table region_subscription
+create table if not exists region_subscription
 (
 	id serial not null
 		constraint region_subscription_pk
@@ -120,7 +120,7 @@ create table region_subscription
 	region text not null
 );
 
-create table change
+create table if not exists change
 (
 	id serial not null
 		constraint change_pk
@@ -136,7 +136,7 @@ create table change
 	region text not null
 );
 
-create table demand
+create table if not exists demand
 (
 	id serial not null
 		constraint demand_pk
@@ -153,10 +153,10 @@ create table demand
 	created_at_timestamp timestamp not null
 );
 
-create index demand_token_index
+create index if not exists demand_token_index
 	on demand (token);
 
-create table demand_device
+create table if not exists demand_device
 (
 	id serial not null
 		constraint demand_device_pk
@@ -174,7 +174,7 @@ create table demand_device
 	is_deleted boolean not null
 );
 
-create table demand_consumable
+create table if not exists demand_consumable
 (
 	id serial not null
 		constraint demand_consumable_pk

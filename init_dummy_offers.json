@@ -1,0 +1,53 @@
+{
+	"OfferContexts": [
+		{
+			"Address": {
+				"hascoordinates": true,
+				"latitude": "48.13756",
+				"longitude": "11.57490",
+				"is_deleted": false,
+				"street_line_1": "Marienplatz 1",
+				"street_line_2": null,
+				"street_line_3": null,
+				"street_line_4": null,
+				"county": null,
+				"city": "München",
+				"state": null,
+				"postal_code": "80331",
+				"country": "DEUTSCHLAND"
+			},
+			"Offer": {
+				"name": "GermanDummyPirat",
+				"mail": "pirat.hilfsmittel@gmail.com",
+				"phone": "123456",
+				"organisation": "DummyOrganisation",
+				"ispublic": false,
+				"token": "0P2uADVO3Y7Q9YstM7Z08vfjFRhUQE",
+				"timestamp":"2020-05-12 00:00:00.000000",
+				"region": "de"
+			},
+			"Consumables": [
+				{
+					"category": "MASKE",
+					"name": "FFP2 MASKE",
+					"manufacturer": "German Dummy & Co",
+					"ordernumber": 545454,
+					"amount": 100,
+					"unit": "Packung",
+					"annotation": "Nur ein Dummy",
+					"is_deleted": false
+				},
+				{
+					"category": "MASKE",
+					"name": "FFP3 MASKE",
+					"manufacturer": "German Dummy & Co",
+					"ordernumber": 77777,
+					"amount": 50,
+					"unit": "Packung",
+					"annotation": "Nur ein Dummy",
+					"is_deleted": false
+				}
+			]
+		}
+	]
+}

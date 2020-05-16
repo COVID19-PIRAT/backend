@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Npgsql;
+using Pirat.DatabaseContext;
 
 namespace Pirat
 {
@@ -13,7 +13,13 @@ namespace Pirat
         public static void Main(string[] args)
         {
             CheckEnvironmentVariables();
-            CheckConnectionToDatabase();
+            
+            DatabaseInitialization.CheckConnectionToDatabase();
+            var initTables = Environment.GetEnvironmentVariable("PIRAT_INIT_DB_TABLES_IF_NOT_EXIST")?.Equals("true", StringComparison.Ordinal);
+            var initData = Environment.GetEnvironmentVariable("PIRAT_INIT_DUMMY_DATA_IF_NOT_EXIST")?.Equals("true", StringComparison.Ordinal);
+            if (initTables.HasValue) DatabaseInitialization.InitDatabaseTables();
+            if (initData.HasValue) DatabaseInitialization.InitDatabaseWithDummyData();
+
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -35,7 +41,10 @@ namespace Pirat
                 
                 "PIRAT_ADMIN_KEY",
                 "PIRAT_SWAGGER_PREFIX_PATH",
-                "PIRAT_WEBAPP_ENVIRONMENT"
+                "PIRAT_WEBAPP_ENVIRONMENT",
+
+                "PIRAT_INIT_DB_TABLES_IF_NOT_EXIST",
+                "PIRAT_INIT_DUMMY_DATA_IF_NOT_EXIST"
             };
             foreach (var requiredEnvironmentVariable in requiredEnvironmentVariables)
             {
@@ -45,14 +54,6 @@ namespace Pirat
                 }
             }
         }
-
-        public static void CheckConnectionToDatabase()
-        {
-            var connection = new NpgsqlConnection(Environment.GetEnvironmentVariable("PIRAT_CONNECTION"));
-            connection.Open();
-            connection.Dispose();
-        }
-
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
