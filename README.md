@@ -16,7 +16,9 @@ See https://dotnet.microsoft.com/download/dotnet-core/3.1 to get the SDK
 
 #### Database
 
-This program uses a PostgreSQL database. The database definition is in `init.sql`.
+This program uses a PostgreSQL database. The database definition is in `Database/init.sql`.
+
+Dummy data that is possible loaded into the database (see section Environment Variables) is in `Database`.
 
 
 #### Compile

@@ -44,7 +44,10 @@ namespace Pirat.DatabaseContext
     {
 
         private static readonly string DatabaseInitializationFilesLocation =
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Database");
+
+        private static readonly string DatabaseTableInitializationFile =
+            Path.Combine(DatabaseInitializationFilesLocation, "init.sql");
 
         /// <summary>
         /// Checks if connection to database can be established. Otherwise exception is thrown.
@@ -63,9 +66,7 @@ namespace Pirat.DatabaseContext
         {
             CheckConnectionToDatabase();
 
-            var initSqlFile = Path.Combine(DatabaseInitializationFilesLocation, "init.sql");
-
-            var commandsInput = File.ReadAllText(initSqlFile, Encoding.UTF8);
+            var commandsInput = File.ReadAllText(DatabaseTableInitializationFile, Encoding.UTF8);
 
             var commands = commandsInput.Split(';');
 
