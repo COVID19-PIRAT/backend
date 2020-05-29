@@ -15,10 +15,10 @@ namespace Pirat
             CheckEnvironmentVariables();
             
             DatabaseInitialization.CheckConnectionToDatabase();
-            var initTables = Environment.GetEnvironmentVariable("PIRAT_INIT_DB_TABLES_IF_NOT_EXIST")?.Equals("true", StringComparison.Ordinal);
-            var initData = Environment.GetEnvironmentVariable("PIRAT_INIT_DUMMY_DATA_IF_NOT_EXIST")?.Equals("true", StringComparison.Ordinal);
-            if (initTables.HasValue) DatabaseInitialization.InitDatabaseTables();
-            if (initData.HasValue) DatabaseInitialization.InitDatabaseWithDummyData();
+            var initTables = string.Equals(Environment.GetEnvironmentVariable("PIRAT_INIT_DB_TABLES_IF_NOT_EXIST"), "true", StringComparison.Ordinal);
+            var initData = string.Equals(Environment.GetEnvironmentVariable("PIRAT_INIT_DUMMY_DATA_IF_NOT_EXIST"),"true", StringComparison.Ordinal);
+            if (initTables) DatabaseInitialization.InitDatabaseTables();
+            if (initData) DatabaseInitialization.InitDatabaseWithDummyData();
 
             CreateHostBuilder(args).Build().Run();
         }

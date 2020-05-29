@@ -57,6 +57,11 @@ The following environment variables are available, most of them are required.
 * PIRAT_GOOGLE_API_KEY
 * PIRAT_GOOGLE_RECAPTCHA_SECRET
 
+**Database Initialization**
+
+* PIRAT_INIT_DB_TABLES_IF_NOT_EXIST - If set to `true` tables that do not exist so far are added to the schema.
+* PIRAT_INIT_DUMMY_DATA_IF_NOT_EXIST - Insert predefined dummy data into the tables if set to `true`. If tables are not empty, the dummy data gets not inserted.
+
 
 Example:
 
@@ -77,6 +82,9 @@ PIRAT_INTERNAL_RECEIVER_MAIL=mail@pirat-tool.com
 
 PIRAT_GOOGLE_API_KEY=KKKKEEEEYYYYY
 PIRAT_GOOGLE_RECAPTCHA_SECRET=SSSSEEECCCRRREEEEEETTTTTTT
+
+PIRAT_INIT_DB_TABLES_IF_NOT_EXIST=true
+PIRAT_INIT_DUMMY_DATA_IF_NOT_EXIST=true
 ```
 
 
