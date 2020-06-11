@@ -38,6 +38,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\Database\**" CopyToOutputDirectory="PreserveNewest" Link="Database\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+
+  <ItemGroup>
     <PackageReference Include="Cronos" Version="0.7.0" />
     <PackageReference Include="MailKit" Version="2.7.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
@@ -66,5 +71,11 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Update="Program.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
 
 </Project>
